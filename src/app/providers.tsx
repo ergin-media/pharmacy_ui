@@ -1,10 +1,12 @@
 import { QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from "react-router";
 import { queryClient } from "./queryClient";
+import { router } from "./router";
 
-export function AppProviders({ children }: { children: React.ReactNode }) {
+export function AppProviders() {
     return (
         <QueryClientProvider client={queryClient}>
-            {children}
+            <RouterProvider router={router} />
         </QueryClientProvider>
     );
 }
