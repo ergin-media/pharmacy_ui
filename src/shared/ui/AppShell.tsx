@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { NAV_SECTIONS } from "@/shared/nav/nav.config.ts";
 
 function NavItem({ to, label }: { to: string; label: string }) {
     const { pathname } = useLocation();
@@ -36,11 +37,21 @@ export function AppShell() {
 
                     <Separator className="my-2" />
 
-                    <nav className="grid gap-1 px-1">
-                        <div className="px-2 pt-2 text-xs font-medium text-muted-foreground">
-                            Rezepte
-                        </div>
-                        <NavItem to="/rx" label="RX Übersicht" />
+                    <nav className="grid gap-3 px-1">
+                        {NAV_SECTIONS.map((section) => (
+                            <div key={section.title} className="grid gap-1">
+                                <div className="px-2 pt-2 text-xs font-medium text-muted-foreground">
+                                    {section.title}
+                                </div>
+                                {section.items.map((item) => (
+                                    <NavItem
+                                        key={item.to}
+                                        to={item.to}
+                                        label={item.label}
+                                    />
+                                ))}
+                            </div>
+                        ))}
                     </nav>
 
                     <Separator className="my-3" />
