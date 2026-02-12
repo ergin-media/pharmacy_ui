@@ -15,6 +15,10 @@ export const rxKeys = {
                 per_page: p.per_page ?? 25,
                 parse_status: p.parse_status ?? "",
                 provider: p.provider ?? "",
+
+                // neu:
+                search: p.search ?? "",
+                sort: p.sort ?? "created_at_desc",
             },
         ] as const,
 };

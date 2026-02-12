@@ -74,6 +74,9 @@ export function RxListPage() {
         per_page: perPage,
         parse_status: parseStatus,
         provider,
+        // später:
+        // search,
+        // sort,
     };
 
     const q = useRxListQuery(params);

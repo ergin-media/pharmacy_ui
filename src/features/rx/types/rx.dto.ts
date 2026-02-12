@@ -41,9 +41,19 @@ export interface RxListResponseDto {
     total_pages: number;
 }
 
+export type RxSort =
+    | "created_at_desc"
+    | "created_at_asc"
+    | "received_at_desc"
+    | "received_at_asc";
+
 export interface RxListQueryParams {
     page?: number;
     per_page?: number;
     parse_status?: RxParseStatus;
     provider?: string;
+
+    // neu:
+    search?: string; // z.B. subject, from_email, patient name, rx_hash
+    sort?: RxSort;
 }
