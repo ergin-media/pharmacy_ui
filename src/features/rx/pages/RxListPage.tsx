@@ -23,6 +23,17 @@ import {
 } from "@/components/ui/table";
 
 const PER_PAGE_OPTIONS = [10, 25, 50, 100] as const;
+const SORT_OPTIONS = [
+    { value: "created_at_desc", label: "Neueste zuerst" },
+    { value: "created_at_asc", label: "Älteste zuerst" },
+    { value: "received_at_desc", label: "Eingang: neueste zuerst" },
+    { value: "received_at_asc", label: "Eingang: älteste zuerst" },
+] as const;
+
+type RxSort = (typeof SORT_OPTIONS)[number]["value"];
+
+const DEFAULT_SORT: RxSort = "created_at_desc";
+const ALLOWED_SORTS = SORT_OPTIONS.map((s) => s.value) as RxSort[];
 
 function toInt(value: string | null, fallback: number) {
     const n = Number(value);
@@ -68,15 +79,21 @@ export function RxListPage() {
 
     const providerRaw = (sp.get("provider") ?? "").trim();
     const provider = providerRaw ? providerRaw : undefined;
+    const searchRaw = (sp.get("search") ?? "").trim();
+    const search = searchRaw ? searchRaw : undefined;
+
+    const sortRaw = (sp.get("sort") ?? "").trim();
+    const sort = (ALLOWED_SORTS as readonly string[]).includes(sortRaw)
+        ? (sortRaw as RxSort)
+        : DEFAULT_SORT;
 
     const params = {
         page,
         per_page: perPage,
         parse_status: parseStatus,
         provider,
-        // später:
-        // search,
-        // sort,
+        search,
+        sort,
     };
 
     const q = useRxListQuery(params);
@@ -89,6 +106,8 @@ export function RxListPage() {
             per_page: number;
             parse_status: string;
             provider: string;
+            search: string;
+            sort: string;
         }>,
     ) {
         const n = new URLSearchParams(sp);
@@ -106,6 +125,20 @@ export function RxListPage() {
             const v = next.provider.trim();
             if (v) n.set("provider", v);
             else n.delete("provider");
+        }
+
+        // neu: search
+        if (next.search !== undefined) {
+            const v = next.search.trim();
+            if (v) n.set("search", v);
+            else n.delete("search");
+        }
+
+        // neu: sort
+        if (next.sort !== undefined) {
+            const v = next.sort.trim();
+            if (v) n.set("sort", v);
+            else n.delete("sort");
         }
 
         setSp(n, { replace: true });
@@ -151,6 +184,39 @@ export function RxListPage() {
                             })
                         }
                     />
+
+                    <Input
+                        value={searchRaw}
+                        placeholder="Suche (Betreff, E-Mail, Patient, Hash …)"
+                        className="w-80"
+                        onChange={(e) =>
+                            updateParams({
+                                page: 1,
+                                search: e.target.value,
+                            })
+                        }
+                    />
+
+                    <Select
+                        value={sort}
+                        onValueChange={(v) =>
+                            updateParams({
+                                page: 1,
+                                sort: v,
+                            })
+                        }
+                    >
+                        <SelectTrigger className="w-56">
+                            <SelectValue placeholder="Sortierung" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {SORT_OPTIONS.map((s) => (
+                                <SelectItem key={s.value} value={s.value}>
+                                    {s.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
                     <Select
                         value={String(perPage)}
