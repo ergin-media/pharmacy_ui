@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -80,9 +81,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function AppShell() {
+    const [mobileOpen, setMobileOpen] = useState(false);
+
     return (
         <div className="min-h-screen bg-background">
-            <div className="mx-auto max-w-[1400px] p-4">
+            <div className="mx-auto max-w-350 p-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-[260px_1fr]">
                     {/* Desktop Sidebar */}
                     <Card className="hidden h-[calc(100vh-2rem)] p-3 md:block">
@@ -94,14 +97,18 @@ export function AppShell() {
                         {/* Topbar */}
                         <Card className="mb-4 flex items-center justify-between gap-2 p-3">
                             <div className="flex items-center gap-2">
-                                {/* Mobile menu */}
+                                {/* Mobile menu (controlled) */}
                                 <div className="md:hidden">
-                                    <Sheet>
+                                    <Sheet
+                                        open={mobileOpen}
+                                        onOpenChange={setMobileOpen}
+                                    >
                                         <SheetTrigger asChild>
                                             <Button variant="outline" size="sm">
                                                 Menü
                                             </Button>
                                         </SheetTrigger>
+
                                         <SheetContent
                                             side="left"
                                             className="w-[320px]"
@@ -113,10 +120,11 @@ export function AppShell() {
                                             </SheetHeader>
 
                                             <div className="mt-4">
-                                                {/* Close sheet on navigate */}
-                                                {/* Sheet closes automatically on route change in many cases,
-                            but we still pass onNavigate to be explicit. */}
-                                                <SidebarContent />
+                                                <SidebarContent
+                                                    onNavigate={() =>
+                                                        setMobileOpen(false)
+                                                    }
+                                                />
                                             </div>
                                         </SheetContent>
                                     </Sheet>
