@@ -11,7 +11,7 @@ export type NavSection = {
 export const NAV_SECTIONS: NavSection[] = [
     {
         title: "Rezepte",
-        items: [{ label: "RX Übersicht", to: "/rx" }],
+        items: [{ label: "Übersicht", to: "/rx" }],
     },
 
     // später:
