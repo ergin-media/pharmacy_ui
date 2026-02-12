@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { useRxListQuery } from "../queries/rx.queries";
 import type { RxParseStatus } from "../types/rx.dto";
@@ -70,15 +69,12 @@ export function RxListPage() {
     const providerRaw = (sp.get("provider") ?? "").trim();
     const provider = providerRaw ? providerRaw : undefined;
 
-    const params = useMemo(
-        () => ({
-            page,
-            per_page: perPage,
-            parse_status: parseStatus,
-            provider,
-        }),
-        [page, perPage, parseStatus, provider],
-    );
+    const params = {
+        page,
+        per_page: perPage,
+        parse_status: parseStatus,
+        provider,
+    };
 
     const q = useRxListQuery(params);
     const total = q.data?.total ?? 0;
