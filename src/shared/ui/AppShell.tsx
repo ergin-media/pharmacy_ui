@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router";
+import { getTitleForPath } from "@/shared/nav/nav.helpers";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 import {
     Sheet,
     SheetContent,
@@ -82,6 +85,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export function AppShell() {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const { pathname } = useLocation();
+    const title = getTitleForPath(pathname);
 
     return (
         <div className="min-h-screen bg-background">
@@ -120,18 +125,20 @@ export function AppShell() {
                                             </SheetHeader>
 
                                             <div className="mt-4">
-                                                <SidebarContent
-                                                    onNavigate={() =>
-                                                        setMobileOpen(false)
-                                                    }
-                                                />
+                                                <ScrollArea className="mt-4 h-[calc(100vh-8rem)] pr-2">
+                                                    <SidebarContent
+                                                        onNavigate={() =>
+                                                            setMobileOpen(false)
+                                                        }
+                                                    />
+                                                </ScrollArea>
                                             </div>
                                         </SheetContent>
                                     </Sheet>
                                 </div>
 
                                 <div className="text-sm font-medium">
-                                    Dashboard
+                                    {title}
                                 </div>
                             </div>
 
