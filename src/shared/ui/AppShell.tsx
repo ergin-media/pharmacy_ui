@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
 import {
     Sheet,
     SheetContent,
@@ -89,9 +88,11 @@ export function AppShell() {
     const title = getTitleForPath(pathname);
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="mx-auto max-w-350 p-4">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-[260px_1fr]">
+        <div className="min-h-screen w-full bg-background">
+            {/* Full width container */}
+            <div className="w-full p-4">
+                {/* 25% max sidebar on md+, rest content */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-[250px_1fr]">
                     {/* Desktop Sidebar */}
                     <Card className="hidden h-[calc(100vh-2rem)] p-3 md:block">
                         <SidebarContent />
@@ -124,15 +125,13 @@ export function AppShell() {
                                                 </SheetTitle>
                                             </SheetHeader>
 
-                                            <div className="mt-4">
-                                                <ScrollArea className="mt-4 h-[calc(100vh-8rem)] pr-2">
-                                                    <SidebarContent
-                                                        onNavigate={() =>
-                                                            setMobileOpen(false)
-                                                        }
-                                                    />
-                                                </ScrollArea>
-                                            </div>
+                                            <ScrollArea className="mt-4 h-[calc(100vh-8rem)] pr-2">
+                                                <SidebarContent
+                                                    onNavigate={() =>
+                                                        setMobileOpen(false)
+                                                    }
+                                                />
+                                            </ScrollArea>
                                         </SheetContent>
                                     </Sheet>
                                 </div>

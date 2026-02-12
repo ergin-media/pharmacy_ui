@@ -113,264 +113,249 @@ export function RxListPage() {
     }
 
     return (
-        <div className="p-4">
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                    <CardTitle>RX</CardTitle>
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle>RX</CardTitle>
 
-                    <div className="flex gap-2 flex-wrap items-center">
-                        <Select
-                            value={parseStatus ?? "all"}
-                            onValueChange={(v) =>
-                                updateParams({
-                                    page: 1,
-                                    parse_status: v === "all" ? "" : v,
-                                })
-                            }
-                        >
-                            <SelectTrigger className="w-[220px]">
-                                <SelectValue placeholder="Status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Alle Status</SelectItem>
-                                <SelectItem value="pending">pending</SelectItem>
-                                <SelectItem value="parsed">parsed</SelectItem>
-                                <SelectItem value="failed">failed</SelectItem>
-                                <SelectItem value="parsed_with_warnings">
-                                    parsed_with_warnings
+                <div className="flex gap-2 flex-wrap items-center">
+                    <Select
+                        value={parseStatus ?? "all"}
+                        onValueChange={(v) =>
+                            updateParams({
+                                page: 1,
+                                parse_status: v === "all" ? "" : v,
+                            })
+                        }
+                    >
+                        <SelectTrigger className="w-[220px]">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Alle Status</SelectItem>
+                            <SelectItem value="pending">pending</SelectItem>
+                            <SelectItem value="parsed">parsed</SelectItem>
+                            <SelectItem value="failed">failed</SelectItem>
+                            <SelectItem value="parsed_with_warnings">
+                                parsed_with_warnings
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Input
+                        value={providerRaw}
+                        placeholder="Provider-Slug (optional)"
+                        className="w-60"
+                        onChange={(e) =>
+                            updateParams({
+                                page: 1,
+                                provider: e.target.value,
+                            })
+                        }
+                    />
+
+                    <Select
+                        value={String(perPage)}
+                        onValueChange={(v) =>
+                            updateParams({ page: 1, per_page: Number(v) })
+                        }
+                    >
+                        <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Pro Seite" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {PER_PAGE_OPTIONS.map((n) => (
+                                <SelectItem key={n} value={String(n)}>
+                                    {n} / Seite
                                 </SelectItem>
-                            </SelectContent>
-                        </Select>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
-                        <Input
-                            value={providerRaw}
-                            placeholder="Provider-Slug (optional)"
-                            className="w-[240px]"
-                            onChange={(e) =>
-                                updateParams({
-                                    page: 1,
-                                    provider: e.target.value,
-                                })
-                            }
-                        />
+                    <Button
+                        variant="outline"
+                        onClick={() => q.refetch()}
+                        disabled={q.isFetching}
+                    >
+                        {q.isFetching ? "Aktualisiere…" : "Aktualisieren"}
+                    </Button>
+                </div>
+            </CardHeader>
 
-                        <Select
-                            value={String(perPage)}
-                            onValueChange={(v) =>
-                                updateParams({ page: 1, per_page: Number(v) })
-                            }
-                        >
-                            <SelectTrigger className="w-[160px]">
-                                <SelectValue placeholder="Pro Seite" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {PER_PAGE_OPTIONS.map((n) => (
-                                    <SelectItem key={n} value={String(n)}>
-                                        {n} / Seite
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-
+            <CardContent className="space-y-3">
+                {q.isLoading ? (
+                    <div className="text-sm text-muted-foreground">Lade…</div>
+                ) : q.isError ? (
+                    <div className="flex items-center gap-2">
+                        <div className="text-sm text-destructive">
+                            Fehler: {(q.error as Error)?.message ?? "unknown"}
+                        </div>
                         <Button
                             variant="outline"
+                            size="sm"
                             onClick={() => q.refetch()}
-                            disabled={q.isFetching}
                         >
-                            {q.isFetching ? "Aktualisiere…" : "Aktualisieren"}
+                            Erneut versuchen
                         </Button>
                     </div>
-                </CardHeader>
-
-                <CardContent className="space-y-3">
-                    {q.isLoading ? (
+                ) : (
+                    <>
                         <div className="text-sm text-muted-foreground">
-                            Lade…
+                            Gesamt:{" "}
+                            <span className="font-medium text-foreground">
+                                {total}
+                            </span>{" "}
+                            — Seite{" "}
+                            <span className="font-medium text-foreground">
+                                {q.data?.page ?? page}
+                            </span>{" "}
+                            / {totalPages}
                         </div>
-                    ) : q.isError ? (
-                        <div className="flex items-center gap-2">
-                            <div className="text-sm text-destructive">
-                                Fehler: {(q.error as any)?.message ?? "unknown"}
-                            </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => q.refetch()}
-                            >
-                                Erneut versuchen
-                            </Button>
+
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-20">
+                                            ID
+                                        </TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Provider</TableHead>
+                                        <TableHead>Patient</TableHead>
+                                        <TableHead>Betreff</TableHead>
+                                        <TableHead>Von</TableHead>
+                                        <TableHead className="whitespace-nowrap">
+                                            Eingang
+                                        </TableHead>
+                                        <TableHead className="whitespace-nowrap">
+                                            Erstellt
+                                        </TableHead>
+                                        <TableHead className="whitespace-nowrap">
+                                            Geparst
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+
+                                <TableBody>
+                                    {(q.data?.items ?? []).length === 0 ? (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={9}
+                                                className="text-muted-foreground"
+                                            >
+                                                Keine Ergebnisse.
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        q.data!.items.map((r) => (
+                                            <TableRow key={r.id}>
+                                                <TableCell className="font-medium">
+                                                    {r.id}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge
+                                                        variant={badgeVariant(
+                                                            r.parse_status,
+                                                        )}
+                                                    >
+                                                        {r.parse_status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="max-w-55 truncate">
+                                                    {r.provider?.name ??
+                                                        r.provider?.slug ??
+                                                        "-"}
+                                                </TableCell>
+                                                <TableCell className="max-w-55 truncate">
+                                                    {(r.patient?.first_name ??
+                                                        "") +
+                                                        " " +
+                                                        (r.patient?.last_name ??
+                                                            "")}
+                                                </TableCell>
+                                                <TableCell className="max-w-105 truncate">
+                                                    {r.mail?.subject ?? "-"}
+                                                </TableCell>
+                                                <TableCell className="max-w-55 truncate">
+                                                    {r.mail?.from_email ?? "-"}
+                                                </TableCell>
+                                                <TableCell className="whitespace-nowrap">
+                                                    {formatDate(
+                                                        r.mail?.received_at,
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="whitespace-nowrap">
+                                                    {formatDate(r.created_at)}
+                                                </TableCell>
+                                                <TableCell className="whitespace-nowrap">
+                                                    {formatDate(r.parsed_at)}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
-                    ) : (
-                        <>
+
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
                             <div className="text-sm text-muted-foreground">
-                                Gesamt:{" "}
+                                Seite{" "}
                                 <span className="font-medium text-foreground">
-                                    {total}
-                                </span>{" "}
-                                — Seite{" "}
-                                <span className="font-medium text-foreground">
-                                    {q.data?.page ?? page}
+                                    {page}
                                 </span>{" "}
                                 / {totalPages}
                             </div>
 
-                            <div className="rounded-md border">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[80px]">
-                                                ID
-                                            </TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Provider</TableHead>
-                                            <TableHead>Patient</TableHead>
-                                            <TableHead>Betreff</TableHead>
-                                            <TableHead>Von</TableHead>
-                                            <TableHead className="whitespace-nowrap">
-                                                Eingang
-                                            </TableHead>
-                                            <TableHead className="whitespace-nowrap">
-                                                Erstellt
-                                            </TableHead>
-                                            <TableHead className="whitespace-nowrap">
-                                                Geparst
-                                            </TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-
-                                    <TableBody>
-                                        {(q.data?.items ?? []).length === 0 ? (
-                                            <TableRow>
-                                                <TableCell
-                                                    colSpan={9}
-                                                    className="text-muted-foreground"
-                                                >
-                                                    Keine Ergebnisse.
-                                                </TableCell>
-                                            </TableRow>
-                                        ) : (
-                                            q.data!.items.map((r) => (
-                                                <TableRow key={r.id}>
-                                                    <TableCell className="font-medium">
-                                                        {r.id}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge
-                                                            variant={
-                                                                badgeVariant(
-                                                                    r.parse_status,
-                                                                ) as any
-                                                            }
-                                                        >
-                                                            {r.parse_status}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="max-w-[220px] truncate">
-                                                        {r.provider?.name ??
-                                                            r.provider?.slug ??
-                                                            "-"}
-                                                    </TableCell>
-                                                    <TableCell className="max-w-[220px] truncate">
-                                                        {(r.patient
-                                                            ?.first_name ??
-                                                            "") +
-                                                            " " +
-                                                            (r.patient
-                                                                ?.last_name ??
-                                                                "")}
-                                                    </TableCell>
-                                                    <TableCell className="max-w-[420px] truncate">
-                                                        {r.mail?.subject ?? "-"}
-                                                    </TableCell>
-                                                    <TableCell className="max-w-[220px] truncate">
-                                                        {r.mail?.from_email ??
-                                                            "-"}
-                                                    </TableCell>
-                                                    <TableCell className="whitespace-nowrap">
-                                                        {formatDate(
-                                                            r.mail?.received_at,
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell className="whitespace-nowrap">
-                                                        {formatDate(
-                                                            r.created_at,
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell className="whitespace-nowrap">
-                                                        {formatDate(
-                                                            r.parsed_at,
-                                                        )}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => updateParams({ page: 1 })}
+                                    disabled={page === 1}
+                                >
+                                    {"<<"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        updateParams({
+                                            page: Math.max(1, page - 1),
+                                        })
+                                    }
+                                    disabled={page === 1}
+                                >
+                                    {"<"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        updateParams({
+                                            page: Math.min(
+                                                totalPages,
+                                                page + 1,
+                                            ),
+                                        })
+                                    }
+                                    disabled={page >= totalPages}
+                                >
+                                    {">"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        updateParams({ page: totalPages })
+                                    }
+                                    disabled={page >= totalPages}
+                                >
+                                    {">>"}
+                                </Button>
                             </div>
-
-                            <div className="flex items-center justify-between gap-3 flex-wrap">
-                                <div className="text-sm text-muted-foreground">
-                                    Seite{" "}
-                                    <span className="font-medium text-foreground">
-                                        {page}
-                                    </span>{" "}
-                                    / {totalPages}
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            updateParams({ page: 1 })
-                                        }
-                                        disabled={page === 1}
-                                    >
-                                        {"<<"}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            updateParams({
-                                                page: Math.max(1, page - 1),
-                                            })
-                                        }
-                                        disabled={page === 1}
-                                    >
-                                        {"<"}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            updateParams({
-                                                page: Math.min(
-                                                    totalPages,
-                                                    page + 1,
-                                                ),
-                                            })
-                                        }
-                                        disabled={page >= totalPages}
-                                    >
-                                        {">"}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            updateParams({ page: totalPages })
-                                        }
-                                        disabled={page >= totalPages}
-                                    >
-                                        {">>"}
-                                    </Button>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </CardContent>
-            </Card>
-        </div>
+                        </div>
+                    </>
+                )}
+            </CardContent>
+        </Card>
     );
 }
