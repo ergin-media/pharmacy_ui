@@ -1,8 +1,14 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router";
 import { useRxListQuery } from "../queries/rx.queries";
 import type { RxParseStatus } from "../types/rx.dto";
 
 const PER_PAGE_OPTIONS = [10, 25, 50, 100] as const;
+
+function toInt(value: string | null, fallback: number) {
+    const n = Number(value);
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
 
 function formatDate(value?: string | null) {
     if (!value) return "-";
@@ -10,29 +16,68 @@ function formatDate(value?: string | null) {
     return Number.isNaN(d.getTime()) ? value : d.toLocaleString();
 }
 
+const ALLOWED_STATUSES: RxParseStatus[] = [
+    "pending",
+    "parsed",
+    "failed",
+    "parsed_with_warnings",
+];
+
 export function RxListPage() {
-    const [page, setPage] = useState(1);
-    const [perPage, setPerPage] =
-        useState<(typeof PER_PAGE_OPTIONS)[number]>(25);
-    const [parseStatus, setParseStatus] = useState<RxParseStatus | "all">(
-        "all",
-    );
-    const [provider, setProvider] = useState("");
+    const [sp, setSp] = useSearchParams();
+
+    const page = Math.max(1, toInt(sp.get("page"), 1));
+    const perPage = Math.max(1, Math.min(100, toInt(sp.get("per_page"), 25)));
+
+    const parseStatusRaw = (sp.get("parse_status") ?? "").trim();
+    const parseStatus = (ALLOWED_STATUSES as string[]).includes(parseStatusRaw)
+        ? (parseStatusRaw as RxParseStatus)
+        : undefined;
+
+    const providerRaw = (sp.get("provider") ?? "").trim();
+    const provider = providerRaw ? providerRaw : undefined;
 
     const params = useMemo(
         () => ({
             page,
             per_page: perPage,
-            parse_status: parseStatus === "all" ? undefined : parseStatus,
-            provider: provider.trim() ? provider.trim() : undefined,
+            parse_status: parseStatus,
+            provider,
         }),
         [page, perPage, parseStatus, provider],
     );
 
     const q = useRxListQuery(params);
 
-    const total = q.data?.total ?? 0;
     const totalPages = q.data?.total_pages ?? 1;
+
+    function updateParams(
+        next: Partial<{
+            page: number;
+            per_page: number;
+            parse_status: string;
+            provider: string;
+        }>,
+    ) {
+        const n = new URLSearchParams(sp);
+
+        if (next.page !== undefined) n.set("page", String(next.page));
+        if (next.per_page !== undefined)
+            n.set("per_page", String(next.per_page));
+
+        if (next.parse_status !== undefined) {
+            if (next.parse_status) n.set("parse_status", next.parse_status);
+            else n.delete("parse_status");
+        }
+
+        if (next.provider !== undefined) {
+            const v = next.provider.trim();
+            if (v) n.set("provider", v);
+            else n.delete("provider");
+        }
+
+        setSp(n, { replace: true });
+    }
 
     return (
         <div style={{ padding: 16, display: "grid", gap: 12 }}>
@@ -55,13 +100,18 @@ export function RxListPage() {
                     }}
                 >
                     <select
-                        value={parseStatus}
+                        value={parseStatus ?? "all"}
                         onChange={(e) => {
-                            setPage(1);
-                            setParseStatus(e.target.value as any);
+                            updateParams({
+                                page: 1,
+                                parse_status:
+                                    e.target.value === "all"
+                                        ? ""
+                                        : e.target.value,
+                            });
                         }}
                     >
-                        <option value="all">All statuses</option>
+                        <option value="all">Alle Status</option>
                         <option value="pending">pending</option>
                         <option value="parsed">parsed</option>
                         <option value="failed">failed</option>
@@ -71,50 +121,51 @@ export function RxListPage() {
                     </select>
 
                     <input
-                        value={provider}
-                        placeholder="provider slug (optional)"
-                        onChange={(e) => {
-                            setPage(1);
-                            setProvider(e.target.value);
-                        }}
+                        value={providerRaw}
+                        placeholder="Provider-Slug (optional)"
+                        onChange={(e) =>
+                            updateParams({ page: 1, provider: e.target.value })
+                        }
                     />
 
                     <select
                         value={String(perPage)}
-                        onChange={(e) => {
-                            setPage(1);
-                            setPerPage(Number(e.target.value) as any);
-                        }}
+                        onChange={(e) =>
+                            updateParams({
+                                page: 1,
+                                per_page: Number(e.target.value),
+                            })
+                        }
                     >
                         {PER_PAGE_OPTIONS.map((n) => (
                             <option key={n} value={n}>
-                                {n} / page
+                                {n} / Seite
                             </option>
                         ))}
                     </select>
 
                     <button onClick={() => q.refetch()} disabled={q.isFetching}>
-                        {q.isFetching ? "Refreshing…" : "Refresh"}
+                        {q.isFetching ? "Aktualisiere…" : "Aktualisieren"}
                     </button>
                 </div>
             </div>
 
             {q.isLoading ? (
-                <div>Loading…</div>
+                <div>Lade…</div>
             ) : q.isError ? (
                 <div>
-                    Failed: {(q.error as any)?.message ?? "unknown"}
+                    Fehler: {(q.error as any)?.message ?? "unknown"}
                     <button
                         style={{ marginLeft: 8 }}
                         onClick={() => q.refetch()}
                     >
-                        Retry
+                        Erneut versuchen
                     </button>
                 </div>
             ) : (
                 <>
                     <div style={{ fontSize: 13, opacity: 0.8 }}>
-                        Total: <b>{total}</b> — Page{" "}
+                        Gesamt: <b>{q.data?.total ?? 0}</b> — Seite{" "}
                         <b>{q.data?.page ?? page}</b> / {totalPages}
                     </div>
 
@@ -138,10 +189,11 @@ export function RxListPage() {
                                         "Status",
                                         "Provider",
                                         "Patient",
-                                        "Subject",
-                                        "From",
-                                        "Created",
-                                        "Parsed",
+                                        "Betreff",
+                                        "Von",
+                                        "Eingang",
+                                        "Erstellt",
+                                        "Geparst",
                                     ].map((h) => (
                                         <th
                                             key={h}
@@ -161,13 +213,13 @@ export function RxListPage() {
                                 {(q.data?.items ?? []).length === 0 ? (
                                     <tr>
                                         <td
-                                            colSpan={8}
+                                            colSpan={9}
                                             style={{
                                                 padding: 10,
                                                 opacity: 0.8,
                                             }}
                                         >
-                                            No results.
+                                            Keine Ergebnisse.
                                         </td>
                                     </tr>
                                 ) : (
@@ -239,6 +291,17 @@ export function RxListPage() {
                                                         "1px solid rgba(255,255,255,0.06)",
                                                 }}
                                             >
+                                                {formatDate(
+                                                    r.mail?.received_at,
+                                                )}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    padding: 10,
+                                                    borderBottom:
+                                                        "1px solid rgba(255,255,255,0.06)",
+                                                }}
+                                            >
                                                 {formatDate(r.created_at)}
                                             </td>
                                             <td
@@ -265,32 +328,36 @@ export function RxListPage() {
                         }}
                     >
                         <button
-                            onClick={() => setPage(1)}
+                            onClick={() => updateParams({ page: 1 })}
                             disabled={page === 1}
                         >
                             {"<<"}
                         </button>
                         <button
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            onClick={() =>
+                                updateParams({ page: Math.max(1, page - 1) })
+                            }
                             disabled={page === 1}
                         >
                             {"<"}
                         </button>
 
                         <span>
-                            Page <b>{page}</b> / {totalPages}
+                            Seite <b>{page}</b> / {totalPages}
                         </span>
 
                         <button
                             onClick={() =>
-                                setPage((p) => Math.min(totalPages, p + 1))
+                                updateParams({
+                                    page: Math.min(totalPages, page + 1),
+                                })
                             }
                             disabled={page >= totalPages}
                         >
                             {">"}
                         </button>
                         <button
-                            onClick={() => setPage(totalPages)}
+                            onClick={() => updateParams({ page: totalPages })}
                             disabled={page >= totalPages}
                         >
                             {">>"}
