@@ -3,6 +3,26 @@ import { useSearchParams } from "react-router";
 import { useRxListQuery } from "../queries/rx.queries";
 import type { RxParseStatus } from "../types/rx.dto";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+
 const PER_PAGE_OPTIONS = [10, 25, 50, 100] as const;
 
 function toInt(value: string | null, fallback: number) {
@@ -22,6 +42,19 @@ const ALLOWED_STATUSES: RxParseStatus[] = [
     "failed",
     "parsed_with_warnings",
 ];
+
+function badgeVariant(status: RxParseStatus) {
+    switch (status) {
+        case "parsed":
+            return "secondary";
+        case "failed":
+            return "destructive";
+        case "parsed_with_warnings":
+            return "outline";
+        default:
+            return "outline";
+    }
+}
 
 export function RxListPage() {
     const [sp, setSp] = useSearchParams();
@@ -48,7 +81,7 @@ export function RxListPage() {
     );
 
     const q = useRxListQuery(params);
-
+    const total = q.data?.total ?? 0;
     const totalPages = q.data?.total_pages ?? 1;
 
     function updateParams(
@@ -80,291 +113,264 @@ export function RxListPage() {
     }
 
     return (
-        <div style={{ padding: 16, display: "grid", gap: 12 }}>
-            <div
-                style={{
-                    display: "flex",
-                    gap: 12,
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                }}
-            >
-                <h2 style={{ margin: 0 }}>RX</h2>
+        <div className="p-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                    <CardTitle>RX</CardTitle>
 
-                <div
-                    style={{
-                        marginLeft: "auto",
-                        display: "flex",
-                        gap: 8,
-                        flexWrap: "wrap",
-                    }}
-                >
-                    <select
-                        value={parseStatus ?? "all"}
-                        onChange={(e) => {
-                            updateParams({
-                                page: 1,
-                                parse_status:
-                                    e.target.value === "all"
-                                        ? ""
-                                        : e.target.value,
-                            });
-                        }}
-                    >
-                        <option value="all">Alle Status</option>
-                        <option value="pending">pending</option>
-                        <option value="parsed">parsed</option>
-                        <option value="failed">failed</option>
-                        <option value="parsed_with_warnings">
-                            parsed_with_warnings
-                        </option>
-                    </select>
-
-                    <input
-                        value={providerRaw}
-                        placeholder="Provider-Slug (optional)"
-                        onChange={(e) =>
-                            updateParams({ page: 1, provider: e.target.value })
-                        }
-                    />
-
-                    <select
-                        value={String(perPage)}
-                        onChange={(e) =>
-                            updateParams({
-                                page: 1,
-                                per_page: Number(e.target.value),
-                            })
-                        }
-                    >
-                        {PER_PAGE_OPTIONS.map((n) => (
-                            <option key={n} value={n}>
-                                {n} / Seite
-                            </option>
-                        ))}
-                    </select>
-
-                    <button onClick={() => q.refetch()} disabled={q.isFetching}>
-                        {q.isFetching ? "Aktualisiere…" : "Aktualisieren"}
-                    </button>
-                </div>
-            </div>
-
-            {q.isLoading ? (
-                <div>Lade…</div>
-            ) : q.isError ? (
-                <div>
-                    Fehler: {(q.error as any)?.message ?? "unknown"}
-                    <button
-                        style={{ marginLeft: 8 }}
-                        onClick={() => q.refetch()}
-                    >
-                        Erneut versuchen
-                    </button>
-                </div>
-            ) : (
-                <>
-                    <div style={{ fontSize: 13, opacity: 0.8 }}>
-                        Gesamt: <b>{q.data?.total ?? 0}</b> — Seite{" "}
-                        <b>{q.data?.page ?? page}</b> / {totalPages}
-                    </div>
-
-                    <div
-                        style={{
-                            overflowX: "auto",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            borderRadius: 8,
-                        }}
-                    >
-                        <table
-                            style={{
-                                width: "100%",
-                                borderCollapse: "collapse",
-                            }}
-                        >
-                            <thead>
-                                <tr>
-                                    {[
-                                        "ID",
-                                        "Status",
-                                        "Provider",
-                                        "Patient",
-                                        "Betreff",
-                                        "Von",
-                                        "Eingang",
-                                        "Erstellt",
-                                        "Geparst",
-                                    ].map((h) => (
-                                        <th
-                                            key={h}
-                                            style={{
-                                                textAlign: "left",
-                                                padding: 10,
-                                                borderBottom:
-                                                    "1px solid rgba(255,255,255,0.08)",
-                                            }}
-                                        >
-                                            {h}
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(q.data?.items ?? []).length === 0 ? (
-                                    <tr>
-                                        <td
-                                            colSpan={9}
-                                            style={{
-                                                padding: 10,
-                                                opacity: 0.8,
-                                            }}
-                                        >
-                                            Keine Ergebnisse.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    q.data!.items.map((r) => (
-                                        <tr key={r.id}>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {r.id}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {r.parse_status}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {r.provider?.name ??
-                                                    r.provider?.slug ??
-                                                    "-"}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {(r.patient?.first_name ?? "") +
-                                                    " " +
-                                                    (r.patient?.last_name ??
-                                                        "")}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {r.mail?.subject ?? "-"}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {r.mail?.from_email ?? "-"}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {formatDate(
-                                                    r.mail?.received_at,
-                                                )}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {formatDate(r.created_at)}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    padding: 10,
-                                                    borderBottom:
-                                                        "1px solid rgba(255,255,255,0.06)",
-                                                }}
-                                            >
-                                                {formatDate(r.parsed_at)}
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: 8,
-                            alignItems: "center",
-                        }}
-                    >
-                        <button
-                            onClick={() => updateParams({ page: 1 })}
-                            disabled={page === 1}
-                        >
-                            {"<<"}
-                        </button>
-                        <button
-                            onClick={() =>
-                                updateParams({ page: Math.max(1, page - 1) })
-                            }
-                            disabled={page === 1}
-                        >
-                            {"<"}
-                        </button>
-
-                        <span>
-                            Seite <b>{page}</b> / {totalPages}
-                        </span>
-
-                        <button
-                            onClick={() =>
+                    <div className="flex gap-2 flex-wrap items-center">
+                        <Select
+                            value={parseStatus ?? "all"}
+                            onValueChange={(v) =>
                                 updateParams({
-                                    page: Math.min(totalPages, page + 1),
+                                    page: 1,
+                                    parse_status: v === "all" ? "" : v,
                                 })
                             }
-                            disabled={page >= totalPages}
                         >
-                            {">"}
-                        </button>
-                        <button
-                            onClick={() => updateParams({ page: totalPages })}
-                            disabled={page >= totalPages}
+                            <SelectTrigger className="w-[220px]">
+                                <SelectValue placeholder="Status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Alle Status</SelectItem>
+                                <SelectItem value="pending">pending</SelectItem>
+                                <SelectItem value="parsed">parsed</SelectItem>
+                                <SelectItem value="failed">failed</SelectItem>
+                                <SelectItem value="parsed_with_warnings">
+                                    parsed_with_warnings
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <Input
+                            value={providerRaw}
+                            placeholder="Provider-Slug (optional)"
+                            className="w-[240px]"
+                            onChange={(e) =>
+                                updateParams({
+                                    page: 1,
+                                    provider: e.target.value,
+                                })
+                            }
+                        />
+
+                        <Select
+                            value={String(perPage)}
+                            onValueChange={(v) =>
+                                updateParams({ page: 1, per_page: Number(v) })
+                            }
                         >
-                            {">>"}
-                        </button>
+                            <SelectTrigger className="w-[160px]">
+                                <SelectValue placeholder="Pro Seite" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {PER_PAGE_OPTIONS.map((n) => (
+                                    <SelectItem key={n} value={String(n)}>
+                                        {n} / Seite
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        <Button
+                            variant="outline"
+                            onClick={() => q.refetch()}
+                            disabled={q.isFetching}
+                        >
+                            {q.isFetching ? "Aktualisiere…" : "Aktualisieren"}
+                        </Button>
                     </div>
-                </>
-            )}
+                </CardHeader>
+
+                <CardContent className="space-y-3">
+                    {q.isLoading ? (
+                        <div className="text-sm text-muted-foreground">
+                            Lade…
+                        </div>
+                    ) : q.isError ? (
+                        <div className="flex items-center gap-2">
+                            <div className="text-sm text-destructive">
+                                Fehler: {(q.error as any)?.message ?? "unknown"}
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => q.refetch()}
+                            >
+                                Erneut versuchen
+                            </Button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="text-sm text-muted-foreground">
+                                Gesamt:{" "}
+                                <span className="font-medium text-foreground">
+                                    {total}
+                                </span>{" "}
+                                — Seite{" "}
+                                <span className="font-medium text-foreground">
+                                    {q.data?.page ?? page}
+                                </span>{" "}
+                                / {totalPages}
+                            </div>
+
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[80px]">
+                                                ID
+                                            </TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Provider</TableHead>
+                                            <TableHead>Patient</TableHead>
+                                            <TableHead>Betreff</TableHead>
+                                            <TableHead>Von</TableHead>
+                                            <TableHead className="whitespace-nowrap">
+                                                Eingang
+                                            </TableHead>
+                                            <TableHead className="whitespace-nowrap">
+                                                Erstellt
+                                            </TableHead>
+                                            <TableHead className="whitespace-nowrap">
+                                                Geparst
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+
+                                    <TableBody>
+                                        {(q.data?.items ?? []).length === 0 ? (
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={9}
+                                                    className="text-muted-foreground"
+                                                >
+                                                    Keine Ergebnisse.
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            q.data!.items.map((r) => (
+                                                <TableRow key={r.id}>
+                                                    <TableCell className="font-medium">
+                                                        {r.id}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge
+                                                            variant={
+                                                                badgeVariant(
+                                                                    r.parse_status,
+                                                                ) as any
+                                                            }
+                                                        >
+                                                            {r.parse_status}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[220px] truncate">
+                                                        {r.provider?.name ??
+                                                            r.provider?.slug ??
+                                                            "-"}
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[220px] truncate">
+                                                        {(r.patient
+                                                            ?.first_name ??
+                                                            "") +
+                                                            " " +
+                                                            (r.patient
+                                                                ?.last_name ??
+                                                                "")}
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[420px] truncate">
+                                                        {r.mail?.subject ?? "-"}
+                                                    </TableCell>
+                                                    <TableCell className="max-w-[220px] truncate">
+                                                        {r.mail?.from_email ??
+                                                            "-"}
+                                                    </TableCell>
+                                                    <TableCell className="whitespace-nowrap">
+                                                        {formatDate(
+                                                            r.mail?.received_at,
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="whitespace-nowrap">
+                                                        {formatDate(
+                                                            r.created_at,
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="whitespace-nowrap">
+                                                        {formatDate(
+                                                            r.parsed_at,
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-3 flex-wrap">
+                                <div className="text-sm text-muted-foreground">
+                                    Seite{" "}
+                                    <span className="font-medium text-foreground">
+                                        {page}
+                                    </span>{" "}
+                                    / {totalPages}
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            updateParams({ page: 1 })
+                                        }
+                                        disabled={page === 1}
+                                    >
+                                        {"<<"}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            updateParams({
+                                                page: Math.max(1, page - 1),
+                                            })
+                                        }
+                                        disabled={page === 1}
+                                    >
+                                        {"<"}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            updateParams({
+                                                page: Math.min(
+                                                    totalPages,
+                                                    page + 1,
+                                                ),
+                                            })
+                                        }
+                                        disabled={page >= totalPages}
+                                    >
+                                        {">"}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            updateParams({ page: totalPages })
+                                        }
+                                        disabled={page >= totalPages}
+                                    >
+                                        {">>"}
+                                    </Button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }
