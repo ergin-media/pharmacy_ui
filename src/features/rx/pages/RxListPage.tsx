@@ -63,9 +63,11 @@ export function RxListPage() {
 
                         <RxListTable
                             items={vm.query.data?.items ?? []}
+                            perPage={vm.filters.perPage}
                             onOpen={(id) => console.log("open", id)}
                             onPdf={(id) => console.log("pdf", id)}
                             onMore={(id) => console.log("more", id)}
+                            isLoading={vm.query.isFetching}
                         />
 
                         <RxListPagination

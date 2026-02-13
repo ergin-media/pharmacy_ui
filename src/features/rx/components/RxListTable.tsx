@@ -38,13 +38,13 @@ function getExtras(r: RxListItemDto): Phase2Extras {
 
 export function RxListTable(props: {
     items: RxListItemDto[];
+    perPage: number; // 👈 neu
     isLoading?: boolean;
-    skeletonRows?: number;
     onOpen?: (id: number) => void;
     onPdf?: (id: number) => void;
     onMore?: (id: number) => void;
 }) {
-    const { items, isLoading, skeletonRows = 8, onOpen, onPdf, onMore } = props;
+    const { items, perPage, isLoading, onOpen, onPdf, onMore } = props;
 
     return (
         <div className="overflow-x-auto rounded-md border">
@@ -75,7 +75,7 @@ export function RxListTable(props: {
 
                 <TableBody>
                     {isLoading ? (
-                        <RxListTableSkeleton rows={skeletonRows} />
+                        <RxListTableSkeleton rows={perPage} />
                     ) : items.length === 0 ? (
                         <TableRow>
                             <TableCell

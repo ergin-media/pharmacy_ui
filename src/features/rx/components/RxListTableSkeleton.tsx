@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 
 export function RxListTableSkeleton(props: { rows?: number }) {
-    const rows = props.rows ?? 8;
+    const rows = props.rows ?? 10;
 
     return (
         <>
