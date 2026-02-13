@@ -52,7 +52,7 @@ export function RxListToolbar(props: {
                 value={parseStatus ?? "all"}
                 onValueChange={onParseStatusChange}
             >
-                <SelectTrigger className="w-[220px]">
+                <SelectTrigger className="w-55">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>

@@ -16,6 +16,7 @@ import { formatDateTime } from "@/shared/lib/format/date";
 import { formatMoney } from "@/shared/lib/format/money";
 import { formatPersonName } from "@/shared/lib/format/person";
 import { formatQuantity } from "@/shared/lib/format/quantity";
+import { RxListTableSkeleton } from "./RxListTableSkeleton";
 
 type Phase2Extras = {
     items_preview?: Array<{
@@ -37,36 +38,45 @@ function getExtras(r: RxListItemDto): Phase2Extras {
 
 export function RxListTable(props: {
     items: RxListItemDto[];
+    isLoading?: boolean;
+    skeletonRows?: number;
     onOpen?: (id: number) => void;
     onPdf?: (id: number) => void;
     onMore?: (id: number) => void;
 }) {
-    const { items, onOpen, onPdf, onMore } = props;
+    const { items, isLoading, skeletonRows = 8, onOpen, onPdf, onMore } = props;
 
     return (
-        <div className="rounded-md border overflow-x-auto">
+        <div className="overflow-x-auto rounded-md border">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[260px]">Patient</TableHead>
-                        <TableHead className="w-[220px]">Quelle</TableHead>
+                        <TableHead className="w-65">Patient</TableHead>
+
+                        <TableHead className="w-55">Quelle</TableHead>
+
                         <TableHead>Artikel</TableHead>
-                        <TableHead className="w-[140px] text-right">
-                            Menge
-                        </TableHead>
-                        <TableHead className="w-[160px] text-right">
+
+                        <TableHead className="w-35 text-right">Menge</TableHead>
+
+                        <TableHead className="w-40 text-right">
                             Finaler Preis
                         </TableHead>
-                        <TableHead className="w-[170px]">Eingang</TableHead>
-                        <TableHead className="w-[140px]">Status</TableHead>
-                        <TableHead className="w-[180px] text-right sticky right-0 bg-background">
+
+                        <TableHead className="w-42.5">Eingang</TableHead>
+
+                        <TableHead className="w-35">Status</TableHead>
+
+                        <TableHead className="w-45 text-right sticky right-0 bg-background">
                             Aktionen
                         </TableHead>
                     </TableRow>
                 </TableHeader>
 
                 <TableBody>
-                    {items.length === 0 ? (
+                    {isLoading ? (
+                        <RxListTableSkeleton rows={skeletonRows} />
+                    ) : items.length === 0 ? (
                         <TableRow>
                             <TableCell
                                 colSpan={8}
@@ -98,19 +108,22 @@ export function RxListTable(props: {
                                                 r.patient?.last_name,
                                             )}
                                         </div>
-                                        <div className="text-xs text-muted-foreground truncate max-w-[240px]">
+
+                                        {/* 240px -> 60*4px */}
+                                        <div className="max-w-60 truncate text-xs text-muted-foreground">
                                             {r.mail?.from_email ?? "—"}
                                         </div>
                                     </TableCell>
 
                                     {/* Quelle */}
                                     <TableCell>
-                                        <div className="font-medium truncate max-w-[200px]">
+                                        <div className="max-w-50 truncate font-medium">
                                             {r.provider?.name ??
                                                 r.provider?.slug ??
                                                 "—"}
                                         </div>
-                                        <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+
+                                        <div className="max-w-50 truncate text-xs text-muted-foreground">
                                             {r.mail?.subject ?? "—"}
                                         </div>
                                     </TableCell>
@@ -118,7 +131,7 @@ export function RxListTable(props: {
                                     {/* Artikel */}
                                     <TableCell>
                                         {itemsPreview.length > 0 ? (
-                                            <div className="space-y-1 min-w-[320px]">
+                                            <div className="min-w-80 space-y-1">
                                                 {itemsPreview
                                                     .slice(0, 2)
                                                     .map((it, idx) => (
@@ -129,7 +142,7 @@ export function RxListTable(props: {
                                                             <div className="truncate">
                                                                 {it.name ?? "—"}
                                                             </div>
-                                                            <div className="text-xs text-muted-foreground whitespace-nowrap">
+                                                            <div className="whitespace-nowrap text-xs text-muted-foreground">
                                                                 {formatQuantity(
                                                                     it.quantity,
                                                                     it.unit,
@@ -201,14 +214,14 @@ export function RxListTable(props: {
                                             {r.parse_status}
                                         </Badge>
                                         {r.parsed_at ? (
-                                            <div className="text-xs text-muted-foreground mt-1">
+                                            <div className="mt-1 text-xs text-muted-foreground">
                                                 {formatDateTime(r.parsed_at)}
                                             </div>
                                         ) : null}
                                     </TableCell>
 
                                     {/* Aktionen */}
-                                    <TableCell className="text-right sticky right-0 bg-background">
+                                    <TableCell className="sticky right-0 bg-background text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button
                                                 variant="outline"

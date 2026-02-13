@@ -14,6 +14,7 @@ import {
     spSetInt,
     spSetOrDelete,
 } from "@/shared/lib/url/searchParams";
+import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 
 export function useRxListPage() {
     const [sp, setSp] = useSearchParams();
@@ -34,6 +35,7 @@ export function useRxListPage() {
 
     const searchRaw = spGetString(sp, "search");
     const search = searchRaw ? searchRaw : undefined;
+    const debouncedSearch = useDebouncedValue(search, 350);
 
     const sortRaw = spGetString(sp, "sort");
     const sort: RxSort = (ALLOWED_SORTS as readonly string[]).includes(sortRaw)
@@ -47,10 +49,10 @@ export function useRxListPage() {
             per_page: perPage,
             parse_status: parseStatus,
             provider,
-            search,
+            search: debouncedSearch,
             sort,
         }),
-        [page, perPage, parseStatus, provider, search, sort],
+        [page, perPage, parseStatus, provider, debouncedSearch, sort],
     );
 
     const query = useRxListQuery(params);
