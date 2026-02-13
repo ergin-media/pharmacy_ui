@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useRxListQuery } from "../queries/rx.queries";
 import type { RxParseStatus } from "../types/rx.dto";
@@ -19,9 +19,8 @@ import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 export function useRxListPage() {
     const [sp, setSp] = useSearchParams();
 
-    // ---- read URL params (normalized) ----
     const page = Math.max(1, spGetInt(sp, "page", 1));
-    const perPage = Math.max(1, Math.min(100, spGetInt(sp, "per_page", 25)));
+    const perPage = Math.max(1, Math.min(100, spGetInt(sp, "per_page", 10)));
 
     const parseStatusRaw = spGetString(sp, "parse_status");
     const parseStatus: RxParseStatus | undefined = (
@@ -33,32 +32,25 @@ export function useRxListPage() {
     const providerRaw = spGetString(sp, "provider");
     const provider = providerRaw ? providerRaw : undefined;
 
-    const searchRaw = spGetString(sp, "search");
-    const search = searchRaw ? searchRaw : undefined;
-    const debouncedSearch = useDebouncedValue(search, 350);
+    // --- Search: URL -> local input state ---
+    const searchRaw = spGetString(sp, "search"); // source of truth for deep-linking
+    const [searchInput, setSearchInput] = useState(searchRaw);
+
+    // Wenn URL sich extern ändert (Back/Forward/Link), Input synchronisieren
+    useEffect(() => {
+        setSearchInput(searchRaw);
+    }, [searchRaw]);
+
+    // Debounce auf Input
+    const debouncedSearchInput = useDebouncedValue(
+        searchInput.trim() || undefined,
+        500,
+    );
 
     const sortRaw = spGetString(sp, "sort");
     const sort: RxSort = (ALLOWED_SORTS as readonly string[]).includes(sortRaw)
         ? (sortRaw as RxSort)
         : DEFAULT_SORT;
-
-    // params object for react-query (no useMemo required if queryKey uses primitives/object hashing)
-    const params = useMemo(
-        () => ({
-            page,
-            per_page: perPage,
-            parse_status: parseStatus,
-            provider,
-            search: debouncedSearch,
-            sort,
-        }),
-        [page, perPage, parseStatus, provider, debouncedSearch, sort],
-    );
-
-    const query = useRxListQuery(params);
-
-    const total = query.data?.total ?? 0;
-    const totalPages = query.data?.total_pages ?? 1;
 
     function patch(
         next: Partial<{
@@ -79,40 +71,68 @@ export function useRxListPage() {
             spSetOrDelete(n, "parse_status", next.parse_status);
         if (next.provider !== undefined)
             spSetOrDelete(n, "provider", next.provider);
-        if (next.search !== undefined) spSetOrDelete(n, "search", next.search);
+
+        // search NICHT mehr pro Tastendruck hier setzen!
         if (next.sort !== undefined) spSetOrDelete(n, "sort", next.sort);
 
         setSp(n, { replace: true });
     }
 
-    // Actions for UI components
+    // URL-Param "search" nur debounced schreiben (und page reset)
+    useEffect(() => {
+        const n = new URLSearchParams(sp);
+        spSetInt(n, "page", 1);
+        spSetOrDelete(n, "search", debouncedSearchInput ?? "");
+        setSp(n, { replace: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedSearchInput]);
+
+    const params = useMemo(
+        () => ({
+            page,
+            per_page: perPage,
+            parse_status: parseStatus,
+            provider,
+            search: debouncedSearchInput,
+            sort,
+        }),
+        [page, perPage, parseStatus, provider, debouncedSearchInput, sort],
+    );
+
+    const query = useRxListQuery(params);
+
+    const total = query.data?.total ?? 0;
+    const totalPages = query.data?.total_pages ?? 1;
+
     const actions = {
         setParseStatus: (v: string) =>
             patch({ page: 1, parse_status: v === "all" ? "" : v }),
+
         setProvider: (v: string) => patch({ page: 1, provider: v }),
-        setSearch: (v: string) => patch({ page: 1, search: v }),
+
+        // Search: nur lokalen Input ändern (keine URL sofort)
+        setSearch: (v: string) => setSearchInput(v),
+
         setSort: (v: string) => patch({ page: 1, sort: v }),
+
         setPerPage: (v: number) => patch({ page: 1, per_page: v }),
+
         setPage: (v: number) => patch({ page: v }),
+
         refresh: () => query.refetch(),
     };
 
     return {
-        // state
         filters: {
             page,
             perPage,
             parseStatus,
             providerRaw,
-            searchRaw,
+            searchRaw: searchInput, // Toolbar sieht live input
             sort,
         },
-
-        // data
         query,
         meta: { total, totalPages },
-
-        // actions
         actions,
     };
 }

@@ -49,16 +49,26 @@ export function RxListPage() {
                     </div>
                 ) : (
                     <>
-                        <div className="text-sm text-muted-foreground">
-                            Gesamt:{" "}
-                            <span className="font-medium text-foreground">
-                                {vm.meta.total}
-                            </span>{" "}
-                            — Seite{" "}
-                            <span className="font-medium text-foreground">
-                                {vm.query.data?.page ?? vm.filters.page}
-                            </span>{" "}
-                            / {vm.meta.totalPages}
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                            <div className="text-sm text-muted-foreground">
+                                Gesamt:{" "}
+                                <span className="font-medium text-foreground">
+                                    {vm.meta.total}
+                                </span>{" "}
+                                — Seite{" "}
+                                <span className="font-medium text-foreground">
+                                    {vm.query.data?.page ?? vm.filters.page}
+                                </span>{" "}
+                                / {vm.meta.totalPages}
+                            </div>
+
+                            <RxListPagination
+                                page={vm.filters.page}
+                                totalPages={vm.meta.totalPages}
+                                onPageChange={vm.actions.setPage}
+                                isLoading={vm.query.isFetching}
+                                showStatus={false} // 👈 oben kein "Seite x / y" Text
+                            />
                         </div>
 
                         <RxListTable
@@ -74,6 +84,8 @@ export function RxListPage() {
                             page={vm.filters.page}
                             totalPages={vm.meta.totalPages}
                             onPageChange={vm.actions.setPage}
+                            isLoading={vm.query.isFetching}
+                            showStatus={true} // 👈 unten normal anzeigen
                         />
                     </>
                 )}

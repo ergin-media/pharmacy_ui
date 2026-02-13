@@ -3,5 +3,5 @@ export function formatQuantity(
     unit?: string | null,
 ): string {
     if (quantity === null || quantity === undefined) return "—";
-    return unit ? `${quantity} ${unit}` : String(quantity);
+    return unit ? `${quantity}${unit}` : String(quantity);
 }

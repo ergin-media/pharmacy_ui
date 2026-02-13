@@ -3,21 +3,35 @@ import { Button } from "@/components/ui/button";
 export function RxListPagination(props: {
     page: number;
     totalPages: number;
-    isLoading?: boolean; // 👈 neu
     onPageChange: (page: number) => void;
+    isLoading?: boolean;
+    showStatus?: boolean;
 }) {
-    const { page, totalPages, isLoading = false, onPageChange } = props;
+    const {
+        page,
+        totalPages,
+        onPageChange,
+        isLoading = false,
+        showStatus = true,
+    } = props;
 
     const disablePrev = isLoading || page === 1;
     const disableNext = isLoading || page >= totalPages;
 
     return (
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="text-sm text-muted-foreground">
-                Seite{" "}
-                <span className="font-medium text-foreground">{page}</span> /{" "}
-                {totalPages}
-            </div>
+        <div
+            className={[
+                "flex items-center gap-3 flex-wrap",
+                showStatus ? "justify-between" : "justify-end",
+            ].join(" ")}
+        >
+            {showStatus && (
+                <div className="text-sm text-muted-foreground">
+                    Seite{" "}
+                    <span className="font-medium text-foreground">{page}</span>{" "}
+                    / {totalPages}
+                </div>
+            )}
 
             <div className="flex gap-2">
                 <Button

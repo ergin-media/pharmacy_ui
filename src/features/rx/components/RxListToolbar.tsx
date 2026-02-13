@@ -4,6 +4,7 @@ import {
     SORT_OPTIONS,
     type RxSort,
 } from "../lib/rx.constants";
+import { RX_PROVIDERS } from "../lib/rx.providers";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,8 @@ import {
 
 export function RxListToolbar(props: {
     parseStatus?: RxParseStatus;
-    providerRaw: string;
+
+    providerRaw: string; // wird jetzt slug oder "" sein
     searchRaw: string;
     sort: RxSort;
     perPage: number;
@@ -25,7 +27,7 @@ export function RxListToolbar(props: {
     isFetching: boolean;
 
     onParseStatusChange: (v: string) => void;
-    onProviderChange: (v: string) => void;
+    onProviderChange: (v: string) => void; // v ist slug oder ""
     onSearchChange: (v: string) => void;
     onSortChange: (v: string) => void;
     onPerPageChange: (v: number) => void;
@@ -46,15 +48,15 @@ export function RxListToolbar(props: {
         onRefresh,
     } = props;
 
-    // Während Fetch: alle Controls deaktivieren
-    const disabled = isFetching;
+    // Selects + Button deaktivieren, Inputs aktiv lassen (Tippen nicht beeinflussen)
+    const disableControls = isFetching;
 
     return (
-        <div className="flex gap-2 flex-wrap items-center">
+        <div className="flex flex-wrap items-center gap-2">
             <Select
                 value={parseStatus ?? "all"}
                 onValueChange={onParseStatusChange}
-                disabled={disabled}
+                disabled={disableControls}
             >
                 <SelectTrigger className="w-55">
                     <SelectValue placeholder="Status" />
@@ -70,26 +72,37 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
-            <Input
-                value={providerRaw}
-                placeholder="Provider-Slug (optional)"
-                className="w-60"
-                onChange={(e) => onProviderChange(e.target.value)}
-                disabled={disabled}
-            />
+            {/* Provider als Select */}
+            <Select
+                value={providerRaw || "all"}
+                onValueChange={(v) => onProviderChange(v === "all" ? "" : v)}
+                disabled={disableControls}
+            >
+                <SelectTrigger className="w-55">
+                    <SelectValue placeholder="Provider" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Alle Plattformen</SelectItem>
+                    {RX_PROVIDERS.map((p) => (
+                        <SelectItem key={p.slug} value={p.slug}>
+                            {p.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
 
+            {/* Suche bleibt Input (nicht disabled) */}
             <Input
                 value={searchRaw}
                 placeholder="Suche (Artikel, Patient, E-Mail, Hash …)"
                 className="w-80"
                 onChange={(e) => onSearchChange(e.target.value)}
-                disabled={disabled}
             />
 
             <Select
                 value={sort}
                 onValueChange={onSortChange}
-                disabled={disabled}
+                disabled={disableControls}
             >
                 <SelectTrigger className="w-56">
                     <SelectValue placeholder="Sortierung" />
@@ -106,7 +119,7 @@ export function RxListToolbar(props: {
             <Select
                 value={String(perPage)}
                 onValueChange={(v) => onPerPageChange(Number(v))}
-                disabled={disabled}
+                disabled={disableControls}
             >
                 <SelectTrigger className="w-40">
                     <SelectValue placeholder="Pro Seite" />
@@ -120,7 +133,11 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
-            <Button variant="outline" onClick={onRefresh} disabled={disabled}>
+            <Button
+                variant="outline"
+                onClick={onRefresh}
+                disabled={disableControls}
+            >
                 {isFetching ? "Aktualisiere…" : "Aktualisieren"}
             </Button>
         </div>

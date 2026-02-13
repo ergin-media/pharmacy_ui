@@ -30,7 +30,7 @@ function fulfillmentLabel(value?: string | null) {
 }
 
 function orderLabel(externalOrderId?: string | null) {
-    return externalOrderId ? `Bestellung #${externalOrderId}` : "—";
+    return externalOrderId ? `${externalOrderId}` : "—";
 }
 
 export function RxListTable(props: {
@@ -49,13 +49,15 @@ export function RxListTable(props: {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-65">Patient</TableHead>
-                        <TableHead className="w-55">Quelle</TableHead>
+                        <TableHead className="w-55">Plattform</TableHead>
                         <TableHead>Artikel</TableHead>
-                        <TableHead className="w-35 text-right">Menge</TableHead>
-                        <TableHead className="w-40 text-right">
-                            Finaler Preis
+                        <TableHead className="w-35 text-right">
+                            Gesamtmenge
                         </TableHead>
-                        <TableHead className="w-[170px]">Eingang</TableHead>
+                        <TableHead className="w-40 text-right">
+                            Gesamtpreis
+                        </TableHead>
+                        <TableHead className="w-42.5">Eingang</TableHead>
                         <TableHead className="w-35">Status</TableHead>
                         <TableHead className="w-45 text-right sticky right-0 bg-background">
                             Aktionen
@@ -140,27 +142,40 @@ export function RxListTable(props: {
                                         {itemsPreview.length > 0 ? (
                                             <div className="min-w-80 space-y-1">
                                                 {itemsPreview
-                                                    .slice(0, 2)
+                                                    .slice(0, 3)
                                                     .map((it, idx) => (
                                                         <div
                                                             key={idx}
-                                                            className="flex items-center justify-between gap-3"
+                                                            className="flex items-center gap-1"
                                                         >
                                                             <div className="truncate">
-                                                                {it.name ?? "—"}
+                                                                {it.name ? (
+                                                                    <>
+                                                                        <span className="mr-1 text-muted-foreground">
+                                                                            •
+                                                                        </span>
+                                                                        {
+                                                                            it.name
+                                                                        }
+                                                                    </>
+                                                                ) : (
+                                                                    "—"
+                                                                )}
                                                             </div>
                                                             <div className="whitespace-nowrap text-xs text-muted-foreground">
+                                                                (
                                                                 {formatQuantity(
                                                                     it.quantity,
                                                                     it.unit,
                                                                 )}
+                                                                )
                                                             </div>
                                                         </div>
                                                     ))}
 
-                                                {itemsCount > 2 ? (
+                                                {itemsCount > 3 ? (
                                                     <div className="text-xs text-muted-foreground">
-                                                        +{itemsCount - 2}{" "}
+                                                        +{itemsCount - 3}{" "}
                                                         weitere
                                                     </div>
                                                 ) : null}
@@ -172,7 +187,7 @@ export function RxListTable(props: {
                                         )}
                                     </TableCell>
 
-                                    {/* Menge */}
+                                    {/* Gesamtmenge */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
                                             {formatQuantity(
@@ -180,33 +195,18 @@ export function RxListTable(props: {
                                                 totalUnit,
                                             )}
                                         </div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {itemsCount
-                                                ? `${itemsCount} Positionen`
-                                                : "—"}
-                                        </div>
                                     </TableCell>
 
-                                    {/* Finaler Preis */}
+                                    {/* Gesamtpreis */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
                                             {formatMoney(priceCents, currency)}
-                                        </div>
-                                        <div className="text-xs text-muted-foreground">
-                                            —
                                         </div>
                                     </TableCell>
 
                                     {/* Eingang */}
                                     <TableCell className="whitespace-nowrap">
-                                        <div className="font-medium">
-                                            {formatDateTime(
-                                                r.mail?.received_at,
-                                            )}
-                                        </div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {r.mail?.from_email ?? "—"}
-                                        </div>
+                                        {formatDateTime(r.mail?.received_at)}
                                     </TableCell>
 
                                     {/* Status */}
@@ -218,11 +218,6 @@ export function RxListTable(props: {
                                         >
                                             {r.parse_status}
                                         </Badge>
-                                        {r.parsed_at ? (
-                                            <div className="mt-1 text-xs text-muted-foreground">
-                                                {formatDateTime(r.parsed_at)}
-                                            </div>
-                                        ) : null}
                                     </TableCell>
 
                                     {/* Aktionen */}
