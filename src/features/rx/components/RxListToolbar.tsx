@@ -46,11 +46,15 @@ export function RxListToolbar(props: {
         onRefresh,
     } = props;
 
+    // Während Fetch: alle Controls deaktivieren
+    const disabled = isFetching;
+
     return (
         <div className="flex gap-2 flex-wrap items-center">
             <Select
                 value={parseStatus ?? "all"}
                 onValueChange={onParseStatusChange}
+                disabled={disabled}
             >
                 <SelectTrigger className="w-55">
                     <SelectValue placeholder="Status" />
@@ -71,6 +75,7 @@ export function RxListToolbar(props: {
                 placeholder="Provider-Slug (optional)"
                 className="w-60"
                 onChange={(e) => onProviderChange(e.target.value)}
+                disabled={disabled}
             />
 
             <Input
@@ -78,9 +83,14 @@ export function RxListToolbar(props: {
                 placeholder="Suche (Artikel, Patient, E-Mail, Hash …)"
                 className="w-80"
                 onChange={(e) => onSearchChange(e.target.value)}
+                disabled={disabled}
             />
 
-            <Select value={sort} onValueChange={onSortChange}>
+            <Select
+                value={sort}
+                onValueChange={onSortChange}
+                disabled={disabled}
+            >
                 <SelectTrigger className="w-56">
                     <SelectValue placeholder="Sortierung" />
                 </SelectTrigger>
@@ -96,6 +106,7 @@ export function RxListToolbar(props: {
             <Select
                 value={String(perPage)}
                 onValueChange={(v) => onPerPageChange(Number(v))}
+                disabled={disabled}
             >
                 <SelectTrigger className="w-40">
                     <SelectValue placeholder="Pro Seite" />
@@ -109,7 +120,7 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
-            <Button variant="outline" onClick={onRefresh} disabled={isFetching}>
+            <Button variant="outline" onClick={onRefresh} disabled={disabled}>
                 {isFetching ? "Aktualisiere…" : "Aktualisieren"}
             </Button>
         </div>

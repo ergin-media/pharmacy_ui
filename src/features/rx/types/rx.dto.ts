@@ -6,6 +6,8 @@ export type RxParseStatus =
     | "failed"
     | "parsed_with_warnings";
 
+export type RxFulfillmentType = "shipping" | "pickup" | "unknown";
+
 export interface RxListItemDto {
     id: Id;
 
@@ -21,16 +23,46 @@ export interface RxListItemDto {
 
     rx_hash: Sha256;
 
+    // neu
+    external_order_id?: string | null;
+    fulfillment_type?: RxFulfillmentType | string | null;
+
     mail: {
         subject: string | null;
         from_email: string | null;
         received_at: ISODateTime | null;
     };
 
+    // erweitert
     patient: {
         first_name: string | null;
         last_name: string | null;
+
+        birthdate?: string | null;
+        age?: number | null;
+
+        street?: string | null;
+        zip?: string | null;
+        city?: string | null;
+        country?: string | null;
+
+        phone?: string | null;
+        email?: string | null;
     };
+
+    // neu (ersetzt die alten summary/phase2-extras)
+    summary?: {
+        items_preview?: Array<{
+            name: string | null;
+            unit: string | null;
+            quantity: number | null;
+        }>;
+        items_count?: number | null;
+        total_quantity?: number | null;
+        total_unit?: string | null;
+        final_price_cents?: number | null;
+        currency?: string | null;
+    } | null;
 }
 
 export interface RxListResponseDto {
@@ -41,19 +73,11 @@ export interface RxListResponseDto {
     total_pages: number;
 }
 
-export type RxSort =
-    | "created_at_desc"
-    | "created_at_asc"
-    | "received_at_desc"
-    | "received_at_asc";
-
 export interface RxListQueryParams {
     page?: number;
     per_page?: number;
     parse_status?: RxParseStatus;
     provider?: string;
-
-    // neu:
-    search?: string; // z.B. subject, from_email, patient name, rx_hash
-    sort?: RxSort;
+    search?: string;
+    sort?: string;
 }

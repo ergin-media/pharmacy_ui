@@ -18,33 +18,30 @@ import { formatPersonName } from "@/shared/lib/format/person";
 import { formatQuantity } from "@/shared/lib/format/quantity";
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
 
-type Phase2Extras = {
-    items_preview?: Array<{
-        name: string | null;
-        quantity: number | null;
-        unit: string | null;
-    }>;
-    items_count?: number;
-    total_quantity?: number | null;
-    total_unit?: string | null;
-    final_price_cents?: number | null;
-    currency?: string | null;
-};
+function fulfillmentLabel(value?: string | null) {
+    switch (value) {
+        case "shipping":
+            return "Versand";
+        case "pickup":
+            return "Abholung";
+        default:
+            return "—";
+    }
+}
 
-function getExtras(r: RxListItemDto): Phase2Extras {
-    // Backend liefert Phase-2 Felder evtl. noch nicht → safe fallback
-    return r as unknown as Phase2Extras;
+function orderLabel(externalOrderId?: string | null) {
+    return externalOrderId ? `Bestellung #${externalOrderId}` : "—";
 }
 
 export function RxListTable(props: {
     items: RxListItemDto[];
-    perPage: number; // 👈 neu
     isLoading?: boolean;
+    perPage: number;
     onOpen?: (id: number) => void;
     onPdf?: (id: number) => void;
     onMore?: (id: number) => void;
 }) {
-    const { items, perPage, isLoading, onOpen, onPdf, onMore } = props;
+    const { items, isLoading, perPage, onOpen, onPdf, onMore } = props;
 
     return (
         <div className="overflow-x-auto rounded-md border">
@@ -52,21 +49,14 @@ export function RxListTable(props: {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-65">Patient</TableHead>
-
                         <TableHead className="w-55">Quelle</TableHead>
-
                         <TableHead>Artikel</TableHead>
-
                         <TableHead className="w-35 text-right">Menge</TableHead>
-
                         <TableHead className="w-40 text-right">
                             Finaler Preis
                         </TableHead>
-
-                        <TableHead className="w-42.5">Eingang</TableHead>
-
+                        <TableHead className="w-[170px]">Eingang</TableHead>
                         <TableHead className="w-35">Status</TableHead>
-
                         <TableHead className="w-45 text-right sticky right-0 bg-background">
                             Aktionen
                         </TableHead>
@@ -87,13 +77,28 @@ export function RxListTable(props: {
                         </TableRow>
                     ) : (
                         items.map((r) => {
-                            const ex = getExtras(r);
+                            const summary = r.summary ?? undefined;
 
-                            const itemsPreview = ex.items_preview ?? [];
+                            const itemsPreview = summary?.items_preview ?? [];
                             const itemsCount =
-                                typeof ex.items_count === "number"
-                                    ? ex.items_count
+                                typeof summary?.items_count === "number"
+                                    ? summary.items_count
                                     : itemsPreview.length;
+
+                            const totalQty = summary?.total_quantity ?? null;
+                            const totalUnit = summary?.total_unit ?? null;
+
+                            const priceCents =
+                                summary?.final_price_cents ?? null;
+                            const currency = summary?.currency ?? "EUR";
+
+                            const patientTitle = formatPersonName(
+                                r.patient?.first_name,
+                                r.patient?.last_name,
+                            );
+
+                            const patientSub =
+                                r.patient?.email ?? r.patient?.phone ?? "—";
 
                             return (
                                 <TableRow
@@ -103,28 +108,30 @@ export function RxListTable(props: {
                                     {/* Patient */}
                                     <TableCell>
                                         <div className="font-medium">
-                                            {formatPersonName(
-                                                r.patient?.first_name,
-                                                r.patient?.last_name,
-                                            )}
+                                            {patientTitle}
                                         </div>
 
-                                        {/* 240px -> 60*4px */}
                                         <div className="max-w-60 truncate text-xs text-muted-foreground">
-                                            {r.mail?.from_email ?? "—"}
+                                            {patientSub}
                                         </div>
                                     </TableCell>
 
                                     {/* Quelle */}
                                     <TableCell>
-                                        <div className="max-w-50 truncate font-medium">
+                                        <div className="font-medium truncate max-w-50">
                                             {r.provider?.name ??
                                                 r.provider?.slug ??
                                                 "—"}
                                         </div>
 
                                         <div className="max-w-50 truncate text-xs text-muted-foreground">
-                                            {r.mail?.subject ?? "—"}
+                                            {orderLabel(r.external_order_id)}{" "}
+                                            <span className="text-muted-foreground">
+                                                •{" "}
+                                                {fulfillmentLabel(
+                                                    r.fulfillment_type,
+                                                )}
+                                            </span>
                                         </div>
                                     </TableCell>
 
@@ -150,6 +157,7 @@ export function RxListTable(props: {
                                                             </div>
                                                         </div>
                                                     ))}
+
                                                 {itemsCount > 2 ? (
                                                     <div className="text-xs text-muted-foreground">
                                                         +{itemsCount - 2}{" "}
@@ -168,8 +176,8 @@ export function RxListTable(props: {
                                     <TableCell className="text-right">
                                         <div className="font-medium">
                                             {formatQuantity(
-                                                ex.total_quantity,
-                                                ex.total_unit,
+                                                totalQty,
+                                                totalUnit,
                                             )}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
@@ -182,10 +190,7 @@ export function RxListTable(props: {
                                     {/* Finaler Preis */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
-                                            {formatMoney(
-                                                ex.final_price_cents,
-                                                ex.currency,
-                                            )}
+                                            {formatMoney(priceCents, currency)}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
                                             —
@@ -200,7 +205,7 @@ export function RxListTable(props: {
                                             )}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
-                                            ID: {r.id}
+                                            {r.mail?.from_email ?? "—"}
                                         </div>
                                     </TableCell>
 
