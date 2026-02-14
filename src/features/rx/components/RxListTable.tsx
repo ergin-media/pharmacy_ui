@@ -128,6 +128,11 @@ export function RxListTable(props: {
 
                                         <div className="max-w-50 truncate text-xs text-muted-foreground">
                                             {orderLabel(r.external_order_id)}
+                                            {/*
+                                            {fulfillmentLabel(
+                                                    r.fulfillment_type,
+                                                )}
+                                            */}
                                         </div>
                                     </TableCell>
 

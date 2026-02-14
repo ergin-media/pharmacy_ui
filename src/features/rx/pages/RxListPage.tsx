@@ -54,12 +54,7 @@ export function RxListPage() {
                                 Gesamt:{" "}
                                 <span className="font-medium text-foreground">
                                     {vm.meta.total}
-                                </span>{" "}
-                                — Seite{" "}
-                                <span className="font-medium text-foreground">
-                                    {vm.query.data?.page ?? vm.filters.page}
-                                </span>{" "}
-                                / {vm.meta.totalPages}
+                                </span>
                             </div>
 
                             <RxListPagination

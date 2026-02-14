@@ -94,7 +94,7 @@ export function AppShell() {
                 {/* 25% max sidebar on md+, rest content */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-[250px_1fr]">
                     {/* Desktop Sidebar */}
-                    <Card className="hidden h-[calc(100vh-2rem)] p-3 md:block h-full">
+                    <Card className="hidden h-full p-3 md:block">
                         <SidebarContent />
                     </Card>
 
