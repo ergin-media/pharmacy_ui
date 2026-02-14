@@ -30,7 +30,7 @@ function fulfillmentLabel(value?: string | null) {
 }
 
 function orderLabel(externalOrderId?: string | null) {
-    return externalOrderId ? `${externalOrderId}` : "—";
+    return externalOrderId ? `ID: ${externalOrderId}` : "";
 }
 
 export function RxListTable(props: {
@@ -127,13 +127,7 @@ export function RxListTable(props: {
                                         </div>
 
                                         <div className="max-w-50 truncate text-xs text-muted-foreground">
-                                            {orderLabel(r.external_order_id)}{" "}
-                                            <span className="text-muted-foreground">
-                                                •{" "}
-                                                {fulfillmentLabel(
-                                                    r.fulfillment_type,
-                                                )}
-                                            </span>
+                                            {orderLabel(r.external_order_id)}
                                         </div>
                                     </TableCell>
 

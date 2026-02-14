@@ -94,7 +94,7 @@ export function RxListToolbar(props: {
             {/* Suche bleibt Input (nicht disabled) */}
             <Input
                 value={searchRaw}
-                placeholder="Suche (Artikel, Patient, E-Mail, Hash …)"
+                placeholder="Suche (Patient, Bestell-ID)"
                 className="w-80"
                 onChange={(e) => onSearchChange(e.target.value)}
             />
