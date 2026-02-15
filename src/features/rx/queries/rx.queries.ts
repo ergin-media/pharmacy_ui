@@ -15,8 +15,8 @@ export const rxKeys = {
                 per_page: p.per_page ?? 25,
                 parse_status: p.parse_status ?? "",
                 provider: p.provider ?? "",
-
-                // neu:
+                workflow_status: p.workflow_status ?? "",
+                payment_state: p.payment_state ?? "",
                 search: p.search ?? "",
                 sort: p.sort ?? "created_at_desc",
             },

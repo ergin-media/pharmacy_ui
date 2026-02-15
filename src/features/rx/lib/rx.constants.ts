@@ -18,7 +18,8 @@ export const DEFAULT_SORT: RxSort = "created_at_desc";
 export const ALLOWED_SORTS = SORT_OPTIONS.map((s) => s.value) as RxSort[];
 
 export const WORKFLOW_OPTIONS = [
-    { value: "pending", label: "In Bearbeitung" },
+    { value: "pending", label: "Offen" },
+    { value: "processing", label: "In Bearbeitung" },
     { value: "completed", label: "Abgeschlossen" },
     { value: "rejected", label: "Abgelehnt" },
 ] as const;

@@ -9,7 +9,11 @@ export type RxParseStatus =
 export type RxFulfillmentType = "shipping" | "pickup" | "unknown";
 
 // neu
-export type RxWorkflowStatus = "pending" | "completed" | "rejected";
+export type RxWorkflowStatus =
+    | "pending"
+    | "processing"
+    | "completed"
+    | "rejected";
 export type RxPaymentState = "unpaid" | "paid";
 
 export interface RxListItemDto {
