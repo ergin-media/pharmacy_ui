@@ -1,5 +1,5 @@
 import type { RxPaymentState, RxWorkflowStatus } from "../types/rx.dto";
-import type { BadgeVariant } from "@/components/ui/badge";
+import type { BadgeVariant } from "@/components/ui/badge.variants";
 
 export function workflowBadgeVariant(
     status?: RxWorkflowStatus | null,
