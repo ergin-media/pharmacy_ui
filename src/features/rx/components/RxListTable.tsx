@@ -4,7 +4,6 @@ import type {
     RxWorkflowStatus,
     RxPaymentState,
 } from "../types/rx.dto";
-import { badgeVariant } from "../lib/rx.constants";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,4 +1,8 @@
-import type { RxParseStatus } from "../types/rx.dto";
+import type {
+    RxParseStatus,
+    RxWorkflowStatus,
+    RxPaymentState,
+} from "../types/rx.dto";
 import {
     PER_PAGE_OPTIONS,
     SORT_OPTIONS,
@@ -16,10 +20,24 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
+const WORKFLOW_OPTIONS: Array<{ value: RxWorkflowStatus; label: string }> = [
+    { value: "pending", label: "pending" },
+    { value: "completed", label: "completed" },
+    { value: "rejected", label: "rejected" },
+];
+
+const PAYMENT_OPTIONS: Array<{ value: RxPaymentState; label: string }> = [
+    { value: "unpaid", label: "unpaid" },
+    { value: "paid", label: "paid" },
+];
+
 export function RxListToolbar(props: {
     parseStatus?: RxParseStatus;
 
-    providerRaw: string; // wird jetzt slug oder "" sein
+    workflowStatus?: RxWorkflowStatus; // neu
+    paymentState?: RxPaymentState; // neu
+
+    providerRaw: string; // slug oder ""
     searchRaw: string;
     sort: RxSort;
     perPage: number;
@@ -27,7 +45,11 @@ export function RxListToolbar(props: {
     isFetching: boolean;
 
     onParseStatusChange: (v: string) => void;
-    onProviderChange: (v: string) => void; // v ist slug oder ""
+
+    onWorkflowStatusChange: (v: string) => void; // neu: v oder ""
+    onPaymentStateChange: (v: string) => void; // neu: v oder ""
+
+    onProviderChange: (v: string) => void; // slug oder ""
     onSearchChange: (v: string) => void;
     onSortChange: (v: string) => void;
     onPerPageChange: (v: number) => void;
@@ -35,12 +57,16 @@ export function RxListToolbar(props: {
 }) {
     const {
         parseStatus,
+        workflowStatus,
+        paymentState,
         providerRaw,
         searchRaw,
         sort,
         perPage,
         isFetching,
         onParseStatusChange,
+        onWorkflowStatusChange,
+        onPaymentStateChange,
         onProviderChange,
         onSearchChange,
         onSortChange,
@@ -48,21 +74,22 @@ export function RxListToolbar(props: {
         onRefresh,
     } = props;
 
-    // Selects + Button deaktivieren, Inputs aktiv lassen (Tippen nicht beeinflussen)
+    // Selects + Button deaktivieren, Inputs aktiv lassen
     const disableControls = isFetching;
 
     return (
         <div className="flex flex-wrap items-center gap-2">
+            {/* Parse Status */}
             <Select
                 value={parseStatus ?? "all"}
                 onValueChange={onParseStatusChange}
                 disabled={disableControls}
             >
                 <SelectTrigger className="w-55">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="Parse-Status" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="all">Alle Status</SelectItem>
+                    <SelectItem value="all">Alle Parse-Status</SelectItem>
                     <SelectItem value="pending">pending</SelectItem>
                     <SelectItem value="parsed">parsed</SelectItem>
                     <SelectItem value="failed">failed</SelectItem>
@@ -72,7 +99,49 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
-            {/* Provider als Select */}
+            {/* Workflow Status */}
+            <Select
+                value={workflowStatus ?? "all"}
+                onValueChange={(v) =>
+                    onWorkflowStatusChange(v === "all" ? "" : v)
+                }
+                disabled={disableControls}
+            >
+                <SelectTrigger className="w-55">
+                    <SelectValue placeholder="Workflow" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Alle Workflows</SelectItem>
+                    {WORKFLOW_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            {/* Payment State */}
+            <Select
+                value={paymentState ?? "all"}
+                onValueChange={(v) =>
+                    onPaymentStateChange(v === "all" ? "" : v)
+                }
+                disabled={disableControls}
+            >
+                <SelectTrigger className="w-55">
+                    <SelectValue placeholder="Payment" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Alle Payments</SelectItem>
+                    {PAYMENT_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            {/* Provider */}
             <Select
                 value={providerRaw || "all"}
                 onValueChange={(v) => onProviderChange(v === "all" ? "" : v)}
@@ -91,7 +160,7 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
-            {/* Suche bleibt Input (nicht disabled) */}
+            {/* Suche bleibt Input */}
             <Input
                 value={searchRaw}
                 placeholder="Suche (Patient, Bestell-ID)"
@@ -99,6 +168,7 @@ export function RxListToolbar(props: {
                 onChange={(e) => onSearchChange(e.target.value)}
             />
 
+            {/* Sort */}
             <Select
                 value={sort}
                 onValueChange={onSortChange}
@@ -116,6 +186,7 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
+            {/* Per Page */}
             <Select
                 value={String(perPage)}
                 onValueChange={(v) => onPerPageChange(Number(v))}
@@ -133,6 +204,7 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
+            {/* Refresh */}
             <Button
                 variant="outline"
                 onClick={onRefresh}
