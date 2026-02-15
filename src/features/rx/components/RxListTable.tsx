@@ -234,21 +234,11 @@ export function RxListTable(props: {
                                             </div>
 
                                             <div className="text-xs text-muted-foreground">
-                                                parse:{" "}
                                                 <span className="font-medium text-foreground">
                                                     {
                                                         r.parse_status as RxParseStatus
                                                     }
                                                 </span>
-                                                {r.parsed_at ? (
-                                                    <>
-                                                        {" "}
-                                                        •{" "}
-                                                        {formatDateTime(
-                                                            r.parsed_at,
-                                                        )}
-                                                    </>
-                                                ) : null}
                                             </div>
                                         </div>
                                     </TableCell>
