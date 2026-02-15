@@ -1,21 +1,9 @@
 import type { RxPaymentState, RxWorkflowStatus } from "../types/rx.dto";
-
-// Hängt an deinen Badge-Variants (success/info/warning/neutral/destructive)
-export type StatusBadgeVariant =
-    | "default"
-    | "secondary"
-    | "destructive"
-    | "outline"
-    | "ghost"
-    | "link"
-    | "success"
-    | "info"
-    | "warning"
-    | "neutral";
+import type { BadgeVariant } from "@/components/ui/badge";
 
 export function workflowBadgeVariant(
     status?: RxWorkflowStatus | null,
-): StatusBadgeVariant {
+): BadgeVariant {
     switch (status) {
         case "completed":
             return "success";
@@ -31,7 +19,7 @@ export function workflowBadgeVariant(
 
 export function paymentBadgeVariant(
     state?: RxPaymentState | null,
-): StatusBadgeVariant {
+): BadgeVariant {
     switch (state) {
         case "paid":
             return "success";
