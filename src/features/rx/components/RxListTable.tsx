@@ -28,44 +28,48 @@ function orderLabel(externalOrderId?: string | null) {
 function workflowBadgeVariant(status?: RxWorkflowStatus | null) {
     switch (status) {
         case "completed":
-            return "secondary";
+            return "success";
+        case "processing":
+            return "info";
         case "rejected":
             return "destructive";
         case "pending":
         default:
-            return "outline";
-    }
-}
-
-function workflowLabel(status?: RxWorkflowStatus | null) {
-    switch (status) {
-        case "completed":
-            return "completed";
-        case "rejected":
-            return "rejected";
-        case "pending":
-        default:
-            return "pending";
+            return "neutral";
     }
 }
 
 function paymentBadgeVariant(state?: RxPaymentState | null) {
     switch (state) {
         case "paid":
-            return "secondary";
+            return "success";
         case "unpaid":
         default:
-            return "outline";
+            return "warning";
+    }
+}
+
+function workflowLabel(status?: RxWorkflowStatus | null) {
+    switch (status) {
+        case "processing":
+            return "In Bearbeitung";
+        case "completed":
+            return "Abgeschlossen";
+        case "rejected":
+            return "Abgelehnt";
+        case "pending":
+        default:
+            return "Offen";
     }
 }
 
 function paymentLabel(state?: RxPaymentState | null) {
     switch (state) {
         case "paid":
-            return "paid";
+            return "Bezahlt";
         case "unpaid":
         default:
-            return "unpaid";
+            return "Unbezahlt";
     }
 }
 
@@ -253,7 +257,6 @@ export function RxListTable(props: {
                                                         r.workflow_status,
                                                     )}
                                                 >
-                                                    workflow:{" "}
                                                     {workflowLabel(
                                                         r.workflow_status,
                                                     )}
@@ -264,7 +267,6 @@ export function RxListTable(props: {
                                                         r.payment_state,
                                                     )}
                                                 >
-                                                    payment:{" "}
                                                     {paymentLabel(
                                                         r.payment_state,
                                                     )}
