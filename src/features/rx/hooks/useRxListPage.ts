@@ -1,13 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useRxListQuery } from "../queries/rx.queries";
-import type { RxParseStatus } from "../types/rx.dto";
+import type {
+    RxParseStatus,
+    RxWorkflowStatus,
+    RxPaymentState,
+} from "../types/rx.dto";
 import {
     ALLOWED_SORTS,
     ALLOWED_STATUSES,
     DEFAULT_SORT,
     type RxSort,
 } from "../lib/rx.constants";
+const ALLOWED_WORKFLOW: RxWorkflowStatus[] = [
+    "pending",
+    "completed",
+    "rejected",
+];
+const ALLOWED_PAYMENT: RxPaymentState[] = ["unpaid", "paid"];
+
 import {
     spGetInt,
     spGetString,
@@ -31,6 +42,20 @@ export function useRxListPage() {
 
     const providerRaw = spGetString(sp, "provider");
     const provider = providerRaw ? providerRaw : undefined;
+
+    const workflowRaw = spGetString(sp, "workflow_status");
+    const workflowStatus: RxWorkflowStatus | undefined = (
+        ALLOWED_WORKFLOW as string[]
+    ).includes(workflowRaw)
+        ? (workflowRaw as RxWorkflowStatus)
+        : undefined;
+
+    const paymentRaw = spGetString(sp, "payment_state");
+    const paymentState: RxPaymentState | undefined = (
+        ALLOWED_PAYMENT as string[]
+    ).includes(paymentRaw)
+        ? (paymentRaw as RxPaymentState)
+        : undefined;
 
     // --- Search: URL -> local input state ---
     const searchRaw = spGetString(sp, "search"); // source of truth for deep-linking
@@ -57,6 +82,10 @@ export function useRxListPage() {
             page: number;
             per_page: number;
             parse_status: string;
+
+            workflow_status: string; // neu
+            payment_state: string; // neu
+
             provider: string;
             search: string;
             sort: string;
@@ -71,6 +100,12 @@ export function useRxListPage() {
             spSetOrDelete(n, "parse_status", next.parse_status);
         if (next.provider !== undefined)
             spSetOrDelete(n, "provider", next.provider);
+
+        if (next.workflow_status !== undefined)
+            spSetOrDelete(n, "workflow_status", next.workflow_status);
+
+        if (next.payment_state !== undefined)
+            spSetOrDelete(n, "payment_state", next.payment_state);
 
         // search NICHT mehr pro Tastendruck hier setzen!
         if (next.sort !== undefined) spSetOrDelete(n, "sort", next.sort);
@@ -92,11 +127,22 @@ export function useRxListPage() {
             page,
             per_page: perPage,
             parse_status: parseStatus,
+            workflow_status: workflowStatus, // neu
+            payment_state: paymentState, // neu
             provider,
             search: debouncedSearchInput,
             sort,
         }),
-        [page, perPage, parseStatus, provider, debouncedSearchInput, sort],
+        [
+            page,
+            perPage,
+            parseStatus,
+            workflowStatus,
+            paymentState,
+            provider,
+            debouncedSearchInput,
+            sort,
+        ],
     );
 
     const query = useRxListQuery(params);
@@ -108,17 +154,18 @@ export function useRxListPage() {
         setParseStatus: (v: string) =>
             patch({ page: 1, parse_status: v === "all" ? "" : v }),
 
+        setWorkflowStatus: (v: string) =>
+            patch({ page: 1, workflow_status: v }), // v ist "" oder status
+
+        setPaymentState: (v: string) => patch({ page: 1, payment_state: v }), // v ist "" oder state
+
         setProvider: (v: string) => patch({ page: 1, provider: v }),
 
-        // Search: nur lokalen Input ändern (keine URL sofort)
         setSearch: (v: string) => setSearchInput(v),
 
         setSort: (v: string) => patch({ page: 1, sort: v }),
-
         setPerPage: (v: number) => patch({ page: 1, per_page: v }),
-
         setPage: (v: number) => patch({ page: v }),
-
         refresh: () => query.refetch(),
     };
 
@@ -127,8 +174,12 @@ export function useRxListPage() {
             page,
             perPage,
             parseStatus,
+
+            workflowStatus, // neu
+            paymentState, // neu
+
             providerRaw,
-            searchRaw: searchInput, // Toolbar sieht live input
+            searchRaw: searchInput,
             sort,
         },
         query,

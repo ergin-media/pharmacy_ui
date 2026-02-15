@@ -16,12 +16,16 @@ export function RxListPage() {
 
                 <RxListToolbar
                     parseStatus={vm.filters.parseStatus}
+                    workflowStatus={vm.filters.workflowStatus}
+                    paymentState={vm.filters.paymentState}
                     providerRaw={vm.filters.providerRaw}
                     searchRaw={vm.filters.searchRaw}
                     sort={vm.filters.sort}
                     perPage={vm.filters.perPage}
                     isFetching={vm.query.isFetching}
                     onParseStatusChange={vm.actions.setParseStatus}
+                    onWorkflowStatusChange={vm.actions.setWorkflowStatus}
+                    onPaymentStateChange={vm.actions.setPaymentState}
                     onProviderChange={vm.actions.setProvider}
                     onSearchChange={vm.actions.setSearch}
                     onSortChange={vm.actions.setSort}

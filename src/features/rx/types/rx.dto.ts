@@ -82,6 +82,11 @@ export interface RxListQueryParams {
     page?: number;
     per_page?: number;
     parse_status?: RxParseStatus;
+
+    // neu
+    workflow_status?: RxWorkflowStatus;
+    payment_state?: RxPaymentState;
+
     provider?: string;
     search?: string;
     sort?: string;
