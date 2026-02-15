@@ -1,9 +1,7 @@
-import type {
-    RxListItemDto,
-    RxParseStatus,
-    RxWorkflowStatus,
-    RxPaymentState,
-} from "../types/rx.dto";
+import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
+import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
+import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,58 +18,6 @@ import { formatMoney } from "@/shared/lib/format/money";
 import { formatPersonName } from "@/shared/lib/format/person";
 import { formatQuantity } from "@/shared/lib/format/quantity";
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
-
-function orderLabel(externalOrderId?: string | null) {
-    return externalOrderId ? `ID: ${externalOrderId}` : "";
-}
-
-function workflowBadgeVariant(status?: RxWorkflowStatus | null) {
-    switch (status) {
-        case "completed":
-            return "success";
-        case "processing":
-            return "info";
-        case "rejected":
-            return "destructive";
-        case "pending":
-        default:
-            return "neutral";
-    }
-}
-
-function paymentBadgeVariant(state?: RxPaymentState | null) {
-    switch (state) {
-        case "paid":
-            return "success";
-        case "unpaid":
-        default:
-            return "warning";
-    }
-}
-
-function workflowLabel(status?: RxWorkflowStatus | null) {
-    switch (status) {
-        case "processing":
-            return "In Bearbeitung";
-        case "completed":
-            return "Abgeschlossen";
-        case "rejected":
-            return "Abgelehnt";
-        case "pending":
-        default:
-            return "Offen";
-    }
-}
-
-function paymentLabel(state?: RxPaymentState | null) {
-    switch (state) {
-        case "paid":
-            return "Bezahlt";
-        case "unpaid":
-        default:
-            return "Unbezahlt";
-    }
-}
 
 export function RxListTable(props: {
     items: RxListItemDto[];
@@ -99,7 +45,7 @@ export function RxListTable(props: {
                         </TableHead>
                         <TableHead className="w-42.5">Eingang</TableHead>
                         <TableHead className="w-35">Status</TableHead>
-                        <TableHead className="w-45 text-right sticky right-0 bg-background">
+                        <TableHead className="w-45 sticky right-0 bg-background text-right">
                             Aktionen
                         </TableHead>
                     </TableRow>
@@ -158,9 +104,9 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Quelle */}
+                                    {/* Plattform */}
                                     <TableCell>
-                                        <div className="font-medium truncate max-w-50">
+                                        <div className="max-w-50 truncate font-medium">
                                             {r.provider?.name ??
                                                 r.provider?.slug ??
                                                 "—"}
@@ -168,11 +114,6 @@ export function RxListTable(props: {
 
                                         <div className="max-w-50 truncate text-xs text-muted-foreground">
                                             {orderLabel(r.external_order_id)}
-                                            {/*
-                                            {fulfillmentLabel(
-                                                    r.fulfillment_type,
-                                                )}
-                                            */}
                                         </div>
                                     </TableCell>
 
@@ -201,6 +142,7 @@ export function RxListTable(props: {
                                                                     "—"
                                                                 )}
                                                             </div>
+
                                                             <div className="whitespace-nowrap text-xs text-muted-foreground">
                                                                 (
                                                                 {formatQuantity(
