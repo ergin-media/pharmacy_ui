@@ -6,6 +6,8 @@ import type {
 import {
     PER_PAGE_OPTIONS,
     SORT_OPTIONS,
+    WORKFLOW_OPTIONS,
+    PAYMENT_OPTIONS,
     type RxSort,
 } from "../lib/rx.constants";
 import { RX_PROVIDERS } from "../lib/rx.providers";
@@ -19,17 +21,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
-const WORKFLOW_OPTIONS: Array<{ value: RxWorkflowStatus; label: string }> = [
-    { value: "pending", label: "pending" },
-    { value: "completed", label: "completed" },
-    { value: "rejected", label: "rejected" },
-];
-
-const PAYMENT_OPTIONS: Array<{ value: RxPaymentState; label: string }> = [
-    { value: "unpaid", label: "unpaid" },
-    { value: "paid", label: "paid" },
-];
 
 export function RxListToolbar(props: {
     parseStatus?: RxParseStatus;
