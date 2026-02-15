@@ -1,7 +1,7 @@
 import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
 import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
 import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
-
+import { getMappingMeta, getPriceMeta } from "../lib/rx.summary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-
 import { formatDateTime } from "@/shared/lib/format/date";
 import { formatMoney } from "@/shared/lib/format/money";
 import { formatPersonName } from "@/shared/lib/format/person";
@@ -66,6 +65,7 @@ export function RxListTable(props: {
                     ) : (
                         items.map((r) => {
                             const summary = r.summary ?? undefined;
+                            const priceMeta = getPriceMeta(summary);
 
                             const itemsPreview = summary?.items_preview ?? [];
                             const itemsCount =
@@ -142,7 +142,6 @@ export function RxListTable(props: {
                                                                     "—"
                                                                 )}
                                                             </div>
-
                                                             <div className="whitespace-nowrap text-xs text-muted-foreground">
                                                                 (
                                                                 {formatQuantity(
@@ -154,10 +153,17 @@ export function RxListTable(props: {
                                                         </div>
                                                     ))}
 
+                                                {/* Warnzeile für Mapping */}
+                                                {!priceMeta.isComplete &&
+                                                priceMeta.hint ? (
+                                                    <Badge variant={"danger"}>
+                                                        {priceMeta.hint}
+                                                    </Badge>
+                                                ) : null}
+
                                                 {itemsCount > 3 ? (
                                                     <div className="text-xs text-muted-foreground">
-                                                        +{itemsCount - 3}{" "}
-                                                        weitere
+                                                        {`+${itemsCount - 3} weitere`}
                                                     </div>
                                                 ) : null}
                                             </div>
@@ -180,8 +186,20 @@ export function RxListTable(props: {
 
                                     {/* Gesamtpreis */}
                                     <TableCell className="text-right">
-                                        <div className="font-medium">
-                                            {formatMoney(priceCents, currency)}
+                                        <div className="flex flex-col items-end">
+                                            <div
+                                                className={[
+                                                    "font-medium",
+                                                    priceMeta.isComplete
+                                                        ? ""
+                                                        : "text-muted-foreground opacity-50",
+                                                ].join(" ")}
+                                            >
+                                                {formatMoney(
+                                                    priceCents,
+                                                    currency,
+                                                )}
+                                            </div>
                                         </div>
                                     </TableCell>
 

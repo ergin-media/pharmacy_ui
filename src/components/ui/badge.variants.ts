@@ -16,7 +16,6 @@ export const badgeVariants = cva(
                 ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
                 link: "text-primary underline-offset-4 [a&]:hover:underline",
 
-                // ✅ Generische Status-Varianten
                 success:
                     "bg-emerald-100 text-emerald-800 border-emerald-200 " +
                     "dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-500/30 " +
@@ -31,6 +30,11 @@ export const badgeVariants = cva(
                     "bg-amber-100 text-amber-900 border-amber-200 " +
                     "dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-500/30 " +
                     "[a&]:hover:bg-amber-100/80 dark:[a&]:hover:bg-amber-500/20",
+
+                danger:
+                    "bg-red-100 text-red-800 border-red-200 " +
+                    "dark:bg-red-500/15 dark:text-red-200 dark:border-red-500/30 " +
+                    "[a&]:hover:bg-red-100/80 dark:[a&]:hover:bg-red-500/20",
 
                 neutral:
                     "bg-muted text-muted-foreground border-border " +

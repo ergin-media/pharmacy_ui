@@ -201,7 +201,7 @@ export function RxListToolbar(props: {
                 onClick={onRefresh}
                 disabled={disableControls}
             >
-                {isFetching ? "Aktualisiere…" : "Aktualisieren"}
+                Aktualisieren
             </Button>
         </div>
     );

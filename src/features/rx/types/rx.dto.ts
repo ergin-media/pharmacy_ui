@@ -65,10 +65,19 @@ export interface RxListItemDto {
             name: string | null;
             unit: string | null;
             quantity: number | null;
+
+            // optional: falls du es schon mit übernommen hast
+            pharmacy_product_id?: number | null;
+            has_pharmacy_product?: 0 | 1 | boolean | null;
         }>;
         items_count?: number | null;
         total_quantity?: number | null;
         total_unit?: string | null;
+
+        // ✅ neu
+        unmapped_items_count?: number | null;
+        price_is_complete?: boolean | null;
+
         final_price_cents?: number | null;
         currency?: string | null;
     } | null;
