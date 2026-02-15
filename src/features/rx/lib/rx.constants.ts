@@ -1,4 +1,8 @@
-import type { RxParseStatus } from "../types/rx.dto";
+import type {
+    RxWorkflowStatus,
+    RxPaymentState,
+    RxParseStatus,
+} from "../types/rx.dto";
 
 export const PER_PAGE_OPTIONS = [10, 25, 50, 100] as const;
 
@@ -12,6 +16,25 @@ export const SORT_OPTIONS = [
 export type RxSort = (typeof SORT_OPTIONS)[number]["value"];
 export const DEFAULT_SORT: RxSort = "created_at_desc";
 export const ALLOWED_SORTS = SORT_OPTIONS.map((s) => s.value) as RxSort[];
+
+export const WORKFLOW_OPTIONS = [
+    { value: "pending", label: "In Bearbeitung" },
+    { value: "completed", label: "Abgeschlossen" },
+    { value: "rejected", label: "Abgelehnt" },
+] as const;
+
+export const PAYMENT_OPTIONS = [
+    { value: "unpaid", label: "Unbezahlt" },
+    { value: "paid", label: "Bezahlt" },
+] as const;
+
+export const ALLOWED_WORKFLOW = WORKFLOW_OPTIONS.map(
+    (o) => o.value,
+) as readonly RxWorkflowStatus[];
+
+export const ALLOWED_PAYMENT = PAYMENT_OPTIONS.map(
+    (o) => o.value,
+) as readonly RxPaymentState[];
 
 export const ALLOWED_STATUSES: RxParseStatus[] = [
     "pending",

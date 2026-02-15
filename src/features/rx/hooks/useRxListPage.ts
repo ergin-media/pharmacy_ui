@@ -7,17 +7,13 @@ import type {
     RxPaymentState,
 } from "../types/rx.dto";
 import {
+    ALLOWED_WORKFLOW,
+    ALLOWED_PAYMENT,
     ALLOWED_SORTS,
     ALLOWED_STATUSES,
     DEFAULT_SORT,
     type RxSort,
 } from "../lib/rx.constants";
-const ALLOWED_WORKFLOW: RxWorkflowStatus[] = [
-    "pending",
-    "completed",
-    "rejected",
-];
-const ALLOWED_PAYMENT: RxPaymentState[] = ["unpaid", "paid"];
 
 import {
     spGetInt,
