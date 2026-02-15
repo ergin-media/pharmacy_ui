@@ -1,6 +1,10 @@
-import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
+import type {
+    RxListItemDto,
+    RxParseStatus,
+    RxWorkflowStatus,
+    RxPaymentState,
+} from "../types/rx.dto";
 import { badgeVariant } from "../lib/rx.constants";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,19 +22,52 @@ import { formatPersonName } from "@/shared/lib/format/person";
 import { formatQuantity } from "@/shared/lib/format/quantity";
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
 
-function fulfillmentLabel(value?: string | null) {
-    switch (value) {
-        case "shipping":
-            return "Versand";
-        case "pickup":
-            return "Abholung";
+function orderLabel(externalOrderId?: string | null) {
+    return externalOrderId ? `ID: ${externalOrderId}` : "";
+}
+
+function workflowBadgeVariant(status?: RxWorkflowStatus | null) {
+    switch (status) {
+        case "completed":
+            return "secondary";
+        case "rejected":
+            return "destructive";
+        case "pending":
         default:
-            return "—";
+            return "outline";
     }
 }
 
-function orderLabel(externalOrderId?: string | null) {
-    return externalOrderId ? `ID: ${externalOrderId}` : "";
+function workflowLabel(status?: RxWorkflowStatus | null) {
+    switch (status) {
+        case "completed":
+            return "completed";
+        case "rejected":
+            return "rejected";
+        case "pending":
+        default:
+            return "pending";
+    }
+}
+
+function paymentBadgeVariant(state?: RxPaymentState | null) {
+    switch (state) {
+        case "paid":
+            return "secondary";
+        case "unpaid":
+        default:
+            return "outline";
+    }
+}
+
+function paymentLabel(state?: RxPaymentState | null) {
+    switch (state) {
+        case "paid":
+            return "paid";
+        case "unpaid":
+        default:
+            return "unpaid";
+    }
 }
 
 export function RxListTable(props: {
@@ -210,13 +247,49 @@ export function RxListTable(props: {
 
                                     {/* Status */}
                                     <TableCell>
-                                        <Badge
-                                            variant={badgeVariant(
-                                                r.parse_status as RxParseStatus,
-                                            )}
-                                        >
-                                            {r.parse_status}
-                                        </Badge>
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex flex-wrap gap-2">
+                                                <Badge
+                                                    variant={workflowBadgeVariant(
+                                                        r.workflow_status,
+                                                    )}
+                                                >
+                                                    workflow:{" "}
+                                                    {workflowLabel(
+                                                        r.workflow_status,
+                                                    )}
+                                                </Badge>
+
+                                                <Badge
+                                                    variant={paymentBadgeVariant(
+                                                        r.payment_state,
+                                                    )}
+                                                >
+                                                    payment:{" "}
+                                                    {paymentLabel(
+                                                        r.payment_state,
+                                                    )}
+                                                </Badge>
+                                            </div>
+
+                                            <div className="text-xs text-muted-foreground">
+                                                parse:{" "}
+                                                <span className="font-medium text-foreground">
+                                                    {
+                                                        r.parse_status as RxParseStatus
+                                                    }
+                                                </span>
+                                                {r.parsed_at ? (
+                                                    <>
+                                                        {" "}
+                                                        •{" "}
+                                                        {formatDateTime(
+                                                            r.parsed_at,
+                                                        )}
+                                                    </>
+                                                ) : null}
+                                            </div>
+                                        </div>
                                     </TableCell>
 
                                     {/* Aktionen */}

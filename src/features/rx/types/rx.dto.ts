@@ -8,6 +8,10 @@ export type RxParseStatus =
 
 export type RxFulfillmentType = "shipping" | "pickup" | "unknown";
 
+// neu
+export type RxWorkflowStatus = "pending" | "completed" | "rejected";
+export type RxPaymentState = "unpaid" | "paid";
+
 export interface RxListItemDto {
     id: Id;
 
@@ -18,12 +22,15 @@ export interface RxListItemDto {
 
     parse_status: RxParseStatus;
 
+    // neu
+    workflow_status?: RxWorkflowStatus | null;
+    payment_state?: RxPaymentState | null;
+
     created_at: ISODateTime;
     parsed_at: ISODateTime | null;
 
     rx_hash: Sha256;
 
-    // neu
     external_order_id?: string | null;
     fulfillment_type?: RxFulfillmentType | string | null;
 
@@ -33,7 +40,6 @@ export interface RxListItemDto {
         received_at: ISODateTime | null;
     };
 
-    // erweitert
     patient: {
         first_name: string | null;
         last_name: string | null;
@@ -50,7 +56,6 @@ export interface RxListItemDto {
         email?: string | null;
     };
 
-    // neu (ersetzt die alten summary/phase2-extras)
     summary?: {
         items_preview?: Array<{
             name: string | null;
