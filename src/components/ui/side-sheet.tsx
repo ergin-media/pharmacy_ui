@@ -1,3 +1,4 @@
+import type * as React from "react";
 import {
     Sheet,
     SheetClose,
@@ -18,6 +19,7 @@ export function SideSheet(props: {
 
     side?: "right" | "left" | "top" | "bottom";
     children: React.ReactNode;
+
     footer?: React.ReactNode;
 }) {
     const {

@@ -1,7 +1,7 @@
 import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
 import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
 import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
-import { getMappingMeta, getPriceMeta } from "../lib/rx.summary";
+import { getPriceMeta } from "../lib/rx.summary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +25,9 @@ export function RxListTable(props: {
     onOpen?: (id: number) => void;
     onPdf?: (id: number) => void;
     onMore?: (id: number) => void;
+    onCreateInvoice?: (id: number) => void;
 }) {
-    const { items, isLoading, perPage, onOpen, onPdf, onMore } = props;
+    const { items, isLoading, perPage, onOpen, onPdf, onMore, onCreateInvoice } = props;
 
     return (
         <div className="overflow-x-auto rounded-md border">
@@ -155,7 +156,7 @@ export function RxListTable(props: {
 
                                                 {/* Warnzeile für Mapping */}
                                                 {!priceMeta.isComplete &&
-                                                priceMeta.hint ? (
+                                                    priceMeta.hint ? (
                                                     <Badge variant={"danger"}>
                                                         {priceMeta.hint}
                                                     </Badge>
@@ -249,11 +250,9 @@ export function RxListTable(props: {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() =>
-                                                    onOpen?.(Number(r.id))
-                                                }
+                                                onClick={() => onCreateInvoice?.(Number(r.id))}
                                             >
-                                                Öffnen
+                                                Rechnung
                                             </Button>
                                             <Button
                                                 variant="outline"

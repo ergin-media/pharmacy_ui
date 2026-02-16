@@ -5,9 +5,17 @@ import { useRxListPage } from "../hooks/useRxListPage";
 import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
 import { RxListPagination } from "../components/RxListPagination";
+import { useRxInvoiceDrawer } from "../hooks/useRxInvoiceDrawer";
+import { RxInvoiceDrawer } from "../components/RxInvoiceDrawer";
 
 export function RxListPage() {
     const vm = useRxListPage();
+
+    const invoiceDrawer = useRxInvoiceDrawer({
+        onCreated: async () => {
+            await vm.query.refetch();
+        },
+    });
 
     return (
         <Card>
@@ -76,6 +84,7 @@ export function RxListPage() {
                             onOpen={(id) => console.log("open", id)}
                             onPdf={(id) => console.log("pdf", id)}
                             onMore={(id) => console.log("more", id)}
+                            onCreateInvoice={(id) => invoiceDrawer.actions.openFor(id)}
                             isLoading={vm.query.isFetching}
                         />
 
@@ -84,7 +93,18 @@ export function RxListPage() {
                             totalPages={vm.meta.totalPages}
                             onPageChange={vm.actions.setPage}
                             isLoading={vm.query.isFetching}
-                            showStatus={true} // 👈 unten normal anzeigen
+                            showStatus={true}
+                        />
+
+                        <RxInvoiceDrawer
+                            open={invoiceDrawer.state.open}
+                            rxId={invoiceDrawer.state.rxId}
+                            onOpenChange={(open) => {
+                                if (!open) invoiceDrawer.actions.close();
+                                else invoiceDrawer.actions.setOpen(true);
+                            }}
+                            onCancel={invoiceDrawer.actions.close}
+                            onCreated={invoiceDrawer.actions.onCreated}
                         />
                     </>
                 )}
