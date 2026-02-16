@@ -5,17 +5,19 @@ import { useRxListPage } from "../hooks/useRxListPage";
 import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
 import { RxListPagination } from "../components/RxListPagination";
-import { useRxInvoiceDrawer } from "../hooks/useRxInvoiceDrawer";
 import { RxInvoiceDrawer } from "../components/RxInvoiceDrawer";
+
+import { useDrawer } from "@/shared/hooks/useDrawer";
 
 export function RxListPage() {
     const vm = useRxListPage();
 
-    const invoiceDrawer = useRxInvoiceDrawer({
-        onCreated: async () => {
-            await vm.query.refetch();
-        },
-    });
+    const invoiceDrawer = useDrawer<number>();
+
+    async function handleInvoiceCreated() {
+        await vm.query.refetch();
+        invoiceDrawer.actions.close();
+    }
 
     return (
         <Card>
@@ -61,7 +63,7 @@ export function RxListPage() {
                     </div>
                 ) : (
                     <>
-                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="text-sm text-muted-foreground">
                                 Gesamt:{" "}
                                 <span className="font-medium text-foreground">
@@ -74,7 +76,7 @@ export function RxListPage() {
                                 totalPages={vm.meta.totalPages}
                                 onPageChange={vm.actions.setPage}
                                 isLoading={vm.query.isFetching}
-                                showStatus={false} // 👈 oben kein "Seite x / y" Text
+                                showStatus={false} // 👈 oben kein "Seite x / y"
                             />
                         </div>
 
@@ -84,7 +86,9 @@ export function RxListPage() {
                             onOpen={(id) => console.log("open", id)}
                             onPdf={(id) => console.log("pdf", id)}
                             onMore={(id) => console.log("more", id)}
-                            onCreateInvoice={(id) => invoiceDrawer.actions.openFor(id)}
+                            onCreateInvoice={(id) =>
+                                invoiceDrawer.actions.openFor(id)
+                            }
                             isLoading={vm.query.isFetching}
                         />
 
@@ -98,13 +102,13 @@ export function RxListPage() {
 
                         <RxInvoiceDrawer
                             open={invoiceDrawer.state.open}
-                            rxId={invoiceDrawer.state.rxId}
+                            rxId={invoiceDrawer.state.payload}
                             onOpenChange={(open) => {
                                 if (!open) invoiceDrawer.actions.close();
                                 else invoiceDrawer.actions.setOpen(true);
                             }}
                             onCancel={invoiceDrawer.actions.close}
-                            onCreated={invoiceDrawer.actions.onCreated}
+                            onCreated={handleInvoiceCreated}
                         />
                     </>
                 )}
