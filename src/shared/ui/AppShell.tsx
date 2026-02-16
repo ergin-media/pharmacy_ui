@@ -109,7 +109,7 @@ export function AppShell() {
                                         open={mobileOpen}
                                         onOpenChange={setMobileOpen}
                                     >
-                                        <SheetTrigger asChild>
+                                        <SheetTrigger>
                                             <Button variant="outline" size="sm">
                                                 Menü
                                             </Button>
