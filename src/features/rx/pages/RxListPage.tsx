@@ -5,20 +5,11 @@ import { useRxListPage } from "../hooks/useRxListPage";
 import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
 import { RxListPagination } from "../components/RxListPagination";
-import { RxInvoiceDrawer } from "../components/RxInvoiceDrawer";
-
-import { useDrawer } from "@/shared/hooks/useDrawer";
+import { useRxPanels } from "../hooks/useRxPanels";
 
 export function RxListPage() {
     const vm = useRxListPage();
-
-    const invoiceDrawer = useDrawer<number>();
-
-    async function handleInvoiceCreated() {
-        await vm.query.refetch();
-        invoiceDrawer.actions.close();
-    }
-
+    const panels = useRxPanels();
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -86,9 +77,7 @@ export function RxListPage() {
                             onOpen={(id) => console.log("open", id)}
                             onPdf={(id) => console.log("pdf", id)}
                             onMore={(id) => console.log("more", id)}
-                            onCreateInvoice={(id) =>
-                                invoiceDrawer.actions.openFor(id)
-                            }
+                            onCreateInvoice={(id) => panels.invoice.open(id)}
                             isLoading={vm.query.isFetching}
                         />
 
@@ -98,17 +87,6 @@ export function RxListPage() {
                             onPageChange={vm.actions.setPage}
                             isLoading={vm.query.isFetching}
                             showStatus={true}
-                        />
-
-                        <RxInvoiceDrawer
-                            open={invoiceDrawer.state.open}
-                            rxId={invoiceDrawer.state.payload}
-                            onOpenChange={(open) => {
-                                if (!open) invoiceDrawer.actions.close();
-                                else invoiceDrawer.actions.setOpen(true);
-                            }}
-                            onCancel={invoiceDrawer.actions.close}
-                            onCreated={handleInvoiceCreated}
                         />
                     </>
                 )}
