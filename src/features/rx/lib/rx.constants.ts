@@ -24,6 +24,13 @@ export const WORKFLOW_OPTIONS = [
     { value: "rejected", label: "Abgelehnt" },
 ] as const;
 
+export const WORKFLOW_TABS = [
+    { value: "all", label: "Alle" },
+    ...WORKFLOW_OPTIONS,
+] as const;
+
+export type RxWorkflowTab = (typeof WORKFLOW_TABS)[number]["value"];
+
 export const PAYMENT_OPTIONS = [
     { value: "unpaid", label: "Unbezahlt" },
     { value: "paid", label: "Bezahlt" },

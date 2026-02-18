@@ -1,15 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useRxListPage } from "../hooks/useRxListPage";
 import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
 import { RxListPagination } from "../components/RxListPagination";
+
+import { WORKFLOW_TABS } from "../lib/rx.constants";
 import { useRxPanels } from "../hooks/useRxPanels";
 
 export function RxListPage() {
     const vm = useRxListPage();
     const panels = useRxPanels();
+
+    // Tabs: controlled
+    const tabValue = vm.filters.workflowStatus ?? "all";
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -54,6 +61,25 @@ export function RxListPage() {
                     </div>
                 ) : (
                     <>
+                        {/* Tabs -> setzen workflow_status */}
+                        <Tabs
+                            value={tabValue}
+                            onValueChange={(v) =>
+                                vm.actions.setWorkflowStatus(
+                                    v === "all" ? "" : v,
+                                )
+                            }
+                        >
+                            <TabsList className="flex flex-wrap">
+                                {WORKFLOW_TABS.map((t) => (
+                                    <TabsTrigger key={t.value} value={t.value}>
+                                        {t.label}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </Tabs>
+
+                        {/* Header-Zeile oben + Pagination rechts */}
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="text-sm text-muted-foreground">
                                 Gesamt:{" "}
@@ -67,7 +93,7 @@ export function RxListPage() {
                                 totalPages={vm.meta.totalPages}
                                 onPageChange={vm.actions.setPage}
                                 isLoading={vm.query.isFetching}
-                                showStatus={false} // 👈 oben kein "Seite x / y"
+                                showStatus={false}
                             />
                         </div>
 
