@@ -16,7 +16,26 @@ import {
 
 type IconLike = React.ComponentType<{ className?: string }>;
 
-function isActivePath(pathname: string, to: string) {
+function isExactPath(pathname: string, to: string) {
+    return pathname === to;
+}
+
+/**
+ * Parent ist aktiv, wenn:
+ * - selbst exakt aktiv
+ * - oder ein Child exakt aktiv
+ */
+function isParentActive(pathname: string, item: NavItem) {
+    if (isExactPath(pathname, item.to)) return true;
+    if (!item.items?.length) return false;
+    return item.items.some((child) => isExactPath(pathname, child.to));
+}
+
+/**
+ * Für "offen" reicht prefix match (Section open),
+ * damit /products/mapping das Produkte-Menü aufklappt.
+ */
+function isSectionPath(pathname: string, to: string) {
     if (pathname === to) return true;
     if (to !== "/" && pathname.startsWith(to + "/")) return true;
     return false;
@@ -41,14 +60,17 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
 
             <SidebarMenu>
                 {items.map((item) => {
-                    const active = isActivePath(pathname, item.to);
                     const hasChildren =
                         Array.isArray(item.items) && item.items.length > 0;
 
                     const Icon = item.icon as IconLike | undefined;
 
-                    // Default: wenn Route aktiv ist, soll es offen sein.
-                    const isOpen = active || Boolean(openIds[item.id]);
+                    const active = isParentActive(pathname, item);
+
+                    // Default: Section automatisch offen, wenn Pfad innerhalb liegt
+                    const isOpen =
+                        isSectionPath(pathname, item.to) ||
+                        Boolean(openIds[item.id]);
 
                     return (
                         <SidebarMenuItem key={item.id}>
@@ -86,10 +108,12 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                             {hasChildren && isOpen ? (
                                 <SidebarMenuSub>
                                     {item.items!.map((sub) => {
-                                        const subActive = isActivePath(
+                                        // ✅ Subitems nur exakt aktiv
+                                        const subActive = isExactPath(
                                             pathname,
                                             sub.to,
                                         );
+
                                         const SubIcon = sub.icon as
                                             | IconLike
                                             | undefined;
@@ -108,6 +132,7 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                                                     {SubIcon ? (
                                                         <SubIcon className="size-4 shrink-0" />
                                                     ) : null}
+
                                                     <span className="flex-1">
                                                         {sub.title}
                                                     </span>
