@@ -14,7 +14,7 @@ export const SORT_OPTIONS = [
 ] as const;
 
 export type RxSort = (typeof SORT_OPTIONS)[number]["value"];
-export const DEFAULT_SORT: RxSort = "created_at_desc";
+export const DEFAULT_SORT: RxSort = "received_at_desc";
 export const ALLOWED_SORTS = SORT_OPTIONS.map((s) => s.value) as RxSort[];
 
 export const WORKFLOW_OPTIONS = [
