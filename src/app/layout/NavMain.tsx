@@ -32,8 +32,8 @@ function isParentActive(pathname: string, item: NavItem) {
 }
 
 /**
- * Für "offen" reicht prefix match (Section open),
- * damit /products/mapping das Produkte-Menü aufklappt.
+ * Für "auto-open" reicht prefix match,
+ * damit /products/mapping das Produkte-Menü standardmäßig aufklappt.
  */
 function isSectionPath(pathname: string, to: string) {
     if (pathname === to) return true;
@@ -47,11 +47,13 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    // Nur UI-State: welche Parent-Menüs sind aufgeklappt?
-    const [openIds, setOpenIds] = useState<Record<string, boolean>>({});
+    // Manual override für offene Menüs: undefined = noch nie getoggelt (auto)
+    const [openIds, setOpenIds] = useState<Record<string, boolean | undefined>>(
+        {},
+    );
 
-    function toggle(id: string) {
-        setOpenIds((s) => ({ ...s, [id]: !s[id] }));
+    function toggle(id: string, currentOpen: boolean) {
+        setOpenIds((s) => ({ ...s, [id]: !currentOpen }));
     }
 
     return (
@@ -67,10 +69,14 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
 
                     const active = isParentActive(pathname, item);
 
-                    // Default: Section automatisch offen, wenn Pfad innerhalb liegt
-                    const isOpen =
-                        isSectionPath(pathname, item.to) ||
-                        Boolean(openIds[item.id]);
+                    // Auto-Open (Route-basiert)
+                    const autoOpen = isSectionPath(pathname, item.to);
+
+                    // Manual override (User klickt)
+                    const manualOpen = openIds[item.id];
+
+                    // Wenn manual gesetzt ist, hat das Vorrang, sonst autoOpen
+                    const isOpen = manualOpen ?? autoOpen;
 
                     return (
                         <SidebarMenuItem key={item.id}>
@@ -82,7 +88,7 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                                     if (item.disabled) return;
 
                                     if (hasChildren) {
-                                        toggle(item.id);
+                                        toggle(item.id, isOpen);
                                         return;
                                     }
 
@@ -108,12 +114,10 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                             {hasChildren && isOpen ? (
                                 <SidebarMenuSub>
                                     {item.items!.map((sub) => {
-                                        // ✅ Subitems nur exakt aktiv
                                         const subActive = isExactPath(
                                             pathname,
                                             sub.to,
                                         );
-
                                         const SubIcon = sub.icon as
                                             | IconLike
                                             | undefined;
