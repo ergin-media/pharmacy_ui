@@ -1,18 +1,14 @@
-import { Outlet, useLocation } from "react-router";
-import { getTitleForPath } from "@/shared/nav/nav.helpers";
-
-import { AppSidebar } from "@/components/AppSidebar";
 import { Separator } from "@/components/ui/separator";
 import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { AppBreadcrumb } from "./AppBreadcrumb";
+import { Outlet } from "react-router";
+import { AppSidebar } from "./AppSidebar";
 
 export function AppShell() {
-    const { pathname } = useLocation();
-    const title = getTitleForPath(pathname);
-
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -23,7 +19,7 @@ export function AppShell() {
 
                     <Separator orientation="vertical" className="h-4" />
 
-                    <div className="text-sm font-medium">{title}</div>
+                    <AppBreadcrumb />
 
                     <div className="ml-auto text-xs text-muted-foreground">
                         Lokal: api.pharmacy.local

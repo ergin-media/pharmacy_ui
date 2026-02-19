@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AppProviders } from "@/app/providers";
+import { AppProviders } from "@/app/AppProviders";
 import "./App.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

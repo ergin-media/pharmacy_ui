@@ -1,6 +1,6 @@
 import { NAV_SECTIONS } from "@/shared/nav/nav.config";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
-import { NavMain } from "@/components/NavMain";
+import { NavMain } from "./NavMain";
 
 export function AppSidebar() {
     return (
