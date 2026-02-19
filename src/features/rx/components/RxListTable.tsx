@@ -27,14 +27,22 @@ export function RxListTable(props: {
     onMore?: (id: number) => void;
     onCreateInvoice?: (id: number) => void;
 }) {
-    const { items, isLoading, perPage, onOpen, onPdf, onMore, onCreateInvoice } = props;
+    const {
+        items,
+        isLoading,
+        perPage,
+        onOpen,
+        onPdf,
+        onMore,
+        onCreateInvoice,
+    } = props;
 
     return (
         <div className="overflow-x-auto rounded-md border">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-65">Patient</TableHead>
+                        <TableHead className="w-65 ps-3">Patient</TableHead>
                         <TableHead className="w-55">Plattform</TableHead>
                         <TableHead>Artikel</TableHead>
                         <TableHead className="w-35 text-right">
@@ -45,7 +53,7 @@ export function RxListTable(props: {
                         </TableHead>
                         <TableHead className="w-42.5">Eingang</TableHead>
                         <TableHead className="w-35">Status</TableHead>
-                        <TableHead className="w-45 sticky right-0 bg-background text-right">
+                        <TableHead className="w-45 text-right pe-3">
                             Aktionen
                         </TableHead>
                     </TableRow>
@@ -95,7 +103,7 @@ export function RxListTable(props: {
                                     className="hover:bg-muted/50"
                                 >
                                     {/* Patient */}
-                                    <TableCell>
+                                    <TableCell className="ps-3">
                                         <div className="font-medium">
                                             {patientTitle}
                                         </div>
@@ -156,7 +164,7 @@ export function RxListTable(props: {
 
                                                 {/* Warnzeile für Mapping */}
                                                 {!priceMeta.isComplete &&
-                                                    priceMeta.hint ? (
+                                                priceMeta.hint ? (
                                                     <Badge variant={"danger"}>
                                                         {priceMeta.hint}
                                                     </Badge>
@@ -245,12 +253,16 @@ export function RxListTable(props: {
                                     </TableCell>
 
                                     {/* Aktionen */}
-                                    <TableCell className="sticky right-0 bg-background text-right">
+                                    <TableCell className="text-right pe-3">
                                         <div className="flex justify-end gap-2">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => onCreateInvoice?.(Number(r.id))}
+                                                onClick={() =>
+                                                    onCreateInvoice?.(
+                                                        Number(r.id),
+                                                    )
+                                                }
                                             >
                                                 Rechnung
                                             </Button>
