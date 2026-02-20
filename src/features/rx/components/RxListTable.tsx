@@ -3,7 +3,6 @@ import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
 import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
 import { getPriceMeta } from "../lib/rx.summary";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
@@ -165,7 +164,7 @@ export function RxListTable(props: {
 
                                                 {/* Warnzeile für Mapping */}
                                                 {!priceMeta.isComplete &&
-                                                    priceMeta.hint ? (
+                                                priceMeta.hint ? (
                                                     <Badge variant={"danger"}>
                                                         {priceMeta.hint}
                                                     </Badge>
@@ -258,10 +257,20 @@ export function RxListTable(props: {
                                         <div className="flex justify-end">
                                             <RxRowActionsMenu
                                                 disabled={isLoading}
-                                                onOpen={() => onOpen?.(Number(r.id))}
-                                                onPdf={() => onPdf?.(Number(r.id))}
-                                                onMore={() => onMore?.(Number(r.id))}
-                                                onCreateInvoice={() => onCreateInvoice?.(Number(r.id))}
+                                                onOpen={() =>
+                                                    onOpen?.(Number(r.id))
+                                                }
+                                                onPdf={() =>
+                                                    onPdf?.(Number(r.id))
+                                                }
+                                                onMore={() =>
+                                                    onMore?.(Number(r.id))
+                                                }
+                                                onCreateInvoice={() =>
+                                                    onCreateInvoice?.(
+                                                        Number(r.id),
+                                                    )
+                                                }
                                             />
                                         </div>
                                     </TableCell>

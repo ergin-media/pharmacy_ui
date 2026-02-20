@@ -1,34 +1,36 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import { usePharmacyProductsPage } from "../hooks/usePharmacyProductsPage";
+import { usePharmacyProductsListPage } from "../hooks/usePharmacyProductsListPage";
 import { PharmacyProductsToolbar } from "../components/PharmacyProductsToolbar";
-import { PharmacyProductsTable } from "../components/PharmacyProductsTable";
+import { PharmacyProductsListTable } from "../components/PharmacyProductsListTable";
 
 export function PharmacyProductsListPage() {
-    const vm = usePharmacyProductsPage();
+    const vm = usePharmacyProductsListPage();
 
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle>Apothekenprodukte</CardTitle>
+                <CardTitle>Produkte</CardTitle>
 
                 <PharmacyProductsToolbar
                     activeRaw={vm.filters.activeRaw}
-                    sort={vm.filters.sort}
+                    manufacturerRaw={vm.filters.manufacturerRaw}
                     searchRaw={vm.filters.searchRaw}
+                    sort={vm.filters.sort ?? "created_at_desc"}
+                    perPage={vm.filters.perPage}
                     isFetching={vm.query.isFetching}
                     onActiveChange={vm.actions.setActive}
-                    onSortChange={vm.actions.setSort}
+                    onManufacturerChange={vm.actions.setManufacturer}
                     onSearchChange={vm.actions.setSearch}
+                    onSortChange={vm.actions.setSort}
+                    onPerPageChange={vm.actions.setPerPage}
                     onRefresh={vm.actions.refresh}
                 />
             </CardHeader>
 
             <CardContent className="space-y-3">
-                {vm.query.isLoading ? (
-                    <div className="text-sm text-muted-foreground">Lade…</div>
-                ) : vm.query.isError ? (
+                {vm.query.isError ? (
                     <div className="flex items-center gap-2">
                         <div className="text-sm text-destructive">
                             Fehler:{" "}
@@ -51,13 +53,15 @@ export function PharmacyProductsListPage() {
                             </span>
                         </div>
 
-                        <PharmacyProductsTable
+                        <PharmacyProductsListTable
                             items={vm.query.data?.items ?? []}
                             isLoading={vm.query.isFetching}
+                            perPage={vm.filters.perPage}
+                            sort={vm.filters.sort ?? "created_at_desc"}
+                            onSortChange={vm.actions.setSort}
                         />
 
-                        {/* Pagination wie bei RX können wir direkt nachziehen,
-                           sobald du mir sagst, ob du exakt die RxListPagination wiederverwenden willst. */}
+                        {/* Pagination kann 1:1 wie RxListPagination umgesetzt werden */}
                     </>
                 )}
             </CardContent>

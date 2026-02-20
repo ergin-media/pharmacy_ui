@@ -21,8 +21,8 @@ export type PharmacyProductDto = {
 };
 
 export type PharmacyProductsSort =
-    | "created_at_desc"
-    | "created_at_asc"
+    | "updated_at_desc"
+    | "updated_at_asc"
     | "name_asc"
     | "name_desc"
     | "price_asc"

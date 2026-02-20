@@ -37,9 +37,10 @@ export async function fetchPharmacyProducts(
     const data = (await res.json()) as PharmacyProductsListResponse;
 
     if (!res.ok) {
-        throw new Error(
-            (data as any)?.error?.message ?? `Request failed (${res.status})`,
-        );
+        const errorMessage =
+            (data as { error?: { message?: string } })?.error?.message ??
+            `Request failed (${res.status})`;
+        throw new Error(errorMessage);
     }
 
     return data;

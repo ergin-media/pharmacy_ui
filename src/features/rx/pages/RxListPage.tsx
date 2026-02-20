@@ -20,7 +20,7 @@ export function RxListPage() {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle>RX</CardTitle>
+                <CardTitle>Rezepte</CardTitle>
 
                 <RxListToolbar
                     parseStatus={vm.filters.parseStatus}

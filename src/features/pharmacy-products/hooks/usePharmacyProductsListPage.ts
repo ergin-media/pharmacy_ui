@@ -17,7 +17,7 @@ import {
 } from "../lib/pharmacy-products.constants";
 import type { PharmacyProductsSort } from "../types/pharmacy-products.dto";
 
-export function usePharmacyProductsPage() {
+export function usePharmacyProductsListPage() {
     const [sp, setSp] = useSearchParams();
 
     const page = Math.max(1, spGetInt(sp, "page", 1));
