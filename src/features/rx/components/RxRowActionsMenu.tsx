@@ -1,4 +1,9 @@
-import { MoreHorizontal } from "lucide-react";
+import {
+    MoreHorizontal,
+    ExternalLink,
+    FileText,
+    Receipt,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +25,6 @@ export function RxRowActionsMenu(props: {
 
     return (
         <DropdownMenu>
-            {/* ✅ Base UI: Trigger über render */}
             <DropdownMenuTrigger
                 render={
                     <Button
@@ -34,12 +38,12 @@ export function RxRowActionsMenu(props: {
                 <MoreHorizontal className="size-4" />
             </DropdownMenuTrigger>
 
-            {/* ✅ Align/Offsets kommen aus deiner Wrapper-Signatur */}
             <DropdownMenuContent align="end" side="bottom" sideOffset={6}>
                 <DropdownMenuItem
                     onClick={() => onOpen?.()}
                     disabled={!onOpen || disabled}
                 >
+                    <ExternalLink className="size-4" />
                     Öffnen
                 </DropdownMenuItem>
 
@@ -47,13 +51,18 @@ export function RxRowActionsMenu(props: {
                     onClick={() => onPdf?.()}
                     disabled={!onPdf || disabled}
                 >
+                    <FileText className="size-4" />
                     PDF
                 </DropdownMenuItem>
 
                 {onCreateInvoice ? (
                     <>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onCreateInvoice?.()} disabled={disabled}>
+                        <DropdownMenuItem
+                            onClick={() => onCreateInvoice?.()}
+                            disabled={disabled}
+                        >
+                            <Receipt className="size-4" />
                             Rechnung erstellen
                         </DropdownMenuItem>
                     </>
@@ -62,7 +71,11 @@ export function RxRowActionsMenu(props: {
                 {onMore ? (
                     <>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onMore?.()} disabled={disabled}>
+                        <DropdownMenuItem
+                            onClick={() => onMore?.()}
+                            disabled={disabled}
+                        >
+                            <MoreHorizontal className="size-4" />
                             Mehr…
                         </DropdownMenuItem>
                     </>
