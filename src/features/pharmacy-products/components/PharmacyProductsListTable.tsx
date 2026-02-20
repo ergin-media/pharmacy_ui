@@ -19,10 +19,18 @@ import { PharmacyProductsListTableSkeleton } from "./PharmacyProductsListTableSk
 import { PharmacyProductRowActionsMenu } from "./PharmacyProductRowActionsMenu";
 import { formatMoney } from "@/shared/lib/format/money";
 
-function sortIcon(current: PharmacyProductsSort, col: PharmacyProductsSort) {
-    if (current !== col) return <ArrowUpDown className="size-4 opacity-50" />;
-    if (col.endsWith("_asc")) return <ArrowUp className="size-4" />;
-    return <ArrowDown className="size-4" />;
+function sortIconForKey(
+    current: PharmacyProductsSort,
+    key: "name" | "price" | "updated_at",
+) {
+    const isThisCol = current.startsWith(`${key}_`);
+    if (!isThisCol) return <ArrowUpDown className="size-4 opacity-50" />;
+
+    return current.endsWith("_asc") ? (
+        <ArrowUp className="size-4" />
+    ) : (
+        <ArrowDown className="size-4" />
+    );
 }
 
 export function PharmacyProductsListTable(props: {
@@ -69,37 +77,36 @@ export function PharmacyProductsListTable(props: {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="ps-3">
-                            <button
-                                type="button"
-                                className="inline-flex items-center gap-2 hover:underline"
-                                onClick={() => toggleSort("name")}
-                            >
-                                Name
-                                {sortIcon(sort, "name_asc")}
-                            </button>
-                        </TableHead>
-
-                        <TableHead className="w-40">PZN</TableHead>
-
-                        <TableHead className="w-28">Status</TableHead>
-
                         <TableHead
-                            className="w-44 text-right"
-                            onClick={() => toggleSort("price")}
+                            className="ps-3 cursor-pointer"
+                            onClick={() => toggleSort("name")}
                         >
-                            <div className="flex justify-between items-center">
-                                <span>Basispreis</span>
-                                {sortIcon(sort, "price_asc")}
+                            <div className="flex items-center gap-2">
+                                <span>Name</span>
+                                {sortIconForKey(sort, "name")}
                             </div>
                         </TableHead>
-
-                        <TableHead className="w-44 text-right">
-                            Preis (andere)
+                        <TableHead className="w-40">PZN</TableHead>
+                        <TableHead
+                            className="w-44 cursor-pointer"
+                            onClick={() => toggleSort("price")}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span>Basispreis</span>
+                                {sortIconForKey(sort, "price")}
+                            </div>
                         </TableHead>
-
-                        <TableHead className="w-52">Aktualisiert</TableHead>
-
+                        <TableHead className="w-44">Preis (andere)</TableHead>
+                        <TableHead className="w-28">Status</TableHead>
+                        <TableHead
+                            className="w-52 cursor-pointer"
+                            onClick={() => toggleSort("price")}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span>Aktualisiert</span>
+                                {sortIconForKey(sort, "updated_at")}
+                            </div>
+                        </TableHead>
                         <TableHead className="w-28 text-right pe-3">
                             Aktionen
                         </TableHead>
@@ -129,11 +136,17 @@ export function PharmacyProductsListTable(props: {
                                         </div>
                                     ) : null}
                                 </TableCell>
-
                                 <TableCell className="text-muted-foreground">
                                     {p.product_code}
                                 </TableCell>
-
+                                <TableCell>
+                                    {formatMoney(p.prices.base_price_cents)}
+                                </TableCell>
+                                <TableCell>
+                                    {formatMoney(
+                                        p.prices.price_other_provider_cents,
+                                    )}
+                                </TableCell>
                                 <TableCell>
                                     <Badge
                                         variant={
@@ -145,23 +158,11 @@ export function PharmacyProductsListTable(props: {
                                         {p.is_active ? "Aktiv" : "Inaktiv"}
                                     </Badge>
                                 </TableCell>
-
-                                <TableCell>
-                                    {formatMoney(p.prices.base_price_cents)}
-                                </TableCell>
-
-                                <TableCell className="text-right">
-                                    {formatMoney(
-                                        p.prices.price_other_provider_cents,
-                                    )}
-                                </TableCell>
-
                                 <TableCell className="whitespace-nowrap text-muted-foreground">
                                     {formatDateTime(
                                         p.updated_at ?? p.created_at,
                                     )}
                                 </TableCell>
-
                                 <TableCell className="sticky right-0 text-right pe-3">
                                     <div className="flex justify-end">
                                         <PharmacyProductRowActionsMenu

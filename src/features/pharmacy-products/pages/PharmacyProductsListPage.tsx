@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { usePharmacyProductsListPage } from "../hooks/usePharmacyProductsListPage";
 import { PharmacyProductsToolbar } from "../components/PharmacyProductsToolbar";
 import { PharmacyProductsListTable } from "../components/PharmacyProductsListTable";
+import { PharmacyProductsPagination } from "../components/PharmacyProductsPagination";
 
 export function PharmacyProductsListPage() {
     const vm = usePharmacyProductsListPage();
@@ -46,11 +47,21 @@ export function PharmacyProductsListPage() {
                     </div>
                 ) : (
                     <>
-                        <div className="text-sm text-muted-foreground">
-                            Gesamt:{" "}
-                            <span className="font-medium text-foreground">
-                                {vm.meta.total}
-                            </span>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="text-sm text-muted-foreground">
+                                Gesamt:{" "}
+                                <span className="font-medium text-foreground">
+                                    {vm.meta.total}
+                                </span>
+                            </div>
+
+                            <PharmacyProductsPagination
+                                page={vm.filters.page}
+                                totalPages={vm.meta.totalPages}
+                                onPageChange={vm.actions.setPage}
+                                isLoading={vm.query.isFetching}
+                                showStatus={false}
+                            />
                         </div>
 
                         <PharmacyProductsListTable
@@ -61,7 +72,13 @@ export function PharmacyProductsListPage() {
                             onSortChange={vm.actions.setSort}
                         />
 
-                        {/* Pagination kann 1:1 wie RxListPagination umgesetzt werden */}
+                        <PharmacyProductsPagination
+                            page={vm.filters.page}
+                            totalPages={vm.meta.totalPages}
+                            onPageChange={vm.actions.setPage}
+                            isLoading={vm.query.isFetching}
+                            showStatus={true}
+                        />
                     </>
                 )}
             </CardContent>

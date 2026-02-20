@@ -67,12 +67,15 @@ export function PharmacyProductsToolbar(props: {
             </Select>
 
             {/* Manufacturer (simple input for now) */}
+
+            {/* }
             <Input
                 value={manufacturerRaw}
                 onChange={(e) => onManufacturerChange(e.target.value)}
                 placeholder="Hersteller…"
                 className="w-50"
             />
+            */}
 
             {/* Search */}
             <Input
