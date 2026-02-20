@@ -17,6 +17,7 @@ import { formatMoney } from "@/shared/lib/format/money";
 import { formatPersonName } from "@/shared/lib/format/person";
 import { formatQuantity } from "@/shared/lib/format/quantity";
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
+import { RxRowActionsMenu } from "./RxRowActionsMenu";
 
 export function RxListTable(props: {
     items: RxListItemDto[];
@@ -164,7 +165,7 @@ export function RxListTable(props: {
 
                                                 {/* Warnzeile für Mapping */}
                                                 {!priceMeta.isComplete &&
-                                                priceMeta.hint ? (
+                                                    priceMeta.hint ? (
                                                     <Badge variant={"danger"}>
                                                         {priceMeta.hint}
                                                     </Badge>
@@ -253,37 +254,15 @@ export function RxListTable(props: {
                                     </TableCell>
 
                                     {/* Aktionen */}
-                                    <TableCell className="text-right pe-3">
-                                        <div className="flex justify-end gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() =>
-                                                    onCreateInvoice?.(
-                                                        Number(r.id),
-                                                    )
-                                                }
-                                            >
-                                                Rechnung
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() =>
-                                                    onPdf?.(Number(r.id))
-                                                }
-                                            >
-                                                PDF
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() =>
-                                                    onMore?.(Number(r.id))
-                                                }
-                                            >
-                                                ⋯
-                                            </Button>
+                                    <TableCell className="sticky right-0 text-right">
+                                        <div className="flex justify-end">
+                                            <RxRowActionsMenu
+                                                disabled={isLoading}
+                                                onOpen={() => onOpen?.(Number(r.id))}
+                                                onPdf={() => onPdf?.(Number(r.id))}
+                                                onMore={() => onMore?.(Number(r.id))}
+                                                onCreateInvoice={() => onCreateInvoice?.(Number(r.id))}
+                                            />
                                         </div>
                                     </TableCell>
                                 </TableRow>
