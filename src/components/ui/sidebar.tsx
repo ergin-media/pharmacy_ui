@@ -504,7 +504,7 @@ const sidebarMenuButtonVariants = cva(
         data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground
         data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground
         border-l-3 border-transparent
-        data-active:border-sidebar-primary
+        x_data-active:border-sidebar-primary
         gap-2 p-2 ps-4 text-left text-sm
         transition-[width,height,padding]
         group-has-data-[sidebar=menu-action]/menu-item:pr-8
@@ -613,7 +613,7 @@ function SidebarMenuAction({
                 className: cn(
                     "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-1.5 right-1 aspect-square w-5 rounded-md p-0 peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 peer-data-[size=sm]/menu-button:top-1 focus-visible:ring-2 [&>svg]:size-4 flex items-center justify-center outline-hidden transition-transform group-data-[collapsible=icon]:hidden after:absolute after:-inset-2 md:after:hidden [&>svg]:shrink-0",
                     showOnHover &&
-                    "peer-data-active/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 aria-expanded:opacity-100 md:opacity-0",
+                        "peer-data-active/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 aria-expanded:opacity-100 md:opacity-0",
                     className,
                 ),
             },
@@ -691,7 +691,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<"ul">) {
             data-slot="sidebar-menu-sub"
             data-sidebar="menu-sub"
             className={cn(
-                "border-sidebar-border mx-3.5 translate-x-px gap-1 border-l px-2.5 py-0.5 group-data-[collapsible=icon]:hidden flex min-w-0 flex-col",
+                "border-sidebar-border ms-6 translate-x-px gap-1 border-l px-2.5 py-0.5 group-data-[collapsible=icon]:hidden flex min-w-0 flex-col",
                 className,
             )}
             {...props}
