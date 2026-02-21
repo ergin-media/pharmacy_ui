@@ -13,7 +13,6 @@ export async function fetchProviderProducts(
             params,
         },
     );
-
     return res.data;
 }
 
@@ -25,6 +24,5 @@ export async function updateProviderProductMapping(input: {
         `provider-products/${input.id}`,
         { pharmacy_product_id: input.pharmacy_product_id },
     );
-
     return res.data;
 }

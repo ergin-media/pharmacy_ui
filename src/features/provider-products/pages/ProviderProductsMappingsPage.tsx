@@ -1,29 +1,21 @@
-import { useProviderProductsListVm } from "../hooks/useProviderProductsListVm";
-import {
-    useProviderProductsListQuery,
-    useUpdateProviderProductMapping,
-} from "../queries/providerProducts.queries";
+import { useUpdateProviderProductMapping } from "../queries/providerProducts.queries";
 import { ProviderProductsListTable } from "../components/ProviderProductsListTable";
-
-import { MAPPED_TABS } from "../lib/providerProducts.filters";
-
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ProviderProductMapDto } from "../types/provider-products.dto";
+
+import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function ProviderProductsMappingsPage() {
-    const vm = useProviderProductsListVm();
-    const { state, actions } = vm;
+import { useProviderProductsListPage } from "../hooks/useProviderProductsListPage";
+import { ProviderProductsMappingsToolbar } from "../components/ProviderProductsMappingsToolbar";
+import {
+    PER_PAGE_OPTIONS,
+    type MappedTabValue,
+} from "../lib/provider-products.constants";
 
-    const list = useProviderProductsListQuery({
-        page: state.page,
-        per_page: state.perPage,
-        mapped: state.mapped || undefined,
-        search: state.search || undefined,
-        sort: state.sort,
-    });
+export function ProviderProductsMappingsPage() {
+    const vm = useProviderProductsListPage();
+    const { filters, query, meta, actions } = vm;
 
     const updateMapping = useUpdateProviderProductMapping();
 
@@ -36,49 +28,66 @@ export function ProviderProductsMappingsPage() {
             id: row.id,
             pharmacy_product_id: null,
         });
+        actions.refresh();
     }
+
+    const disableControls = query.isFetching;
 
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>Mappings</CardTitle>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <Tabs
-                        value={state.tabValue}
-                        onValueChange={(v) => actions.setTabValue(v)}
-                    >
-                        <TabsList className="flex flex-wrap">
-                            {MAPPED_TABS.map((t) => (
-                                <TabsTrigger key={t.value} value={t.value}>
-                                    {t.label}
-                                </TabsTrigger>
-                            ))}
-                        </TabsList>
-                    </Tabs>
-
-                    <div className="w-full sm:w-96">
-                        <Input
-                            value={state.search}
-                            onChange={(e) => actions.setSearch(e.target.value)}
-                            placeholder="Suche (externer Name)…"
-                        />
-                    </div>
-                </div>
             </CardHeader>
+
             <CardContent className="space-y-3">
-                <ProviderProductsListTable
-                    items={list.data?.items ?? []}
-                    perPage={state.perPage}
-                    isLoading={list.isFetching}
-                    onManageMapping={openManageMapping}
-                    onRemoveMapping={removeMapping}
-                />
-                <Pagination
-                    page={list.data?.page ?? state.page}
-                    totalPages={list.data?.total_pages ?? 1}
-                    onPageChange={actions.setPage}
-                    isLoading={list.isFetching}
-                />
+                {query.isError ? (
+                    <div className="flex items-center gap-2">
+                        <div className="text-sm text-destructive">
+                            Fehler:{" "}
+                            {(query.error as Error)?.message ?? "unknown"}
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={actions.refresh}
+                        >
+                            Erneut versuchen
+                        </Button>
+                    </div>
+                ) : (
+                    <>
+                        <ProviderProductsMappingsToolbar
+                            total={meta.total}
+                            tabValue={filters.tabValue as MappedTabValue}
+                            onTabChange={actions.setTabValue}
+                            search={filters.searchInput}
+                            onSearchChange={actions.setSearch}
+                            page={filters.page}
+                            totalPages={meta.totalPages}
+                            onPageChange={actions.setPage}
+                            perPage={filters.perPage}
+                            perPageOptions={PER_PAGE_OPTIONS}
+                            onPerPageChange={actions.setPerPage}
+                            isLoading={query.isFetching}
+                            disableControls={disableControls}
+                        />
+
+                        <ProviderProductsListTable
+                            items={query.data?.items ?? []}
+                            perPage={filters.perPage}
+                            isLoading={query.isFetching}
+                            onManageMapping={openManageMapping}
+                            onRemoveMapping={removeMapping}
+                        />
+
+                        <Pagination
+                            page={filters.page}
+                            totalPages={meta.totalPages}
+                            onPageChange={actions.setPage}
+                            isLoading={query.isFetching}
+                        />
+                    </>
+                )}
             </CardContent>
         </Card>
     );
