@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { usePharmacyProductsListPage } from "../hooks/usePharmacyProductsListPage";
 import { PharmacyProductsToolbar } from "../components/PharmacyProductsToolbar";
 import { PharmacyProductsListTable } from "../components/PharmacyProductsListTable";
-import { PharmacyProductsPagination } from "../components/PharmacyProductsPagination";
+import { Pagination } from "@/components/ui/pagination";
 
 export function PharmacyProductsListPage() {
     const vm = usePharmacyProductsListPage();
@@ -55,7 +55,7 @@ export function PharmacyProductsListPage() {
                                 </span>
                             </div>
 
-                            <PharmacyProductsPagination
+                            <Pagination
                                 page={vm.filters.page}
                                 totalPages={vm.meta.totalPages}
                                 onPageChange={vm.actions.setPage}
@@ -72,7 +72,7 @@ export function PharmacyProductsListPage() {
                             onSortChange={vm.actions.setSort}
                         />
 
-                        <PharmacyProductsPagination
+                        <Pagination
                             page={vm.filters.page}
                             totalPages={vm.meta.totalPages}
                             onPageChange={vm.actions.setPage}

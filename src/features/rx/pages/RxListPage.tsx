@@ -5,10 +5,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRxListPage } from "../hooks/useRxListPage";
 import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
-import { RxListPagination } from "../components/RxListPagination";
 
 import { WORKFLOW_TABS } from "../lib/rx.constants";
 import { useRxPanels } from "../hooks/useRxPanels";
+import { Pagination } from "@/components/ui/pagination";
 
 export function RxListPage() {
     const vm = useRxListPage();
@@ -88,7 +88,7 @@ export function RxListPage() {
                                 </span>
                             </div>
 
-                            <RxListPagination
+                            <Pagination
                                 page={vm.filters.page}
                                 totalPages={vm.meta.totalPages}
                                 onPageChange={vm.actions.setPage}
@@ -107,7 +107,7 @@ export function RxListPage() {
                             isLoading={vm.query.isFetching}
                         />
 
-                        <RxListPagination
+                        <Pagination
                             page={vm.filters.page}
                             totalPages={vm.meta.totalPages}
                             onPageChange={vm.actions.setPage}
