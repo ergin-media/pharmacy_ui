@@ -60,7 +60,7 @@ export const NAV_SECTIONS: NavItem[] = [
             {
                 id: "products-mapping",
                 title: "Mappings",
-                to: "/products/mapping",
+                to: "/products/mappings",
             },
         ],
     },
