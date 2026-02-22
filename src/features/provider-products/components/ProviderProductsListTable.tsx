@@ -1,4 +1,6 @@
 import type { ProviderProductMapDto } from "../types/provider-products.dto";
+import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
+
 import { Badge } from "@/components/ui/badge";
 import {
     Table,
@@ -9,18 +11,42 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { formatDateTime } from "@/shared/lib/format/date";
+
 import { ProviderProductsListTableSkeleton } from "./ProviderProductsListTableSkeleton";
 import { ProviderProductRowActionsMenu } from "./ProviderProductRowActionsMenu";
+import { ProviderProductMappingCombobox } from "./ProviderProductMappingCombobox";
 
 export function ProviderProductsListTable(props: {
     items: ProviderProductMapDto[];
     isLoading?: boolean;
     perPage: number;
+
+    pharmacyProducts: PharmacyProductDto[];
+    pharmacyProductsLoading?: boolean;
+
+    disableControls?: boolean;
+
+    onSetMapping: (
+        row: ProviderProductMapDto,
+        pharmacyProductId: number | null,
+    ) => void;
+
     onManageMapping?: (row: ProviderProductMapDto) => void;
     onRemoveMapping?: (row: ProviderProductMapDto) => void;
 }) {
-    const { items, isLoading, perPage, onManageMapping, onRemoveMapping } =
-        props;
+    const {
+        items,
+        isLoading = false,
+        perPage,
+        pharmacyProducts,
+        pharmacyProductsLoading = false,
+        disableControls = false,
+        onSetMapping,
+        onManageMapping,
+        onRemoveMapping,
+    } = props;
+
+    const tableBusy = isLoading || pharmacyProductsLoading;
 
     return (
         <div className="overflow-x-auto rounded-md border">
@@ -29,7 +55,7 @@ export function ProviderProductsListTable(props: {
                     <TableRow>
                         <TableHead className="ps-3">Plattform</TableHead>
                         <TableHead>Externer Name</TableHead>
-                        <TableHead className="w-32">Zuordnung</TableHead>
+                        <TableHead className="w-80">Zuordnung</TableHead>
                         <TableHead className="w-32">Status</TableHead>
                         <TableHead className="w-52">Usage</TableHead>
                         <TableHead className="w-52">Updated</TableHead>
@@ -45,7 +71,7 @@ export function ProviderProductsListTable(props: {
                     ) : items.length === 0 ? (
                         <TableRow>
                             <TableCell
-                                colSpan={6}
+                                colSpan={7}
                                 className="text-muted-foreground"
                             >
                                 Keine Ergebnisse.
@@ -53,30 +79,34 @@ export function ProviderProductsListTable(props: {
                         </TableRow>
                     ) : (
                         items.map((row) => (
-                            <TableRow
-                                key={row.id}
-                                className="hover:bg-muted/50"
-                            >
+                            <TableRow key={row.id} className="hover:bg-muted/50">
+                                {/* Plattform */}
                                 <TableCell className="ps-3">
                                     <div className="font-medium">
-                                        {row.provider.name ??
-                                            row.provider.slug ??
-                                            "—"}
+                                        {row.provider.name ?? "—"}
                                     </div>
                                 </TableCell>
 
+                                {/* Externer Name */}
                                 <TableCell>
                                     <div className="font-medium">
                                         {row.external.name_raw ?? "—"}
                                     </div>
                                 </TableCell>
 
+                                {/* Zuordnung (Combobox) */}
                                 <TableCell>
-                                    <div className="font-medium">
-                                        {row.pharmacy_product?.name ?? "—"}
-                                    </div>
+                                    <ProviderProductMappingCombobox
+                                        row={row}
+                                        products={pharmacyProducts}
+                                        isLoading={tableBusy}
+                                        onSelect={(pid) =>
+                                            onSetMapping(row, pid)
+                                        }
+                                    />
                                 </TableCell>
 
+                                {/* Status */}
                                 <TableCell>
                                     <Badge
                                         variant={
@@ -89,22 +119,33 @@ export function ProviderProductsListTable(props: {
                                     </Badge>
                                 </TableCell>
 
+                                {/* Usage */}
                                 <TableCell>
                                     <div className="font-medium">
                                         {row.usage?.count ?? 0}×
                                     </div>
+                                    {row.usage?.last_used_at ? (
+                                        <div className="text-xs text-muted-foreground">
+                                            zuletzt{" "}
+                                            {formatDateTime(
+                                                row.usage.last_used_at,
+                                            )}
+                                        </div>
+                                    ) : null}
                                 </TableCell>
 
+                                {/* Updated */}
                                 <TableCell className="text-muted-foreground whitespace-nowrap">
                                     {formatDateTime(
                                         row.updated_at ?? row.created_at,
                                     )}
                                 </TableCell>
 
+                                {/* Aktionen */}
                                 <TableCell className="sticky right-0 text-right pe-3">
                                     <div className="flex justify-end">
                                         <ProviderProductRowActionsMenu
-                                            disabled={isLoading}
+                                            disabled={disableControls}
                                             isMapped={row.is_mapped}
                                             onManageMapping={() =>
                                                 onManageMapping?.(row)

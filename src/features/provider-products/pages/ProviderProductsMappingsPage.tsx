@@ -12,26 +12,35 @@ import {
     PER_PAGE_OPTIONS,
     type MappedTabValue,
 } from "../lib/provider-products.constants";
+import { usePharmacyProductsForMappingQuery } from "../queries/pharmacyProductsForMapping.queries";
 
 export function ProviderProductsMappingsPage() {
     const vm = useProviderProductsListPage();
     const { filters, query, meta, actions } = vm;
 
+    const pharmacyProductsQuery = usePharmacyProductsForMappingQuery();
+    const pharmacyProducts = pharmacyProductsQuery.data?.items ?? [];
+
     const updateMapping = useUpdateProviderProductMapping();
 
-    function openManageMapping(row: ProviderProductMapDto) {
-        console.log(row);
-    }
-
-    async function removeMapping(row: ProviderProductMapDto) {
+    async function setMapping(row: ProviderProductMapDto, pharmacyProductId: number | null) {
         await updateMapping.mutateAsync({
             id: row.id,
-            pharmacy_product_id: null,
+            pharmacy_product_id: pharmacyProductId,
         });
+
+        // Falls deine Mutation noch nicht sauber invalidated:
         actions.refresh();
     }
 
-    const disableControls = query.isFetching;
+    async function removeMapping(row: ProviderProductMapDto) {
+        await setMapping(row, null);
+    }
+
+    const disableControls =
+        query.isFetching ||
+        updateMapping.isPending ||
+        pharmacyProductsQuery.isFetching;
 
     return (
         <Card>
@@ -43,14 +52,9 @@ export function ProviderProductsMappingsPage() {
                 {query.isError ? (
                     <div className="flex items-center gap-2">
                         <div className="text-sm text-destructive">
-                            Fehler:{" "}
-                            {(query.error as Error)?.message ?? "unknown"}
+                            Fehler: {(query.error as Error)?.message ?? "unknown"}
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={actions.refresh}
-                        >
+                        <Button variant="outline" size="sm" onClick={actions.refresh}>
                             Erneut versuchen
                         </Button>
                     </div>
@@ -72,11 +76,22 @@ export function ProviderProductsMappingsPage() {
                             disableControls={disableControls}
                         />
 
+                        {/* Optional: nur Hinweis, wenn Produkte nicht geladen werden konnten */}
+                        {pharmacyProductsQuery.isError ? (
+                            <div className="text-sm text-destructive">
+                                Konnte Produktliste nicht laden:{" "}
+                                {(pharmacyProductsQuery.error as Error)?.message ?? "unknown"}
+                            </div>
+                        ) : null}
+
                         <ProviderProductsListTable
                             items={query.data?.items ?? []}
                             perPage={filters.perPage}
                             isLoading={query.isFetching}
-                            onManageMapping={openManageMapping}
+                            disableControls={disableControls}
+                            pharmacyProducts={pharmacyProducts}
+                            pharmacyProductsLoading={pharmacyProductsQuery.isFetching}
+                            onSetMapping={setMapping}
                             onRemoveMapping={removeMapping}
                         />
 
