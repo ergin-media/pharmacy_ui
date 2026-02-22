@@ -4,6 +4,8 @@ export type ProviderProductsMappedFilter = "" | "0" | "1";
 // "" => alle, "0" => unmapped, "1" => mapped
 
 export type ProviderProductsSort =
+    | "name_desc"
+    | "name_asc"
     | "usage_desc"
     | "usage_asc"
     | "updated_at_desc"

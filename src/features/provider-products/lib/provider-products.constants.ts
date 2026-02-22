@@ -15,11 +15,11 @@ export const SORT_OPTIONS = [
     { value: "usage_asc", label: "Nutzung aufsteigend" },
     { value: "updated_at_desc", label: "Aktualisiert absteigend" },
     { value: "updated_at_asc", label: "Aktualisiert aufsteigend" },
-    { value: "created_at_desc", label: "Erstellt absteigend" },
-    { value: "created_at_asc", label: "Erstellt aufsteigend" },
+    { value: "name_desc", label: "Externer Name absteigend" },
+    { value: "name_asc", label: "Externer Name aufsteigend" },
 ] as const;
 
-export const DEFAULT_SORT: ProviderProductsSort = "usage_desc";
+export const DEFAULT_SORT: ProviderProductsSort = "name_asc";
 
 export const ALLOWED_SORTS = SORT_OPTIONS.map(
     (s) => s.value,

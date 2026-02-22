@@ -112,7 +112,7 @@ export function ProviderProductsListTable(props: {
                                         variant={
                                             row.is_mapped
                                                 ? "success"
-                                                : "secondary"
+                                                : "danger"
                                         }
                                     >
                                         {row.is_mapped ? "Gemappt" : "Offen"}
