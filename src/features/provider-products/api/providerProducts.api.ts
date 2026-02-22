@@ -20,9 +20,10 @@ export async function updateProviderProductMapping(input: {
     id: number;
     pharmacy_product_id: number | null;
 }) {
-    const res = await api.patch<{ ok: boolean; status: string }>(
+    const res = await api.patch(
         `provider-products/${input.id}`,
         { pharmacy_product_id: input.pharmacy_product_id },
     );
+
     return res.data;
 }

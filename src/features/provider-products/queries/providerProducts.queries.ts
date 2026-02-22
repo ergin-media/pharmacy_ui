@@ -31,9 +31,24 @@ export function useUpdateProviderProductMapping() {
 
     return useMutation({
         mutationFn: updateProviderProductMapping,
-        onSuccess: async () => {
-            // simplest + robust: invalidate all provider-products lists
-            await qc.invalidateQueries({ queryKey: providerProductsKeys.all });
+
+        onSuccess: (data) => {
+            const updatedItem = data.item;
+
+            // 🔥 Alle ProviderProduct-Listen im Cache patchen
+            qc.setQueriesData(
+                { queryKey: providerProductsKeys.all },
+                (old: any) => {
+                    if (!old?.items) return old;
+
+                    return {
+                        ...old,
+                        items: old.items.map((i: any) =>
+                            i.id === updatedItem.id ? updatedItem : i
+                        ),
+                    };
+                }
+            );
         },
     });
 }

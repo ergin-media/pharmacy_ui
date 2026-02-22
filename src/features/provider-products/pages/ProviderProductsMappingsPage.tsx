@@ -28,9 +28,6 @@ export function ProviderProductsMappingsPage() {
             id: row.id,
             pharmacy_product_id: pharmacyProductId,
         });
-
-        // Falls deine Mutation noch nicht sauber invalidated:
-        actions.refresh();
     }
 
     async function removeMapping(row: ProviderProductMapDto) {
