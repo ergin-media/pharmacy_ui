@@ -9,6 +9,7 @@ import { RxListTable } from "../components/RxListTable";
 import { WORKFLOW_TABS } from "../lib/rx.constants";
 import { useRxPanels } from "../hooks/useRxPanels";
 import { Pagination } from "@/components/ui/pagination";
+import { RxListTableSkeleton } from "../components/RxListTableSkeleton";
 
 export function RxListPage() {
     const vm = useRxListPage();
@@ -44,7 +45,7 @@ export function RxListPage() {
 
             <CardContent className="space-y-3">
                 {vm.query.isLoading ? (
-                    <div className="text-sm text-muted-foreground">Lade…</div>
+                    <RxListTableSkeleton />
                 ) : vm.query.isError ? (
                     <div className="flex items-center gap-2">
                         <div className="text-sm text-destructive">

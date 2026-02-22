@@ -1,3 +1,5 @@
+import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
+
 export type ProviderProductsMappedFilter = "" | "0" | "1";
 // "" => alle, "0" => unmapped, "1" => mapped
 
@@ -20,16 +22,6 @@ export type ProviderExternalDto = {
     name_norm: string | null;
 };
 
-export type PharmacyProductMiniDto = {
-    id: number;
-    manufacturer: string | null;
-    name: string | null;
-    product_code: string | null;
-    base_price: string | number | null;
-    price_other_provider: string | number | null;
-    is_active: boolean | null;
-};
-
 export type ProviderProductUsageDto = {
     count: number;
     last_used_at: string | null;
@@ -39,7 +31,7 @@ export type ProviderProductMapDto = {
     id: number;
     provider: ProviderDto;
     external: ProviderExternalDto;
-    pharmacy_product: PharmacyProductMiniDto | null;
+    pharmacy_product: PharmacyProductDto | null;
     usage: ProviderProductUsageDto;
     created_at: string | null;
     updated_at: string | null;

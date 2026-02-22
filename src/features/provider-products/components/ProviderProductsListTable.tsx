@@ -27,8 +27,9 @@ export function ProviderProductsListTable(props: {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="ps-3">Provider</TableHead>
+                        <TableHead className="ps-3">Plattform</TableHead>
                         <TableHead>Externer Name</TableHead>
+                        <TableHead className="w-32">Zuordnung</TableHead>
                         <TableHead className="w-32">Status</TableHead>
                         <TableHead className="w-52">Usage</TableHead>
                         <TableHead className="w-52">Updated</TableHead>
@@ -62,17 +63,17 @@ export function ProviderProductsListTable(props: {
                                             row.provider.slug ??
                                             "—"}
                                     </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        ID: {row.provider.id}
-                                    </div>
                                 </TableCell>
 
                                 <TableCell>
                                     <div className="font-medium">
                                         {row.external.name_raw ?? "—"}
                                     </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        {row.external.name_norm ?? "—"}
+                                </TableCell>
+
+                                <TableCell>
+                                    <div className="font-medium">
+                                        {row.pharmacy_product?.name ?? "—"}
                                     </div>
                                 </TableCell>
 
@@ -91,12 +92,6 @@ export function ProviderProductsListTable(props: {
                                 <TableCell>
                                     <div className="font-medium">
                                         {row.usage?.count ?? 0}×
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        zuletzt:{" "}
-                                        {formatDateTime(
-                                            row.usage?.last_used_at,
-                                        )}
                                     </div>
                                 </TableCell>
 
