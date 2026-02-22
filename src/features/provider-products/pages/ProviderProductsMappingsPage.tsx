@@ -23,7 +23,10 @@ export function ProviderProductsMappingsPage() {
 
     const updateMapping = useUpdateProviderProductMapping();
 
-    async function setMapping(row: ProviderProductMapDto, pharmacyProductId: number | null) {
+    async function setMapping(
+        row: ProviderProductMapDto,
+        pharmacyProductId: number | null,
+    ) {
         await updateMapping.mutateAsync({
             id: row.id,
             pharmacy_product_id: pharmacyProductId,
@@ -39,6 +42,9 @@ export function ProviderProductsMappingsPage() {
         updateMapping.isPending ||
         pharmacyProductsQuery.isFetching;
 
+    const busyRowId =
+        updateMapping.isPending ? updateMapping.variables?.id ?? null : null;
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -49,9 +55,14 @@ export function ProviderProductsMappingsPage() {
                 {query.isError ? (
                     <div className="flex items-center gap-2">
                         <div className="text-sm text-destructive">
-                            Fehler: {(query.error as Error)?.message ?? "unknown"}
+                            Fehler:{" "}
+                            {(query.error as Error)?.message ?? "unknown"}
                         </div>
-                        <Button variant="outline" size="sm" onClick={actions.refresh}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={actions.refresh}
+                        >
                             Erneut versuchen
                         </Button>
                     </div>
@@ -77,7 +88,8 @@ export function ProviderProductsMappingsPage() {
                         {pharmacyProductsQuery.isError ? (
                             <div className="text-sm text-destructive">
                                 Konnte Produktliste nicht laden:{" "}
-                                {(pharmacyProductsQuery.error as Error)?.message ?? "unknown"}
+                                {(pharmacyProductsQuery.error as Error)
+                                    ?.message ?? "unknown"}
                             </div>
                         ) : null}
 
@@ -86,8 +98,11 @@ export function ProviderProductsMappingsPage() {
                             perPage={filters.perPage}
                             isLoading={query.isFetching}
                             disableControls={disableControls}
+                            busyRowId={busyRowId}
                             pharmacyProducts={pharmacyProducts}
-                            pharmacyProductsLoading={pharmacyProductsQuery.isFetching}
+                            pharmacyProductsLoading={
+                                pharmacyProductsQuery.isFetching
+                            }
                             onSetMapping={setMapping}
                             onRemoveMapping={removeMapping}
                         />

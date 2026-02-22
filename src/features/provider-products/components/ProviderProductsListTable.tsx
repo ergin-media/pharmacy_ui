@@ -26,6 +26,9 @@ export function ProviderProductsListTable(props: {
 
     disableControls?: boolean;
 
+    /** ✅ Parent setzt das, wenn Mapping-Mutation läuft */
+    busyRowId?: number | null;
+
     onSetMapping: (
         row: ProviderProductMapDto,
         pharmacyProductId: number | null,
@@ -41,6 +44,7 @@ export function ProviderProductsListTable(props: {
         pharmacyProducts,
         pharmacyProductsLoading = false,
         disableControls = false,
+        busyRowId = null,
         onSetMapping,
         onManageMapping,
         onRemoveMapping,
@@ -78,86 +82,93 @@ export function ProviderProductsListTable(props: {
                             </TableCell>
                         </TableRow>
                     ) : (
-                        items.map((row) => (
-                            <TableRow key={row.id} className="hover:bg-muted/50">
-                                {/* Plattform */}
-                                <TableCell className="ps-3">
-                                    <div className="font-medium">
-                                        {row.provider.name ?? "—"}
-                                    </div>
-                                </TableCell>
+                        items.map((row) => {
+                            const rowBusy = tableBusy || (busyRowId === row.id);
 
-                                {/* Externer Name */}
-                                <TableCell>
-                                    <div className="font-medium">
-                                        {row.external.name_raw ?? "—"}
-                                    </div>
-                                </TableCell>
-
-                                {/* Zuordnung (Combobox) */}
-                                <TableCell>
-                                    <ProviderProductMappingCombobox
-                                        row={row}
-                                        products={pharmacyProducts}
-                                        isLoading={tableBusy}
-                                        onSelect={(pid) =>
-                                            onSetMapping(row, pid)
-                                        }
-                                    />
-                                </TableCell>
-
-                                {/* Status */}
-                                <TableCell>
-                                    <Badge
-                                        variant={
-                                            row.is_mapped
-                                                ? "success"
-                                                : "danger"
-                                        }
-                                    >
-                                        {row.is_mapped ? "Gemappt" : "Offen"}
-                                    </Badge>
-                                </TableCell>
-
-                                {/* Usage */}
-                                <TableCell>
-                                    <div className="font-medium">
-                                        {row.usage?.count ?? 0}×
-                                    </div>
-                                    {row.usage?.last_used_at ? (
-                                        <div className="text-xs text-muted-foreground">
-                                            zuletzt{" "}
-                                            {formatDateTime(
-                                                row.usage.last_used_at,
-                                            )}
+                            return (
+                                <TableRow
+                                    key={row.id}
+                                    className="hover:bg-muted/50"
+                                >
+                                    {/* Plattform */}
+                                    <TableCell className="ps-3">
+                                        <div className="font-medium">
+                                            {row.provider.name ?? "—"}
                                         </div>
-                                    ) : null}
-                                </TableCell>
+                                    </TableCell>
 
-                                {/* Updated */}
-                                <TableCell className="text-muted-foreground whitespace-nowrap">
-                                    {formatDateTime(
-                                        row.updated_at ?? row.created_at,
-                                    )}
-                                </TableCell>
+                                    {/* Externer Name */}
+                                    <TableCell>
+                                        <div className="font-medium">
+                                            {row.external.name_raw ?? "—"}
+                                        </div>
+                                    </TableCell>
 
-                                {/* Aktionen */}
-                                <TableCell className="sticky right-0 text-right pe-3">
-                                    <div className="flex justify-end">
-                                        <ProviderProductRowActionsMenu
-                                            disabled={disableControls}
-                                            isMapped={row.is_mapped}
-                                            onManageMapping={() =>
-                                                onManageMapping?.(row)
-                                            }
-                                            onRemoveMapping={() =>
-                                                onRemoveMapping?.(row)
+                                    {/* Zuordnung (Combobox) */}
+                                    <TableCell>
+                                        <ProviderProductMappingCombobox
+                                            row={row}
+                                            products={pharmacyProducts}
+                                            isLoading={rowBusy}
+                                            onSelect={(pid) =>
+                                                onSetMapping(row, pid)
                                             }
                                         />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))
+                                    </TableCell>
+
+                                    {/* Status */}
+                                    <TableCell>
+                                        <Badge
+                                            variant={
+                                                row.is_mapped
+                                                    ? "success"
+                                                    : "danger"
+                                            }
+                                        >
+                                            {row.is_mapped ? "Gemappt" : "Offen"}
+                                        </Badge>
+                                    </TableCell>
+
+                                    {/* Usage */}
+                                    <TableCell>
+                                        <div className="font-medium">
+                                            {row.usage?.count ?? 0}×
+                                        </div>
+                                        {row.usage?.last_used_at ? (
+                                            <div className="text-xs text-muted-foreground">
+                                                zuletzt{" "}
+                                                {formatDateTime(
+                                                    row.usage.last_used_at,
+                                                )}
+                                            </div>
+                                        ) : null}
+                                    </TableCell>
+
+                                    {/* Updated */}
+                                    <TableCell className="text-muted-foreground whitespace-nowrap">
+                                        {formatDateTime(
+                                            row.updated_at ?? row.created_at,
+                                        )}
+                                    </TableCell>
+
+                                    {/* Aktionen */}
+                                    <TableCell className="sticky right-0 text-right pe-3">
+                                        <div className="flex justify-end">
+                                            <ProviderProductRowActionsMenu
+                                                disabled={disableControls || rowBusy}
+                                                isMapped={row.is_mapped}
+                                                onManageMapping={() =>
+                                                    onManageMapping?.(row)
+                                                }
+                                                onRemoveMapping={() =>
+                                                    onRemoveMapping?.(row)
+                                                }
+                                            />
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })
                     )}
                 </TableBody>
             </Table>

@@ -81,6 +81,7 @@ export function ProviderProductMappingCombobox(props: {
                     showClear={true}
                     showTrigger={true}
                     disabled={isLoading}
+                    loading={isLoading}
                 />
 
                 <ComboboxContent>
