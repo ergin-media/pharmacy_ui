@@ -27,7 +27,7 @@ export function ProviderProductsListTable(props: {
     disableControls?: boolean;
 
     /** ✅ Parent setzt das, wenn Mapping-Mutation läuft */
-    busyRowId?: number | null;
+    busyRowIds?: number[];
 
     onSetMapping: (
         row: ProviderProductMapDto,
@@ -44,7 +44,7 @@ export function ProviderProductsListTable(props: {
         pharmacyProducts,
         pharmacyProductsLoading = false,
         disableControls = false,
-        busyRowId = null,
+        busyRowIds = [],
         onSetMapping,
         onManageMapping,
         onRemoveMapping,
@@ -83,7 +83,10 @@ export function ProviderProductsListTable(props: {
                         </TableRow>
                     ) : (
                         items.map((row) => {
-                            const rowBusy = tableBusy || (busyRowId === row.id);
+                            const rowBusy =
+                                tableBusy ||
+                                disableControls ||
+                                busyRowIds.includes(row.id);
 
                             return (
                                 <TableRow
@@ -125,7 +128,9 @@ export function ProviderProductsListTable(props: {
                                                     : "danger"
                                             }
                                         >
-                                            {row.is_mapped ? "Gemappt" : "Offen"}
+                                            {row.is_mapped
+                                                ? "Gemappt"
+                                                : "Offen"}
                                         </Badge>
                                     </TableCell>
 
@@ -155,7 +160,9 @@ export function ProviderProductsListTable(props: {
                                     <TableCell className="sticky right-0 text-right pe-3">
                                         <div className="flex justify-end">
                                             <ProviderProductRowActionsMenu
-                                                disabled={disableControls || rowBusy}
+                                                disabled={
+                                                    disableControls || rowBusy
+                                                }
                                                 isMapped={row.is_mapped}
                                                 onManageMapping={() =>
                                                     onManageMapping?.(row)

@@ -45,7 +45,7 @@ export function useProviderProductsListPage() {
         ? (sortRaw as ProviderProductsSort)
         : DEFAULT_SORT;
 
-    // Search: URL -> local input (für controlled Input)
+    // Search (controlled)
     const searchRaw = spGetString(sp, "search") ?? "";
     const [searchInput, setSearchInput] = useState(searchRaw);
 
@@ -69,13 +69,13 @@ export function useProviderProductsListPage() {
         if (next.page !== undefined) spSetInt(n, "page", next.page);
         if (next.per_page !== undefined) spSetInt(n, "per_page", next.per_page);
 
-        if (next.mapped !== undefined) spSetOrDelete(n, "mapped", next.mapped); // "" => löschen
+        if (next.mapped !== undefined) spSetOrDelete(n, "mapped", next.mapped);
         if (next.sort !== undefined) spSetOrDelete(n, "sort", next.sort);
 
         setSp(n, { replace: true });
     }
 
-    // debounced search -> URL (und page reset)
+    // debounced search -> URL (+ page reset)
     useEffect(() => {
         const n = new URLSearchParams(sp);
         spSetInt(n, "page", 1);
@@ -100,6 +100,39 @@ export function useProviderProductsListPage() {
     const total = query.data?.total ?? 0;
     const totalPages = query.data?.total_pages ?? 1;
 
+    // ✅ Row busy state (im Hook)
+    const [busySet, setBusySet] = useState<Set<number>>(() => new Set());
+
+    function markBusy(id: number) {
+        setBusySet((prev) => {
+            if (prev.has(id)) return prev;
+            const next = new Set(prev);
+            next.add(id);
+            return next;
+        });
+    }
+
+    function unmarkBusy(id: number) {
+        setBusySet((prev) => {
+            if (!prev.has(id)) return prev;
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+        });
+    }
+
+    async function runRowAction<T>(rowId: number, fn: () => Promise<T>) {
+        markBusy(rowId);
+        try {
+            return await fn();
+        } finally {
+            unmarkBusy(rowId);
+        }
+    }
+
+    const busyRowIds = useMemo(() => Array.from(busySet), [busySet]);
+    const isRowBusy = (rowId: number) => busySet.has(rowId);
+
     const actions = {
         setTabValue: (v: "all" | "unmapped" | "mapped") => {
             const next: ProviderProductsMappedFilter =
@@ -111,20 +144,28 @@ export function useProviderProductsListPage() {
         setPerPage: (v: number) => patch({ page: 1, per_page: v }),
         setPage: (v: number) => patch({ page: v }),
         refresh: () => query.refetch(),
+
+        // ✅ neu
+        runRowAction,
+        isRowBusy,
     };
 
     return {
         filters: {
             page,
             perPage,
-            mapped, // "", "0", "1"
-            searchInput, // controlled input value
+            mapped,
+            searchInput,
             sort,
             tabValue:
                 mapped === "0" ? "unmapped" : mapped === "1" ? "mapped" : "all",
         },
         query,
         meta: { total, totalPages },
+
+        // ✅ neu
+        busyRowIds,
+
         actions,
     };
 }
