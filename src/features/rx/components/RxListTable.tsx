@@ -162,18 +162,17 @@ export function RxListTable(props: {
                                                         </div>
                                                     ))}
 
+                                                {itemsCount > 3 ? (
+                                                    <div className="text-xs text-muted-foreground">
+                                                        {`+${itemsCount - 3} weitere`}
+                                                    </div>
+                                                ) : null}
                                                 {/* Warnzeile für Mapping */}
                                                 {!priceMeta.isComplete &&
                                                 priceMeta.hint ? (
                                                     <Badge variant={"danger"}>
                                                         {priceMeta.hint}
                                                     </Badge>
-                                                ) : null}
-
-                                                {itemsCount > 3 ? (
-                                                    <div className="text-xs text-muted-foreground">
-                                                        {`+${itemsCount - 3} weitere`}
-                                                    </div>
                                                 ) : null}
                                             </div>
                                         ) : (

@@ -10,23 +10,25 @@ type MappingMeta = {
 
 export function getPriceMeta(
     summary?: {
-        price_is_complete?: boolean | null;
-        unmapped_items_count?: number | null;
+        has_pricing_base_price_missing?: boolean | null;
+        unmapped_items_count?: number | null; // optional: kannst du als Zusatzinfo behalten
     } | null,
 ): PriceMeta {
-    const isComplete = summary?.price_is_complete !== false;
+    const hasPricingMissing = summary?.has_pricing_base_price_missing === true;
 
-    if (!isComplete) {
+    if (hasPricingMissing) {
         const unmapped = summary?.unmapped_items_count ?? 0;
 
+        // Optional: du kannst den unmapped-count als Zusatz-Info behalten,
+        // aber NICHT mehr als Entscheidungsbasis.
         if (unmapped > 0) {
             return {
                 isComplete: false,
-                hint: `${unmapped} Artikel ohne Zuordnung – Gesamtpreis ggf. unvollständig`,
+                hint: `${unmapped} Artikel ohne Zuordnung – Preis muss aktualisiert werden`,
             };
         }
 
-        return { isComplete: false, hint: "Gesamtpreis ggf. unvollständig" };
+        return { isComplete: false, hint: "Preis muss aktualisiert werden" };
     }
 
     return { isComplete: true, hint: null };

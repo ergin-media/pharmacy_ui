@@ -77,6 +77,7 @@ export interface RxListItemDto {
         // ✅ neu
         unmapped_items_count?: number | null;
         price_is_complete?: boolean | null;
+        has_pricing_base_price_missing?: boolean | null;
 
         final_price_cents?: number | null;
         currency?: string | null;
