@@ -18,6 +18,9 @@ import { formatQuantity } from "@/shared/lib/format/quantity";
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
 import { RxRowActionsMenu } from "./RxRowActionsMenu";
 
+import { Button } from "@/components/ui/button";
+import { Loader2, RotateCcw } from "lucide-react";
+
 export function RxListTable(props: {
     items: RxListItemDto[];
     isLoading?: boolean;
@@ -26,6 +29,9 @@ export function RxListTable(props: {
     onPdf?: (id: number) => void;
     onMore?: (id: number) => void;
     onCreateInvoice?: (id: number) => void;
+
+    onReparse?: (id: number) => void;
+    reparseBusyId?: number | null;
 }) {
     const {
         items,
@@ -35,6 +41,8 @@ export function RxListTable(props: {
         onPdf,
         onMore,
         onCreateInvoice,
+        onReparse,
+        reparseBusyId,
     } = props;
 
     return (
@@ -73,6 +81,11 @@ export function RxListTable(props: {
                         </TableRow>
                     ) : (
                         items.map((r) => {
+                            const rowId = Number(r.id);
+                            const isReparseBusy =
+                                reparseBusyId != null &&
+                                Number(reparseBusyId) === rowId;
+
                             const summary = r.summary ?? undefined;
                             const priceMeta = getPriceMeta(summary);
 
@@ -85,8 +98,7 @@ export function RxListTable(props: {
                             const totalQty = summary?.total_quantity ?? null;
                             const totalUnit = summary?.total_unit ?? null;
 
-                            const priceCents =
-                                summary?.final_price_cents ?? null;
+                            const priceCents = summary?.final_price_cents ?? null;
                             const currency = summary?.currency ?? "EUR";
 
                             const patientTitle = formatPersonName(
@@ -143,9 +155,7 @@ export function RxListTable(props: {
                                                                         <span className="mr-1 text-muted-foreground">
                                                                             •
                                                                         </span>
-                                                                        {
-                                                                            it.name
-                                                                        }
+                                                                        {it.name}
                                                                     </>
                                                                 ) : (
                                                                     "—"
@@ -167,9 +177,9 @@ export function RxListTable(props: {
                                                         {`+${itemsCount - 3} weitere`}
                                                     </div>
                                                 ) : null}
-                                                {/* Warnzeile für Mapping */}
+
                                                 {!priceMeta.isComplete &&
-                                                priceMeta.hint ? (
+                                                    priceMeta.hint ? (
                                                     <Badge variant={"danger"}>
                                                         {priceMeta.hint}
                                                     </Badge>
@@ -185,10 +195,7 @@ export function RxListTable(props: {
                                     {/* Gesamtmenge */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
-                                            {formatQuantity(
-                                                totalQty,
-                                                totalUnit,
-                                            )}
+                                            {formatQuantity(totalQty, totalUnit)}
                                         </div>
                                     </TableCell>
 
@@ -203,12 +210,34 @@ export function RxListTable(props: {
                                                         : "text-muted-foreground opacity-50",
                                                 ].join(" ")}
                                             >
-                                                {formatMoney(
-                                                    priceCents,
-                                                    currency,
-                                                )}
+                                                {formatMoney(priceCents, currency)}
                                             </div>
                                         </div>
+
+                                        {/* ✅ Nur wenn Preis-Aktualisierung nötig */}
+                                        {!priceMeta.isComplete && onReparse ? (
+                                            <div>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-7 px-2"
+                                                    onClick={() =>
+                                                        onReparse(rowId)
+                                                    }
+                                                    disabled={
+                                                        Boolean(isLoading) ||
+                                                        isReparseBusy
+                                                    }
+                                                >
+                                                    {isReparseBusy ? (
+                                                        <Loader2 className="mr-2 size-4 animate-spin" />
+                                                    ) : (
+                                                        <RotateCcw className="mr-2 size-4" />
+                                                    )}
+                                                    Reparse
+                                                </Button>
+                                            </div>
+                                        ) : null}
                                     </TableCell>
 
                                     {/* Eingang */}
@@ -216,7 +245,7 @@ export function RxListTable(props: {
                                         {formatDateTime(r.mail?.received_at)}
                                     </TableCell>
 
-                                    {/* Status */}
+                                    {/* Status + Reparse Button */}
                                     <TableCell>
                                         <div className="flex flex-col gap-2">
                                             <div className="flex flex-wrap gap-2">
@@ -243,32 +272,22 @@ export function RxListTable(props: {
 
                                             <div className="text-xs text-muted-foreground">
                                                 <span className="font-medium text-foreground">
-                                                    {
-                                                        r.parse_status as RxParseStatus
-                                                    }
+                                                    {r.parse_status as RxParseStatus}
                                                 </span>
                                             </div>
                                         </div>
                                     </TableCell>
 
                                     {/* Aktionen */}
-                                    <TableCell className="sticky right-0 text-right">
+                                    <TableCell className="sticky right-0 text-right pe-3">
                                         <div className="flex justify-end">
                                             <RxRowActionsMenu
-                                                disabled={isLoading}
-                                                onOpen={() =>
-                                                    onOpen?.(Number(r.id))
-                                                }
-                                                onPdf={() =>
-                                                    onPdf?.(Number(r.id))
-                                                }
-                                                onMore={() =>
-                                                    onMore?.(Number(r.id))
-                                                }
+                                                disabled={Boolean(isLoading) || isReparseBusy}
+                                                onOpen={() => onOpen?.(rowId)}
+                                                onPdf={() => onPdf?.(rowId)}
+                                                onMore={() => onMore?.(rowId)}
                                                 onCreateInvoice={() =>
-                                                    onCreateInvoice?.(
-                                                        Number(r.id),
-                                                    )
+                                                    onCreateInvoice?.(rowId)
                                                 }
                                             />
                                         </div>

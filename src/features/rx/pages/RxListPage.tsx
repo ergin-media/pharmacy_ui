@@ -106,6 +106,9 @@ export function RxListPage() {
                             onMore={(id) => console.log("more", id)}
                             onCreateInvoice={(id) => panels.invoice.open(id)}
                             isLoading={vm.query.isFetching}
+                            // ✅ neu:
+                            onReparse={vm.actions.reparse}
+                            reparseBusyId={vm.meta.reparseBusyId}
                         />
 
                         <Pagination
