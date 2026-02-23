@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import type { ProviderProductMapDto } from "../types/provider-products.dto";
 import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
@@ -30,47 +30,64 @@ export function ProviderProductMappingCombobox(props: {
         return m;
     }, [products]);
 
+    const searchIndex = useMemo(() => {
+        const m = new Map<string, string>();
+        for (const p of products) {
+            m.set(
+                String(p.id),
+                [
+                    p.name,
+                    p.product_code,
+                    p.manufacturer ?? "",
+                    p.name_norm ?? "",
+                ]
+                    .join(" ")
+                    .toLowerCase(),
+            );
+        }
+        return m;
+    }, [products]);
+
     const currentValue = row.pharmacy_product?.id
         ? String(row.pharmacy_product.id)
         : undefined;
+
+    const handleValueChange = useCallback(
+        (v: string | null) => {
+            if (!v) return onSelect(null);
+            const id = Number(v);
+            onSelect(Number.isFinite(id) ? id : null);
+        },
+        [onSelect],
+    );
+
+    const itemToStringLabel = useCallback(
+        (id: string) => byId.get(id)?.name ?? id,
+        [byId],
+    );
+
+    const itemToStringValue = useCallback((id: string) => id, []);
+
+    const filter = useCallback(
+        (id: string, query: string) => {
+            const q = query.trim().toLowerCase();
+            if (!q) return true;
+            const hay = searchIndex.get(id);
+            return hay ? hay.includes(q) : false;
+        },
+        [searchIndex],
+    );
 
     return (
         <div className="min-w-80">
             <Combobox
                 items={items}
                 value={currentValue}
-                onValueChange={(v: string | null) => {
-                    if (!v) {
-                        onSelect(null);
-                        return;
-                    }
-                    const id = Number(v);
-                    onSelect(Number.isFinite(id) ? id : null);
-                }}
+                onValueChange={handleValueChange}
                 disabled={isLoading}
-                itemToStringLabel={(id: string) => {
-                    const p = byId.get(id);
-                    return p ? p.name : id;
-                }}
-                itemToStringValue={(id: string) => id}
-                filter={(id: string, query: string) => {
-                    const q = query.trim().toLowerCase();
-                    if (!q) return true;
-
-                    const p = byId.get(id);
-                    if (!p) return false;
-
-                    const hay = [
-                        p.name,
-                        p.product_code,
-                        p.manufacturer ?? "",
-                        p.name_norm ?? "",
-                    ]
-                        .join(" ")
-                        .toLowerCase();
-
-                    return hay.includes(q);
-                }}
+                itemToStringLabel={itemToStringLabel}
+                itemToStringValue={itemToStringValue}
+                filter={filter}
             >
                 <ComboboxInput
                     placeholder="Zuordnung wählen…"
@@ -81,7 +98,6 @@ export function ProviderProductMappingCombobox(props: {
                     className={cn(
                         // Basis
                         "transition-colors",
-                        // 🔥 Highlight wenn unmapped
                         isUnmapped &&
                             !isLoading &&
                             "border-red-400/70 bg-red-50/40 dark:bg-amber-500/10 focus-visible:ring-red-400",
