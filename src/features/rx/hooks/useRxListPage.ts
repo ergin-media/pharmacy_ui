@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
-import { useRxListQuery } from "../queries/rx.queries";
+
+import { useReparseRxMutation, useRxListQuery } from "../queries/rx.queries";
 import type {
     RxParseStatus,
     RxWorkflowStatus,
@@ -54,15 +55,13 @@ export function useRxListPage() {
         : undefined;
 
     // --- Search: URL -> local input state ---
-    const searchRaw = spGetString(sp, "search"); // source of truth for deep-linking
+    const searchRaw = spGetString(sp, "search");
     const [searchInput, setSearchInput] = useState(searchRaw);
 
-    // Wenn URL sich extern ändert (Back/Forward/Link), Input synchronisieren
     useEffect(() => {
         setSearchInput(searchRaw);
     }, [searchRaw]);
 
-    // Debounce auf Input
     const debouncedSearchInput = useDebouncedValue(
         searchInput.trim() || undefined,
         500,
@@ -78,10 +77,8 @@ export function useRxListPage() {
             page: number;
             per_page: number;
             parse_status: string;
-
-            workflow_status: string; // neu
-            payment_state: string; // neu
-
+            workflow_status: string;
+            payment_state: string;
             provider: string;
             search: string;
             sort: string;
@@ -94,6 +91,7 @@ export function useRxListPage() {
 
         if (next.parse_status !== undefined)
             spSetOrDelete(n, "parse_status", next.parse_status);
+
         if (next.provider !== undefined)
             spSetOrDelete(n, "provider", next.provider);
 
@@ -103,13 +101,11 @@ export function useRxListPage() {
         if (next.payment_state !== undefined)
             spSetOrDelete(n, "payment_state", next.payment_state);
 
-        // search NICHT mehr pro Tastendruck hier setzen!
         if (next.sort !== undefined) spSetOrDelete(n, "sort", next.sort);
 
         setSp(n, { replace: true });
     }
 
-    // URL-Param "search" nur debounced schreiben (und page reset)
     useEffect(() => {
         const n = new URLSearchParams(sp);
         spSetInt(n, "page", 1);
@@ -123,8 +119,8 @@ export function useRxListPage() {
             page,
             per_page: perPage,
             parse_status: parseStatus,
-            workflow_status: workflowStatus, // neu
-            payment_state: paymentState, // neu
+            workflow_status: workflowStatus,
+            payment_state: paymentState,
             provider,
             search: debouncedSearchInput,
             sort,
@@ -143,6 +139,15 @@ export function useRxListPage() {
 
     const query = useRxListQuery(params);
 
+    // ✅ NEW: Reparse mutation
+    const reparseMutation = useReparseRxMutation();
+
+    // ✅ busy row id (nur die eine Zeile)
+    const reparseBusyId =
+        reparseMutation.isPending && typeof reparseMutation.variables === "number"
+            ? reparseMutation.variables
+            : null;
+
     const total = query.data?.total ?? 0;
     const totalPages = query.data?.total_pages ?? 1;
 
@@ -150,10 +155,9 @@ export function useRxListPage() {
         setParseStatus: (v: string) =>
             patch({ page: 1, parse_status: v === "all" ? "" : v }),
 
-        setWorkflowStatus: (v: string) =>
-            patch({ page: 1, workflow_status: v }), // v ist "" oder status
+        setWorkflowStatus: (v: string) => patch({ page: 1, workflow_status: v }),
 
-        setPaymentState: (v: string) => patch({ page: 1, payment_state: v }), // v ist "" oder state
+        setPaymentState: (v: string) => patch({ page: 1, payment_state: v }),
 
         setProvider: (v: string) => patch({ page: 1, provider: v }),
 
@@ -162,7 +166,13 @@ export function useRxListPage() {
         setSort: (v: string) => patch({ page: 1, sort: v }),
         setPerPage: (v: number) => patch({ page: 1, per_page: v }),
         setPage: (v: number) => patch({ page: v }),
+
         refresh: () => query.refetch(),
+
+        // ✅ NEW: Reparse Action
+        reparse: async (id: number) => {
+            await reparseMutation.mutateAsync(id);
+        },
     };
 
     return {
@@ -170,16 +180,23 @@ export function useRxListPage() {
             page,
             perPage,
             parseStatus,
-
-            workflowStatus, // neu
-            paymentState, // neu
-
+            workflowStatus,
+            paymentState,
             providerRaw,
             searchRaw: searchInput,
             sort,
         },
         query,
-        meta: { total, totalPages },
+
+        meta: {
+            total,
+            totalPages,
+
+            // ✅ NEW: expose reparse state
+            reparseBusyId,
+            isReparseBusy: reparseMutation.isPending,
+        },
+
         actions,
     };
 }

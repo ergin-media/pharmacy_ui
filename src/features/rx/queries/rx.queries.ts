@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { RxListQueryParams } from "../types/rx.dto";
-import { fetchRxList } from "../api/rx.api";
+import { fetchRxList, reparseRx } from "../api/rx.api";
 
 export const rxKeys = {
     all: ["rx"] as const,
@@ -30,5 +30,32 @@ export function useRxListQuery(params: RxListQueryParams) {
 
         // React Query v5: damit bleibt die vorherige Seite sichtbar beim Page-Wechsel
         placeholderData: (previousData) => previousData,
+    });
+}
+
+export function useReparseRxMutation() {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: reparseRx,
+
+        onSuccess: (data) => {
+            const updatedItem = data.item;
+
+            // 🔥 Alle Rx-Listen patchen
+            qc.setQueriesData(
+                { queryKey: rxKeys.all },
+                (old: any) => {
+                    if (!old?.items) return old;
+
+                    return {
+                        ...old,
+                        items: old.items.map((i: any) =>
+                            i.id === updatedItem.id ? updatedItem : i
+                        ),
+                    };
+                }
+            );
+        },
     });
 }
