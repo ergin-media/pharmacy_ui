@@ -25,37 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, RotateCcw } from "lucide-react";
 import { RxItemsTableCell } from "./RxItemsTableCell";
 
-/**
- * Mapping helpers (neu: items[] kommt direkt von API)
- */
-function rxItemHasMapping(item: {
-    mapping?: {
-        pharmacy_product_id?: number | null;
-        has_pharmacy_product?: boolean | 0 | 1 | null;
-    } | null;
-}): boolean {
-    const v = item?.mapping?.has_pharmacy_product;
-    if (v === true || v === 1) return true;
-    if (v === false || v === 0) return false;
-    return Boolean(item?.mapping?.pharmacy_product_id);
-}
-
-function rxItemLabel(item: {
-    raw_product_name?: string | null;
-    normalized_product_name?: string | null;
-}): string {
-    return item.raw_product_name ?? item.normalized_product_name ?? "—";
-}
-
-function rxUnmappedCount(r: RxListItemDto): number {
-    // wenn Backend es liefert, nehmen wir das (ist am günstigsten)
-    if (typeof r.summary?.unmapped_items_count === "number") {
-        return r.summary.unmapped_items_count;
-    }
-    const its = (r as any).items as Array<any> | undefined;
-    if (!Array.isArray(its)) return 0;
-    return its.filter((it) => !rxItemHasMapping(it)).length;
-}
+import { rxShouldShowReparse, rxUnmappedCount } from "../lib/rx.reparse";
 
 export function RxListTable(props: {
     items: RxListItemDto[];
@@ -125,28 +95,10 @@ export function RxListTable(props: {
                             const summary = r.summary ?? undefined;
                             const priceMeta = getPriceMeta(summary);
 
-                            // ✅ neu: API liefert can_reparse
-                            const canReparse =
-                                r.parse?.actions?.can_reparse === true;
-
-                            // ✅ neu: Items kommen direkt
-                            const rxItems = ((r as any).items ??
-                                []) as Array<{
-                                    id: number | string;
-                                    raw_product_name?: string | null;
-                                    normalized_product_name?: string | null;
-                                    quantity?: number | null;
-                                    unit?: string | null;
-                                    mapping?: {
-                                        pharmacy_product_id?: number | null;
-                                        has_pharmacy_product?: boolean | 0 | 1 | null;
-                                    } | null;
-                                }>;
-
-                            const itemsCount =
-                                typeof summary?.items_count === "number"
-                                    ? summary.items_count
-                                    : rxItems.length;
+                            const unmappedCount = rxUnmappedCount(r);
+                            const showReparse =
+                                Boolean(onReparse) &&
+                                rxShouldShowReparse(r, unmappedCount);
 
                             const totalQty = summary?.total_quantity ?? null;
                             const totalUnit = summary?.total_unit ?? null;
@@ -159,25 +111,11 @@ export function RxListTable(props: {
                                 r.patient?.first_name,
                                 r.patient?.last_name,
                             );
-
                             const patientSub =
                                 r.patient?.email ?? r.patient?.phone ?? "—";
 
-                            const unmappedCount = rxUnmappedCount(r);
-
-                            // Optional: nur zeigen wenn wirklich nötig (du kannst das weiter anpassen)
-                            const needsAttention =
-                                (summary?.price_is_complete === false) ||
-                                unmappedCount > 0;
-
-                            const showReparse =
-                                Boolean(onReparse) && canReparse && needsAttention;
-
                             return (
-                                <TableRow
-                                    key={r.id}
-                                    className="hover:bg-muted/50"
-                                >
+                                <TableRow key={r.id} className="hover:bg-muted/50">
                                     {/* Patient */}
                                     <TableCell className="ps-3">
                                         <div className="font-medium">
@@ -200,20 +138,18 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Artikel (neu: aus r.items + mapping indicator) */}
+                                    {/* Artikel */}
                                     <RxItemsTableCell
+                                        rx={r}
                                         rxItems={r.items ?? []}
-                                        unmappedCount={r.summary?.unmapped_items_count ?? 0}
+                                        unmappedCount={unmappedCount}
                                         priceMeta={priceMeta}
                                     />
 
                                     {/* Gesamtmenge */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
-                                            {formatQuantity(
-                                                totalQty,
-                                                totalUnit,
-                                            )}
+                                            {formatQuantity(totalQty, totalUnit)}
                                         </div>
                                     </TableCell>
 
@@ -228,10 +164,7 @@ export function RxListTable(props: {
                                                         : "text-muted-foreground opacity-50",
                                                 ].join(" ")}
                                             >
-                                                {formatMoney(
-                                                    priceCents,
-                                                    currency,
-                                                )}
+                                                {formatMoney(priceCents, currency)}
                                             </div>
                                         </div>
                                     </TableCell>
@@ -278,13 +211,8 @@ export function RxListTable(props: {
                                                         variant="outline"
                                                         size="sm"
                                                         className="h-7 px-2"
-                                                        onClick={() =>
-                                                            onReparse?.(rowId)
-                                                        }
-                                                        disabled={
-                                                            Boolean(isLoading) ||
-                                                            isReparseBusy
-                                                        }
+                                                        onClick={() => onReparse?.(rowId)}
+                                                        disabled={Boolean(isLoading) || isReparseBusy}
                                                     >
                                                         {isReparseBusy ? (
                                                             <Loader2 className="mr-2 size-4 animate-spin" />
@@ -302,10 +230,7 @@ export function RxListTable(props: {
                                     <TableCell className="text-right pe-3">
                                         <div className="flex justify-end">
                                             <RxRowActionsMenu
-                                                disabled={
-                                                    Boolean(isLoading) ||
-                                                    isReparseBusy
-                                                }
+                                                disabled={Boolean(isLoading) || isReparseBusy}
                                                 onOpen={() => onOpen?.(rowId)}
                                                 onPdf={() => onPdf?.(rowId)}
                                                 onMore={() => onMore?.(rowId)}
