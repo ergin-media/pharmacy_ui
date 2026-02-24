@@ -82,6 +82,19 @@ export interface RxListItemDto {
         final_price_cents?: number | null;
         currency?: string | null;
     } | null;
+
+    parse?: {
+        error?: string | null;
+        warnings?: Array<{
+            code: string;
+            field?: string | null;
+            message?: string | null;
+        }> | null;
+        flags?: Record<string, boolean> | null;
+        actions?: {
+            can_reparse?: boolean | null;
+        } | null;
+    } | null;
 }
 
 export interface RxListResponseDto {

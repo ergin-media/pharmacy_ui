@@ -89,6 +89,19 @@ export function RxListTable(props: {
                             const summary = r.summary ?? undefined;
                             const priceMeta = getPriceMeta(summary);
 
+                            // ✅ neue Quelle: API sagt explizit, ob Reparse erlaubt ist
+                            const canReparse =
+                                r.parse?.actions?.can_reparse === true;
+
+                            // optional: wenn du es enger fassen willst:
+                            // const needsAttention =
+                            //   summary?.price_is_complete === false ||
+                            //   (summary?.unmapped_items_count ?? 0) > 0 ||
+                            //   summary?.has_pricing_base_price_missing === true;
+                            // const showReparse = canReparse && needsAttention;
+
+                            const showReparse = canReparse;
+
                             const itemsPreview = summary?.items_preview ?? [];
                             const itemsCount =
                                 typeof summary?.items_count === "number"
@@ -98,14 +111,14 @@ export function RxListTable(props: {
                             const totalQty = summary?.total_quantity ?? null;
                             const totalUnit = summary?.total_unit ?? null;
 
-                            const priceCents = summary?.final_price_cents ?? null;
+                            const priceCents =
+                                summary?.final_price_cents ?? null;
                             const currency = summary?.currency ?? "EUR";
 
                             const patientTitle = formatPersonName(
                                 r.patient?.first_name,
                                 r.patient?.last_name,
                             );
-
                             const patientSub =
                                 r.patient?.email ?? r.patient?.phone ?? "—";
 
@@ -119,7 +132,6 @@ export function RxListTable(props: {
                                         <div className="font-medium">
                                             {patientTitle}
                                         </div>
-
                                         <div className="max-w-60 truncate text-xs text-muted-foreground">
                                             {patientSub}
                                         </div>
@@ -132,7 +144,6 @@ export function RxListTable(props: {
                                                 r.provider?.slug ??
                                                 "—"}
                                         </div>
-
                                         <div className="max-w-50 truncate text-xs text-muted-foreground">
                                             {orderLabel(r.external_order_id)}
                                         </div>
@@ -155,7 +166,9 @@ export function RxListTable(props: {
                                                                         <span className="mr-1 text-muted-foreground">
                                                                             •
                                                                         </span>
-                                                                        {it.name}
+                                                                        {
+                                                                            it.name
+                                                                        }
                                                                     </>
                                                                 ) : (
                                                                     "—"
@@ -179,8 +192,8 @@ export function RxListTable(props: {
                                                 ) : null}
 
                                                 {!priceMeta.isComplete &&
-                                                    priceMeta.hint ? (
-                                                    <Badge variant={"danger"}>
+                                                priceMeta.hint ? (
+                                                    <Badge variant="danger">
                                                         {priceMeta.hint}
                                                     </Badge>
                                                 ) : null}
@@ -195,7 +208,10 @@ export function RxListTable(props: {
                                     {/* Gesamtmenge */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
-                                            {formatQuantity(totalQty, totalUnit)}
+                                            {formatQuantity(
+                                                totalQty,
+                                                totalUnit,
+                                            )}
                                         </div>
                                     </TableCell>
 
@@ -210,34 +226,12 @@ export function RxListTable(props: {
                                                         : "text-muted-foreground opacity-50",
                                                 ].join(" ")}
                                             >
-                                                {formatMoney(priceCents, currency)}
+                                                {formatMoney(
+                                                    priceCents,
+                                                    currency,
+                                                )}
                                             </div>
                                         </div>
-
-                                        {/* ✅ Nur wenn Preis-Aktualisierung nötig */}
-                                        {!priceMeta.isComplete && onReparse ? (
-                                            <div>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="h-7 px-2"
-                                                    onClick={() =>
-                                                        onReparse(rowId)
-                                                    }
-                                                    disabled={
-                                                        Boolean(isLoading) ||
-                                                        isReparseBusy
-                                                    }
-                                                >
-                                                    {isReparseBusy ? (
-                                                        <Loader2 className="mr-2 size-4 animate-spin" />
-                                                    ) : (
-                                                        <RotateCcw className="mr-2 size-4" />
-                                                    )}
-                                                    Reparse
-                                                </Button>
-                                            </div>
-                                        ) : null}
                                     </TableCell>
 
                                     {/* Eingang */}
@@ -272,9 +266,36 @@ export function RxListTable(props: {
 
                                             <div className="text-xs text-muted-foreground">
                                                 <span className="font-medium text-foreground">
-                                                    {r.parse_status as RxParseStatus}
+                                                    {
+                                                        r.parse_status as RxParseStatus
+                                                    }
                                                 </span>
                                             </div>
+
+                                            {showReparse && onReparse ? (
+                                                <div>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="h-7 px-2"
+                                                        onClick={() =>
+                                                            onReparse(rowId)
+                                                        }
+                                                        disabled={
+                                                            Boolean(
+                                                                isLoading,
+                                                            ) || isReparseBusy
+                                                        }
+                                                    >
+                                                        {isReparseBusy ? (
+                                                            <Loader2 className="mr-2 size-4 animate-spin" />
+                                                        ) : (
+                                                            <RotateCcw className="mr-2 size-4" />
+                                                        )}
+                                                        Reparse
+                                                    </Button>
+                                                </div>
+                                            ) : null}
                                         </div>
                                     </TableCell>
 
@@ -282,7 +303,10 @@ export function RxListTable(props: {
                                     <TableCell className="text-right pe-3">
                                         <div className="flex justify-end">
                                             <RxRowActionsMenu
-                                                disabled={Boolean(isLoading) || isReparseBusy}
+                                                disabled={
+                                                    Boolean(isLoading) ||
+                                                    isReparseBusy
+                                                }
                                                 onOpen={() => onOpen?.(rowId)}
                                                 onPdf={() => onPdf?.(rowId)}
                                                 onMore={() => onMore?.(rowId)}
