@@ -22,11 +22,12 @@ export interface RxListItemDto {
     provider: {
         slug: string | null;
         name: string | null;
+        // optional falls du es verwendest:
+        price_source?: string | null;
     };
 
     parse_status: RxParseStatus;
 
-    // neu
     workflow_status?: RxWorkflowStatus | null;
     payment_state?: RxPaymentState | null;
 
@@ -61,27 +62,38 @@ export interface RxListItemDto {
     };
 
     summary?: {
-        items_preview?: Array<{
-            name: string | null;
-            unit: string | null;
-            quantity: number | null;
-
-            // optional: falls du es schon mit übernommen hast
-            pharmacy_product_id?: number | null;
-            has_pharmacy_product?: 0 | 1 | boolean | null;
-        }>;
         items_count?: number | null;
         total_quantity?: number | null;
         total_unit?: string | null;
 
-        // ✅ neu
         unmapped_items_count?: number | null;
         price_is_complete?: boolean | null;
-        has_pricing_base_price_missing?: boolean | null;
 
         final_price_cents?: number | null;
         currency?: string | null;
     } | null;
+
+    // ✅ neu: vollständige Items
+    items?: Array<{
+        id: Id;
+        rx_document_id: Id;
+        provider_product_map_id: Id | null;
+
+        raw_product_name: string | null;
+        normalized_product_name?: string | null;
+
+        sku?: string | null;
+        quantity: number | null;
+        unit: string | null;
+
+        dosage_notes?: string | null;
+        created_at?: ISODateTime | null;
+
+        mapping?: {
+            pharmacy_product_id?: number | null;
+            has_pharmacy_product?: boolean | 0 | 1 | null;
+        } | null;
+    }> | null;
 
     parse?: {
         error?: string | null;

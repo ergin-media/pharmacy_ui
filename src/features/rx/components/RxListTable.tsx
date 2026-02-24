@@ -2,6 +2,7 @@ import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
 import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
 import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
 import { getPriceMeta } from "../lib/rx.summary";
+
 import { Badge } from "@/components/ui/badge";
 import {
     Table,
@@ -11,15 +12,49 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+
 import { formatDateTime } from "@/shared/lib/format/date";
 import { formatMoney } from "@/shared/lib/format/money";
 import { formatPersonName } from "@/shared/lib/format/person";
 import { formatQuantity } from "@/shared/lib/format/quantity";
+
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
 import { RxRowActionsMenu } from "./RxRowActionsMenu";
 
 import { Button } from "@/components/ui/button";
-import { Loader2, RotateCcw } from "lucide-react";
+import { AlertTriangle, Loader2, RotateCcw } from "lucide-react";
+
+/**
+ * Mapping helpers (neu: items[] kommt direkt von API)
+ */
+function rxItemHasMapping(item: {
+    mapping?: {
+        pharmacy_product_id?: number | null;
+        has_pharmacy_product?: boolean | 0 | 1 | null;
+    } | null;
+}): boolean {
+    const v = item?.mapping?.has_pharmacy_product;
+    if (v === true || v === 1) return true;
+    if (v === false || v === 0) return false;
+    return Boolean(item?.mapping?.pharmacy_product_id);
+}
+
+function rxItemLabel(item: {
+    raw_product_name?: string | null;
+    normalized_product_name?: string | null;
+}): string {
+    return item.raw_product_name ?? item.normalized_product_name ?? "—";
+}
+
+function rxUnmappedCount(r: RxListItemDto): number {
+    // wenn Backend es liefert, nehmen wir das (ist am günstigsten)
+    if (typeof r.summary?.unmapped_items_count === "number") {
+        return r.summary.unmapped_items_count;
+    }
+    const its = (r as any).items as Array<any> | undefined;
+    if (!Array.isArray(its)) return 0;
+    return its.filter((it) => !rxItemHasMapping(it)).length;
+}
 
 export function RxListTable(props: {
     items: RxListItemDto[];
@@ -89,24 +124,28 @@ export function RxListTable(props: {
                             const summary = r.summary ?? undefined;
                             const priceMeta = getPriceMeta(summary);
 
-                            // ✅ neue Quelle: API sagt explizit, ob Reparse erlaubt ist
+                            // ✅ neu: API liefert can_reparse
                             const canReparse =
                                 r.parse?.actions?.can_reparse === true;
 
-                            // optional: wenn du es enger fassen willst:
-                            // const needsAttention =
-                            //   summary?.price_is_complete === false ||
-                            //   (summary?.unmapped_items_count ?? 0) > 0 ||
-                            //   summary?.has_pricing_base_price_missing === true;
-                            // const showReparse = canReparse && needsAttention;
+                            // ✅ neu: Items kommen direkt
+                            const rxItems = ((r as any).items ??
+                                []) as Array<{
+                                    id: number | string;
+                                    raw_product_name?: string | null;
+                                    normalized_product_name?: string | null;
+                                    quantity?: number | null;
+                                    unit?: string | null;
+                                    mapping?: {
+                                        pharmacy_product_id?: number | null;
+                                        has_pharmacy_product?: boolean | 0 | 1 | null;
+                                    } | null;
+                                }>;
 
-                            const showReparse = canReparse;
-
-                            const itemsPreview = summary?.items_preview ?? [];
                             const itemsCount =
                                 typeof summary?.items_count === "number"
                                     ? summary.items_count
-                                    : itemsPreview.length;
+                                    : rxItems.length;
 
                             const totalQty = summary?.total_quantity ?? null;
                             const totalUnit = summary?.total_unit ?? null;
@@ -119,8 +158,19 @@ export function RxListTable(props: {
                                 r.patient?.first_name,
                                 r.patient?.last_name,
                             );
+
                             const patientSub =
                                 r.patient?.email ?? r.patient?.phone ?? "—";
+
+                            const unmappedCount = rxUnmappedCount(r);
+
+                            // Optional: nur zeigen wenn wirklich nötig (du kannst das weiter anpassen)
+                            const needsAttention =
+                                (summary?.price_is_complete === false) ||
+                                unmappedCount > 0;
+
+                            const showReparse =
+                                Boolean(onReparse) && canReparse && needsAttention;
 
                             return (
                                 <TableRow
@@ -149,41 +199,51 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Artikel */}
+                                    {/* Artikel (neu: aus r.items + mapping indicator) */}
                                     <TableCell>
-                                        {itemsPreview.length > 0 ? (
+                                        {rxItems.length > 0 ? (
                                             <div className="min-w-80 space-y-1">
-                                                {itemsPreview
+                                                {rxItems
                                                     .slice(0, 3)
-                                                    .map((it, idx) => (
-                                                        <div
-                                                            key={idx}
-                                                            className="flex items-center gap-1"
-                                                        >
-                                                            <div className="truncate">
-                                                                {it.name ? (
-                                                                    <>
-                                                                        <span className="mr-1 text-muted-foreground">
-                                                                            •
-                                                                        </span>
-                                                                        {
-                                                                            it.name
-                                                                        }
-                                                                    </>
+                                                    .map((it) => {
+                                                        const mapped =
+                                                            rxItemHasMapping(it);
+
+                                                        return (
+                                                            <div
+                                                                key={String(
+                                                                    it.id,
+                                                                )}
+                                                                className="flex items-center gap-2"
+                                                            >
+                                                                {!mapped ? (
+                                                                    <AlertTriangle className="size-4 shrink-0 text-destructive" />
                                                                 ) : (
-                                                                    "—"
+                                                                    <span className="size-4 shrink-0" />
                                                                 )}
+
+                                                                <div className="min-w-0 flex-1 truncate">
+                                                                    <span className="mr-1 text-muted-foreground">
+                                                                        •
+                                                                    </span>
+                                                                    {rxItemLabel(
+                                                                        it,
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="whitespace-nowrap text-xs text-muted-foreground">
+                                                                    (
+                                                                    {formatQuantity(
+                                                                        it.quantity ??
+                                                                        null,
+                                                                        it.unit ??
+                                                                        null,
+                                                                    )}
+                                                                    )
+                                                                </div>
                                                             </div>
-                                                            <div className="whitespace-nowrap text-xs text-muted-foreground">
-                                                                (
-                                                                {formatQuantity(
-                                                                    it.quantity,
-                                                                    it.unit,
-                                                                )}
-                                                                )
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                        );
+                                                    })}
 
                                                 {itemsCount > 3 ? (
                                                     <div className="text-xs text-muted-foreground">
@@ -191,8 +251,18 @@ export function RxListTable(props: {
                                                     </div>
                                                 ) : null}
 
+                                                {/* Mapping-Hinweis (neu) */}
+                                                {unmappedCount > 0 ? (
+                                                    <Badge variant="danger">
+                                                        {unmappedCount === 1
+                                                            ? "1 Artikel ohne Zuordnung"
+                                                            : `${unmappedCount} Artikel ohne Zuordnung`}
+                                                    </Badge>
+                                                ) : null}
+
+                                                {/* Preis-Hinweis (bestehende Logik) */}
                                                 {!priceMeta.isComplete &&
-                                                priceMeta.hint ? (
+                                                    priceMeta.hint ? (
                                                     <Badge variant="danger">
                                                         {priceMeta.hint}
                                                     </Badge>
@@ -239,7 +309,7 @@ export function RxListTable(props: {
                                         {formatDateTime(r.mail?.received_at)}
                                     </TableCell>
 
-                                    {/* Status + Reparse Button */}
+                                    {/* Status + Reparse */}
                                     <TableCell>
                                         <div className="flex flex-col gap-2">
                                             <div className="flex flex-wrap gap-2">
@@ -266,25 +336,22 @@ export function RxListTable(props: {
 
                                             <div className="text-xs text-muted-foreground">
                                                 <span className="font-medium text-foreground">
-                                                    {
-                                                        r.parse_status as RxParseStatus
-                                                    }
+                                                    {r.parse_status as RxParseStatus}
                                                 </span>
                                             </div>
 
-                                            {showReparse && onReparse ? (
+                                            {showReparse ? (
                                                 <div>
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
                                                         className="h-7 px-2"
                                                         onClick={() =>
-                                                            onReparse(rowId)
+                                                            onReparse?.(rowId)
                                                         }
                                                         disabled={
-                                                            Boolean(
-                                                                isLoading,
-                                                            ) || isReparseBusy
+                                                            Boolean(isLoading) ||
+                                                            isReparseBusy
                                                         }
                                                     >
                                                         {isReparseBusy ? (
