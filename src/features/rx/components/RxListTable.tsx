@@ -22,7 +22,8 @@ import { RxListTableSkeleton } from "./RxListTableSkeleton";
 import { RxRowActionsMenu } from "./RxRowActionsMenu";
 
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Loader2, RotateCcw } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
+import { RxItemsTableCell } from "./RxItemsTableCell";
 
 /**
  * Mapping helpers (neu: items[] kommt direkt von API)
@@ -200,80 +201,11 @@ export function RxListTable(props: {
                                     </TableCell>
 
                                     {/* Artikel (neu: aus r.items + mapping indicator) */}
-                                    <TableCell>
-                                        {rxItems.length > 0 ? (
-                                            <div className="min-w-80 space-y-1">
-                                                {rxItems
-                                                    .slice(0, 3)
-                                                    .map((it) => {
-                                                        const mapped =
-                                                            rxItemHasMapping(it);
-
-                                                        return (
-                                                            <div
-                                                                key={String(
-                                                                    it.id,
-                                                                )}
-                                                                className="flex items-center gap-2"
-                                                            >
-                                                                {!mapped ? (
-                                                                    <AlertTriangle className="size-4 shrink-0 text-destructive" />
-                                                                ) : (
-                                                                    <span className="size-4 shrink-0" />
-                                                                )}
-
-                                                                <div className="min-w-0 flex-1 truncate">
-                                                                    <span className="mr-1 text-muted-foreground">
-                                                                        •
-                                                                    </span>
-                                                                    {rxItemLabel(
-                                                                        it,
-                                                                    )}
-                                                                </div>
-
-                                                                <div className="whitespace-nowrap text-xs text-muted-foreground">
-                                                                    (
-                                                                    {formatQuantity(
-                                                                        it.quantity ??
-                                                                        null,
-                                                                        it.unit ??
-                                                                        null,
-                                                                    )}
-                                                                    )
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-
-                                                {itemsCount > 3 ? (
-                                                    <div className="text-xs text-muted-foreground">
-                                                        {`+${itemsCount - 3} weitere`}
-                                                    </div>
-                                                ) : null}
-
-                                                {/* Mapping-Hinweis (neu) */}
-                                                {unmappedCount > 0 ? (
-                                                    <Badge variant="danger">
-                                                        {unmappedCount === 1
-                                                            ? "1 Artikel ohne Zuordnung"
-                                                            : `${unmappedCount} Artikel ohne Zuordnung`}
-                                                    </Badge>
-                                                ) : null}
-
-                                                {/* Preis-Hinweis (bestehende Logik) */}
-                                                {!priceMeta.isComplete &&
-                                                    priceMeta.hint ? (
-                                                    <Badge variant="danger">
-                                                        {priceMeta.hint}
-                                                    </Badge>
-                                                ) : null}
-                                            </div>
-                                        ) : (
-                                            <div className="text-sm text-muted-foreground">
-                                                —
-                                            </div>
-                                        )}
-                                    </TableCell>
+                                    <RxItemsTableCell
+                                        rxItems={r.items ?? []}
+                                        unmappedCount={r.summary?.unmapped_items_count ?? 0}
+                                        priceMeta={priceMeta}
+                                    />
 
                                     {/* Gesamtmenge */}
                                     <TableCell className="text-right">

@@ -1,20 +1,61 @@
-import type { Id, ISODateTime, Sha256 } from "@/shared/types/db";
+import type {
+    Id,
+    ISODate,
+    ISODateTime,
+    Sha256,
+    RxParseStatus as DbRxParseStatus,
+    FulfillmentType as DbFulfillmentType,
+    RxUnit as DbRxUnit,
+    RxPatient as DbRxPatient,
+} from "@/shared/types/db";
 
-export type RxParseStatus =
-    | "pending"
-    | "parsed"
-    | "failed"
-    | "parsed_with_warnings";
+export type RxParseStatus = DbRxParseStatus;
+export type RxFulfillmentType = DbFulfillmentType;
 
-export type RxFulfillmentType = "shipping" | "pickup" | "unknown";
-
-// neu
 export type RxWorkflowStatus =
     | "pending"
     | "processing"
     | "completed"
     | "rejected";
+
 export type RxPaymentState = "unpaid" | "paid";
+
+/**
+ * ✅ Patient DTO basiert auf DB-Type:
+ * - wir nehmen alles aus RxPatient, was wir brauchen
+ * - lassen DB-interne Felder weg
+ * - ergänzen API-only Feld "age"
+ *
+ * Hinweis: "birthdate" ist in DB nicht optional, aber API kann es weglassen -> optional machen.
+ */
+export type RxPatientDto = Omit<
+    DbRxPatient,
+    "id" | "rx_document_id" | "patient_key" | "created_at"
+> & {
+    birthdate?: ISODate | null;
+    age?: number | null;
+};
+
+export type RxItem = {
+    id: Id;
+    rx_document_id: Id;
+    provider_product_map_id: Id | null;
+
+    raw_product_name: string | null;
+    normalized_product_name?: string | null;
+
+    sku?: string | null;
+    quantity: number | null;
+    unit: DbRxUnit | string | null;
+
+    dosage_notes?: string | null;
+    created_at?: ISODateTime | null;
+
+    mapping?: {
+        pharmacy_product_id?: number | null;
+        has_pharmacy_product?: boolean | 0 | 1 | null;
+    } | null;
+};
 
 export interface RxListItemDto {
     id: Id;
@@ -22,7 +63,6 @@ export interface RxListItemDto {
     provider: {
         slug: string | null;
         name: string | null;
-        // optional falls du es verwendest:
         price_source?: string | null;
     };
 
@@ -45,21 +85,10 @@ export interface RxListItemDto {
         received_at: ISODateTime | null;
     };
 
-    patient: {
-        first_name: string | null;
-        last_name: string | null;
-
-        birthdate?: string | null;
-        age?: number | null;
-
-        street?: string | null;
-        zip?: string | null;
-        city?: string | null;
-        country?: string | null;
-
-        phone?: string | null;
-        email?: string | null;
-    };
+    /**
+     * ✅ jetzt korrekt typisiert
+     */
+    patient: RxPatientDto;
 
     summary?: {
         items_count?: number | null;
@@ -73,27 +102,7 @@ export interface RxListItemDto {
         currency?: string | null;
     } | null;
 
-    // ✅ neu: vollständige Items
-    items?: Array<{
-        id: Id;
-        rx_document_id: Id;
-        provider_product_map_id: Id | null;
-
-        raw_product_name: string | null;
-        normalized_product_name?: string | null;
-
-        sku?: string | null;
-        quantity: number | null;
-        unit: string | null;
-
-        dosage_notes?: string | null;
-        created_at?: ISODateTime | null;
-
-        mapping?: {
-            pharmacy_product_id?: number | null;
-            has_pharmacy_product?: boolean | 0 | 1 | null;
-        } | null;
-    }> | null;
+    items?: RxItem[] | null;
 
     parse?: {
         error?: string | null;
@@ -122,7 +131,6 @@ export interface RxListQueryParams {
     per_page?: number;
     parse_status?: RxParseStatus;
 
-    // neu
     workflow_status?: RxWorkflowStatus;
     payment_state?: RxPaymentState;
 
