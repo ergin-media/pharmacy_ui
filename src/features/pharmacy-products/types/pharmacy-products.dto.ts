@@ -15,6 +15,7 @@ export type PharmacyProductDto = {
     product_code: string;
     name_norm: string;
     is_active: boolean;
+    rx_items_count: number;
     prices: PharmacyProductPricesDto;
     created_at: string; // "YYYY-MM-DD HH:mm:ss"
     updated_at: string | null;

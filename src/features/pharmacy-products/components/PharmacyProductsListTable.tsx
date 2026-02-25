@@ -21,7 +21,7 @@ import { formatMoney } from "@/shared/lib/format/money";
 
 function sortIconForKey(
     current: PharmacyProductsSort,
-    key: "name" | "price" | "updated_at",
+    key: "name" | "price" | "usage" | "updated_at",
 ) {
     const isThisCol = current.startsWith(`${key}_`);
     if (!isThisCol) return <ArrowUpDown className="size-4 opacity-50" />;
@@ -59,7 +59,7 @@ export function PharmacyProductsListTable(props: {
     } = props;
 
     const sortMap: Record<
-        "name" | "price" | "updated_at" | "usage",
+        "name" | "price" | "usage" | "updated_at",
         { asc: PharmacyProductsSort; desc: PharmacyProductsSort }
     > = {
         name: { asc: "name_asc", desc: "name_desc" },
@@ -71,6 +71,7 @@ export function PharmacyProductsListTable(props: {
     function toggleSort(key: keyof typeof sortMap) {
         const pair = sortMap[key];
         const next = sort === pair.desc ? pair.asc : pair.desc;
+        console.log(pair, next);
         onSortChange(next);
     }
 
@@ -99,6 +100,15 @@ export function PharmacyProductsListTable(props: {
                             </div>
                         </TableHead>
                         <TableHead className="w-44">Preis (andere)</TableHead>
+                        <TableHead
+                            className="w-44 cursor-pointer"
+                            onClick={() => toggleSort("usage")}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span>Benutzung</span>
+                                {sortIconForKey(sort, "usage")}
+                            </div>
+                        </TableHead>
                         <TableHead className="w-28">Status</TableHead>
                         <TableHead
                             className="w-52 cursor-pointer"
@@ -148,6 +158,9 @@ export function PharmacyProductsListTable(props: {
                                     {formatMoney(
                                         p.prices.price_other_provider_cents,
                                     )}
+                                </TableCell>
+                                <TableCell>
+                                    {p.rx_items_count}
                                 </TableCell>
                                 <TableCell>
                                     <Badge

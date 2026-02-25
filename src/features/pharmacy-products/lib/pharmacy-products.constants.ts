@@ -7,6 +7,8 @@ export const SORT_OPTIONS = [
     { value: "name_desc", label: "Name absteigend" },
     { value: "price_asc", label: "Preis aufsteigend" },
     { value: "price_desc", label: "Preis absteigend" },
+    { value: "usage_asc", label: "Benutzung aufsteigend" },
+    { value: "usage_desc", label: "Benutzung absteigend" },
     { value: "updated_at_desc", label: "Aktualisiert absteigend" },
     { value: "updated_at_asc", label: "Aktualisiert aufsteigend" },
 ] as const;
