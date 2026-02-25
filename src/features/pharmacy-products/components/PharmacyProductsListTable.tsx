@@ -59,11 +59,13 @@ export function PharmacyProductsListTable(props: {
     } = props;
 
     const sortMap: Record<
-        "name" | "price",
+        "name" | "price" | "updated_at" | "usage",
         { asc: PharmacyProductsSort; desc: PharmacyProductsSort }
     > = {
         name: { asc: "name_asc", desc: "name_desc" },
         price: { asc: "price_asc", desc: "price_desc" },
+        usage: { asc: "usage_asc", desc: "usage_desc" },
+        updated_at: { asc: "updated_at_asc", desc: "updated_at_desc" },
     };
 
     function toggleSort(key: keyof typeof sortMap) {
@@ -100,7 +102,7 @@ export function PharmacyProductsListTable(props: {
                         <TableHead className="w-28">Status</TableHead>
                         <TableHead
                             className="w-52 cursor-pointer"
-                            onClick={() => toggleSort("price")}
+                            onClick={() => toggleSort("updated_at")}
                         >
                             <div className="flex items-center gap-2">
                                 <span>Aktualisiert</span>

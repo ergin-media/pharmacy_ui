@@ -26,7 +26,9 @@ export type PharmacyProductsSort =
     | "name_asc"
     | "name_desc"
     | "price_asc"
-    | "price_desc";
+    | "price_desc"
+    | "usage_asc"
+    | "usage_desc";
 
 export type PharmacyProductsListParams = {
     page: number;
