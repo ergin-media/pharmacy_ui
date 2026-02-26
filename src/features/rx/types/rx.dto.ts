@@ -1,12 +1,11 @@
+import type { PatientDto } from "@/features/patients/types/patients.dto";
 import type {
     Id,
-    ISODate,
     ISODateTime,
     Sha256,
     RxParseStatus as DbRxParseStatus,
     FulfillmentType as DbFulfillmentType,
     RxUnit as DbRxUnit,
-    RxPatient as DbRxPatient,
 } from "@/shared/types/db";
 
 export type RxParseStatus = DbRxParseStatus;
@@ -20,21 +19,7 @@ export type RxWorkflowStatus =
 
 export type RxPaymentState = "unpaid" | "paid";
 
-/**
- * ✅ Patient DTO basiert auf DB-Type:
- * - wir nehmen alles aus RxPatient, was wir brauchen
- * - lassen DB-interne Felder weg
- * - ergänzen API-only Feld "age"
- *
- * Hinweis: "birthdate" ist in DB nicht optional, aber API kann es weglassen -> optional machen.
- */
-export type RxPatientDto = Omit<
-    DbRxPatient,
-    "id" | "rx_document_id" | "patient_key" | "created_at"
-> & {
-    birthdate?: ISODate | null;
-    age?: number | null;
-};
+
 
 export type RxItem = {
     id: Id;
@@ -88,7 +73,7 @@ export interface RxListItemDto {
     /**
      * ✅ jetzt korrekt typisiert
      */
-    patient: RxPatientDto;
+    patient: PatientDto;
 
     summary?: {
         items_count?: number | null;
