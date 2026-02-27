@@ -75,14 +75,12 @@ export function PatientsListTable(props: {
                                         <div className="font-medium">
                                             {title}
                                         </div>
-                                        {p.birthdate ? (
-                                            <div className="text-xs text-muted-foreground mt-1">
-                                                Geb.: {formatDate(p.birthdate)}{" "}
-                                                {p.age != null
-                                                    ? `(${p.age})`
-                                                    : ""}
-                                            </div>
-                                        ) : null}
+                                        <div className="text-xs text-muted-foreground mt-1">
+                                            Geb.: {formatDate(p.birthdate)}{" "}
+                                            {p.age != null
+                                                ? `(${p.age})`
+                                                : ""}
+                                        </div>
                                     </TableCell>
 
                                     <TableCell>
@@ -90,7 +88,7 @@ export function PatientsListTable(props: {
                                             {p.contact?.email ?? "—"}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
-                                            {p.contact?.phone ?? "—"}
+                                            Tel.: {p.contact?.phone ?? "—"}
                                         </div>
                                     </TableCell>
 
