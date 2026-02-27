@@ -17,6 +17,8 @@ export interface PatientsListParams {
     issues?: "all" | "with_issues";
 }
 
+export type PatientsIssues = NonNullable<PatientsListParams["issues"]>;
+
 export interface PatientsListResponseDto {
     items: PatientDto[];
     page: number;

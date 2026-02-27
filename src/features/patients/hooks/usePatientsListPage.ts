@@ -15,7 +15,7 @@ import {
     DEFAULT_PER_PAGE,
     DEFAULT_SORT,
 } from "../lib/patients.constants";
-import type { PatientsSort } from "../types/patients.list.dto";
+import type { PatientsIssues, PatientsSort } from "../types/patients.list.dto";
 
 export function usePatientsListPage() {
     const [sp, setSp] = useSearchParams();
@@ -34,7 +34,8 @@ export function usePatientsListPage() {
         : DEFAULT_SORT;
 
     const issuesRaw = spGetString(sp, "issues"); // "all" | "with_issues"
-    const issues = issuesRaw === "with_issues" ? "with_issues" : "all";
+    const issues: PatientsIssues =
+        issuesRaw === "with_issues" ? "with_issues" : "all";
 
     const searchRaw = spGetString(sp, "search");
     const [searchInput, setSearchInput] = useState(searchRaw);

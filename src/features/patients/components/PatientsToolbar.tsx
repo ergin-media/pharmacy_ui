@@ -8,7 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import type { PatientsSort } from "../types/patients.list.dto";
+import type { PatientsIssues, PatientsSort } from "../types/patients.list.dto";
 import { ISSUES_FILTER_OPTIONS } from "../lib/patients.constants";
 import { RotateCcw } from "lucide-react";
 
@@ -55,7 +55,10 @@ export function PatientsToolbar(props: {
                 disabled={isFetching}
             />
 
-            <Select value={issues} onValueChange={(v) => onIssuesChange(v)}>
+            <Select
+                value={issues}
+                onValueChange={(v) => onIssuesChange(v as PatientsIssues)}
+            >
                 <SelectTrigger className="w-56" disabled={isFetching}>
                     <SelectValue placeholder="Filter" />
                 </SelectTrigger>
