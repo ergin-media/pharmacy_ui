@@ -88,7 +88,6 @@ export function usePatientsListPage() {
     );
 
     const query = usePatientsListQuery(params);
-
     const total = query.data?.total ?? 0;
     const totalPages = query.data?.total_pages ?? 1;
 

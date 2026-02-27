@@ -4,9 +4,9 @@ import type {
     PatientsListResponseDto,
 } from "../types/patients.list.dto";
 
-export async function fetchPatients(
-    params: PatientsListParams,
-): Promise<PatientsListResponseDto> {
-    // wenn du keinen apiGet helper hast: einfach fetch(...) wie in deinen anderen APIs
-    return api("patients", { params });
+export async function fetchPatients(params: PatientsListParams) {
+    const res = await api.get<PatientsListResponseDto>("patients", {
+        params,
+    });
+    return res.data;
 }
