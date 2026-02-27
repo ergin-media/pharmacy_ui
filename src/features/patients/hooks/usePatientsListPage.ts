@@ -35,7 +35,7 @@ export function usePatientsListPage() {
 
     const issuesRaw = spGetString(sp, "issues"); // "all" | "with_issues"
     const issues: PatientsIssues =
-        issuesRaw === "with_issues" ? "with_issues" : "all";
+        issuesRaw === "missing" ? "missing" : "all";
 
     const searchRaw = spGetString(sp, "search");
     const [searchInput, setSearchInput] = useState(searchRaw);

@@ -64,7 +64,7 @@ export function PatientsListTable(props: {
                                 p.last_name,
                             );
                             const hasIssues = patientHasIssues(p);
-                            const issuesText = patientIssuesLabel(p.issues);
+                            const issuesText = patientIssuesLabel(p.status?.issues);
 
                             return (
                                 <TableRow

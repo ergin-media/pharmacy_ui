@@ -12,5 +12,5 @@ export const ALLOWED_SORTS: readonly PatientsSort[] = [
 
 export const ISSUES_FILTER_OPTIONS = [
     { value: "all", label: "Alle" },
-    { value: "with_issues", label: "Nur mit Problemen" },
+    { value: "missing", label: "Nur mit Problemen" },
 ] as const;

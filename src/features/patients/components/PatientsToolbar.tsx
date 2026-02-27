@@ -22,13 +22,13 @@ const SORT_OPTIONS: Array<{ value: PatientsSort; label: string }> = [
 export function PatientsToolbar(props: {
     searchRaw: string;
     sort: PatientsSort;
-    issues: "all" | "with_issues";
+    issues: PatientsIssues;
     perPage: number;
     isFetching?: boolean;
 
     onSearchChange: (v: string) => void;
     onSortChange: (v: PatientsSort) => void;
-    onIssuesChange: (v: "all" | "with_issues") => void;
+    onIssuesChange: (v: PatientsIssues) => void;
     onPerPageChange: (v: number) => void;
     onRefresh: () => void;
 }) {

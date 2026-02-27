@@ -34,6 +34,11 @@ export type PatientContactDto = {
     email: string | null;
 };
 
+export type PatientStatusDto = {
+    is_complete: boolean;
+    issues: PatientIssues | null;
+};
+
 export type PatientDto = {
     id: Id;
     rx_document_id: Id;
@@ -49,7 +54,7 @@ export type PatientDto = {
 
     // optional (API-only)
     age?: number | null;
-    issues?: PatientIssues | null;
+    status?: PatientStatusDto | null;
 
     created_at: ISODateTime;
 };

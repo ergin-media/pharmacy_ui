@@ -10,7 +10,7 @@ export function patientIssuesCount(issues?: PatientIssues | null): number {
 }
 
 export function patientHasIssues(p: PatientDto): boolean {
-    return patientIssuesCount(p.issues) > 0;
+    return patientIssuesCount(p.status?.issues) > 0;
 }
 
 const ISSUE_LABELS: Record<PatientIssueCode, string> = {

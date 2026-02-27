@@ -14,7 +14,7 @@ export interface PatientsListParams {
     sort?: PatientsSort;
 
     // optional, falls du direkt filtern willst
-    issues?: "all" | "with_issues";
+    issues?: "complete" | "missing" | "all";
 }
 
 export type PatientsIssues = NonNullable<PatientsListParams["issues"]>;
