@@ -8,5 +8,5 @@ export async function fetchPatients(
     params: PatientsListParams,
 ): Promise<PatientsListResponseDto> {
     // wenn du keinen apiGet helper hast: einfach fetch(...) wie in deinen anderen APIs
-    return api("/v1/patients", { params });
+    return api("patients", { params });
 }
