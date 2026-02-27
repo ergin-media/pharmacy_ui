@@ -21,10 +21,7 @@ export type PatientIssues = Partial<Record<PatientIssueCode, true>>;
 /**
  * Patient DTO (API Shape)
  */
-export type PatientDto = Omit<
-    RxPatient,
-    "rx_document_id" | "patient_key" | "created_at"
-> & {
+export type PatientDto = Omit<RxPatient, "rx_document_id" | "patient_key"> & {
     birthdate?: ISODate | null;
     age?: number | null;
 
