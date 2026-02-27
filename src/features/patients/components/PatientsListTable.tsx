@@ -15,7 +15,7 @@ import { PatientsListTableSkeleton } from "./PatientsListTableSkeleton";
 import { PatientsRowActionsMenu } from "./PatientsRowActionsMenu";
 import { patientHasIssues, patientIssuesLabel } from "../lib/patients.issues";
 import { formatPersonName } from "@/shared/lib/format/person";
-import { formatDateTime } from "@/shared/lib/format/date";
+import { formatDate, formatDateTime } from "@/shared/lib/format/date";
 
 export function PatientsListTable(props: {
     items: PatientDto[];
@@ -76,8 +76,8 @@ export function PatientsListTable(props: {
                                             {title}
                                         </div>
                                         {p.birthdate ? (
-                                            <div className="text-xs text-muted-foreground">
-                                                Geb.: {p.birthdate}{" "}
+                                            <div className="text-xs text-muted-foreground mt-1">
+                                                Geb.: {formatDate(p.birthdate)}{" "}
                                                 {p.age != null
                                                     ? `(${p.age})`
                                                     : ""}

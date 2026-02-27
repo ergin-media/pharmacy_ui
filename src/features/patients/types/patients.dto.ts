@@ -1,7 +1,8 @@
-import type { ISODate, RxPatient } from "@/shared/types/db";
+// features/patients/types/patients.dto.ts
+import type { Id, ISODate, ISODateTime, Sha256 } from "@/shared/types/db";
 
 /**
- * Patient Issue Codes
+ * Patient Issue Codes (aus Backend)
  */
 export type PatientIssueCode =
     | "patient_missing"
@@ -19,11 +20,36 @@ export type PatientIssueCode =
 export type PatientIssues = Partial<Record<PatientIssueCode, true>>;
 
 /**
- * Patient DTO (API Shape)
+ * API Shapes
  */
-export type PatientDto = Omit<RxPatient, "rx_document_id" | "patient_key"> & {
-    birthdate?: ISODate | null;
-    age?: number | null;
+export type PatientAddressDto = {
+    street: string | null;
+    zip: string | null;
+    city: string | null;
+    country: string | null;
+};
 
-    issues?: PatientIssues | null; // ✅ neu
+export type PatientContactDto = {
+    phone: string | null;
+    email: string | null;
+};
+
+export type PatientDto = {
+    id: Id;
+    rx_document_id: Id;
+    patient_key: Sha256 | null;
+
+    first_name: string | null;
+    last_name: string | null;
+    birthdate: ISODate | null;
+
+    // ✅ neu (API)
+    address: PatientAddressDto;
+    contact: PatientContactDto;
+
+    // optional (API-only)
+    age?: number | null;
+    issues?: PatientIssues | null;
+
+    created_at: ISODateTime;
 };
