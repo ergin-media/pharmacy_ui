@@ -19,21 +19,6 @@ export type PatientIssueCode =
 
 export type PatientIssues = Partial<Record<PatientIssueCode, true>>;
 
-/**
- * API Shapes
- */
-export type PatientAddressDto = {
-    street: string | null;
-    zip: string | null;
-    city: string | null;
-    country: string | null;
-};
-
-export type PatientContactDto = {
-    phone: string | null;
-    email: string | null;
-};
-
 export type PatientStatusDto = {
     is_complete: boolean;
     issues: PatientIssues | null;
@@ -47,12 +32,12 @@ export type PatientDto = {
     first_name: string | null;
     last_name: string | null;
     birthdate: ISODate | null;
-
-    // ✅ neu (API)
-    address: PatientAddressDto;
-    contact: PatientContactDto;
-
-    // optional (API-only)
+    street: string | null;
+    zip: string | null;
+    city: string | null;
+    country: string | null;
+    phone: string | null;
+    email: string | null;
     age?: number | null;
     status?: PatientStatusDto | null;
 

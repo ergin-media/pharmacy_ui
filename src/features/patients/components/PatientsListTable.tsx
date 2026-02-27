@@ -85,19 +85,19 @@ export function PatientsListTable(props: {
 
                                     <TableCell>
                                         <div className="text-sm mb-1">
-                                            {p.contact?.email ?? "—"}
+                                            {p.email ?? "—"}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
-                                            Tel.: {p.contact?.phone ?? "—"}
+                                            Tel.: {p.phone ?? "—"}
                                         </div>
                                     </TableCell>
 
                                     <TableCell>
                                         <div className="text-sm mb-1">
-                                            {p.address?.street ?? "—"}
+                                            {p.street ?? "—"}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
-                                            {[p.address?.zip, p.address?.city]
+                                            {[p.zip, p.city]
                                                 .filter(Boolean)
                                                 .join(" ") || "—"}
                                         </div>
