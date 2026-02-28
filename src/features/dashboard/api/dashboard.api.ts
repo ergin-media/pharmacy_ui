@@ -1,8 +1,7 @@
-// src/features/dashboard/api/dashboard.api.ts
 import { api } from "@/shared/api/axios";
-import type { DashboardDto } from "../types/dashboard.dto";
+import type { DashboardQueryParams, DashboardResponseDto } from "../types/dashboard.dto";
 
-export async function fetchDashboard() {
-    const res = await api.get<DashboardDto>("dashboard");
+export async function fetchDashboard(params: DashboardQueryParams = {}) {
+    const res = await api.get<DashboardResponseDto>("dashboard", { params });
     return res.data;
 }

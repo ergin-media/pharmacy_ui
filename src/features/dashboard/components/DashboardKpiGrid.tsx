@@ -1,7 +1,9 @@
 // src/features/dashboard/components/DashboardKpiGrid.tsx
 import { formatEUR, formatInt, formatPct } from "../lib/dashboard.format";
+import type { DashboardPeriod } from "../types/dashboard.dto";
 
 export function DashboardKpiGrid(props: {
+    period: DashboardPeriod,
     economy: {
         revenue_today: number;
         revenue_month: number;
@@ -24,12 +26,21 @@ export function DashboardKpiGrid(props: {
         rx_with_pricing_base_price_missing: number;
     };
 }) {
-    const { economy, analytics, risk } = props;
+    const { period, economy, analytics, risk } = props;
+
+    const rangeLabel =
+        period === "rolling_30d"
+            ? "letzte 30 Tage"
+            : period === "mtd"
+                ? "Monat (MTD)"
+                : period === "prev_month"
+                    ? "letzter Monat"
+                    : "Jahr (YTD)";
 
     return (
         <div className="grid gap-3 md:grid-cols-4">
             <div className="rounded-xl border p-4">
-                <div className="text-xs text-muted-foreground">Umsatz Monat</div>
+                <div className="text-xs text-muted-foreground">Umsatz {rangeLabel}</div>
 
                 <div className="text-2xl font-semibold">
                     {formatEUR(economy.revenue_month)}

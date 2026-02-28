@@ -1,10 +1,27 @@
-// src/features/dashboard/types/dashboard.dto.ts
+export type DashboardPeriod = "rolling_30d" | "mtd" | "prev_month" | "ytd";
+
 export type DashboardTimeSeriesPointDto = {
-    date: string; // YYYY-MM-DD
+    date: string; // "YYYY-MM-DD"
     revenue_total: number;
     revenue_paid: number;
     revenue_unpaid: number;
     rx_count: number;
+};
+
+export type DashboardRevenueCompareAlignedPointDto = {
+    day: number;
+    current: {
+        revenue_total: number;
+        revenue_paid: number;
+        revenue_unpaid: number;
+        rx_count: number;
+    };
+    prev: {
+        revenue_total: number;
+        revenue_paid: number;
+        revenue_unpaid: number;
+        rx_count: number;
+    };
 };
 
 export type DashboardTopProductDto = {
@@ -20,16 +37,18 @@ export type DashboardTopProductDto = {
 
 export type DashboardTopProviderDto = {
     id: number;
-    slug: string;
-    name: string;
+    slug: string | null;
+    name: string | null;
     rx_documents_count: number;
 };
 
-export type DashboardDto = {
-    ok: true;
+export type DashboardResponseDto = {
+    ok: boolean;
+    period: DashboardPeriod;
+
     economy: {
         revenue_today: number;
-        revenue_month: number;
+        revenue_month: number; // in rolling_30d = revenue_last_30d (du benennst es aktuell "month")
         revenue_prev_month: number;
         revenue_vs_prev_month_pct: number;
         rx_count_month: number;
@@ -38,6 +57,7 @@ export type DashboardDto = {
         revenue_unpaid_month: number;
         open_receivables: number;
     };
+
     operations: {
         workflow: {
             pending: number;
@@ -50,6 +70,7 @@ export type DashboardDto = {
             paid: number;
         };
     };
+
     risk: {
         rx_with_unmapped_items: number;
         rx_with_pricing_base_price_missing: number;
@@ -57,32 +78,29 @@ export type DashboardDto = {
         products_missing_base_price: number;
         revenue_risk_total: number;
     };
+
     analytics: {
         top_products: DashboardTopProductDto[];
         top_providers: DashboardTopProviderDto[];
         avg_grams_per_rx_month: number;
         new_patients_30d: number;
     };
-    timeseries: {
-        revenue_daily_current_month: DashboardTimeSeriesPointDto[];
-        revenue_daily_prev_month: DashboardTimeSeriesPointDto[];
-        revenue_daily_compare_aligned: DashboardRevenueCompareAlignedDto[];
+
+    timeseries?: {
+        revenue_daily_current_month?: DashboardTimeSeriesPointDto[];
+        revenue_daily_prev_month?: DashboardTimeSeriesPointDto[];
+        revenue_daily_compare_aligned?: DashboardRevenueCompareAlignedPointDto[];
+
+        /** ✅ rolling_30d */
+        revenue_daily?: DashboardTimeSeriesPointDto[];
     };
+
     _meta?: {
-        generated_at?: string;
-        cache?: { hit?: boolean; ttl_seconds?: number };
+        generated_at: string;
+        cache?: { hit: boolean; ttl_seconds: number };
     };
 };
 
-export type DashboardRevenueComparePointDto = {
-    revenue_total: number;
-    revenue_paid: number;
-    revenue_unpaid: number;
-    rx_count: number;
-};
-
-export type DashboardRevenueCompareAlignedDto = {
-    day: number;
-    current: DashboardRevenueComparePointDto;
-    prev: DashboardRevenueComparePointDto;
+export type DashboardQueryParams = {
+    period?: DashboardPeriod;
 };
