@@ -101,26 +101,31 @@ export function DashboardRevenueAreaChart(props: {
                     <Area
                         yAxisId="revenue"
                         type="monotone"
-                        dataKey="revenue_total"
-                        fill="var(--color-revenue_total)"
-                        stroke="var(--color-revenue_total)"
-                        fillOpacity={0.25}
-                    />
-                    <Area
-                        yAxisId="revenue"
-                        type="monotone"
                         dataKey="revenue_paid"
+                        stackId="revenue"
                         fill="var(--color-revenue_paid)"
                         stroke="var(--color-revenue_paid)"
-                        fillOpacity={0.25}
+                        fillOpacity={0.4}
                     />
+
                     <Area
                         yAxisId="revenue"
                         type="monotone"
                         dataKey="revenue_unpaid"
+                        stackId="revenue"
                         fill="var(--color-revenue_unpaid)"
                         stroke="var(--color-revenue_unpaid)"
-                        fillOpacity={0.25}
+                        fillOpacity={0.4}
+                    />
+
+                    {/* Total nur als Linie */}
+                    <Line
+                        yAxisId="revenue"
+                        type="monotone"
+                        dataKey="revenue_total"
+                        stroke="var(--color-revenue_total)"
+                        strokeWidth={3}
+                        dot={false}
                     />
                 </AreaChart>
             </ChartContainer>

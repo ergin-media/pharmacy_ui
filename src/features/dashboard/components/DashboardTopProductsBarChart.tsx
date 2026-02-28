@@ -19,6 +19,11 @@ export function DashboardTopProductsBarChart(props: {
         rx: p.rx_documents_count,
     }));
 
+    const totalRevenue = data.reduce((sum, p) => sum + p.revenue, 0);
+    const top5Revenue = data.slice(0, 5).reduce((sum, p) => sum + p.revenue, 0);
+    const concentrationPct =
+        totalRevenue > 0 ? (top5Revenue / totalRevenue) * 100 : 0;
+
     const chartConfig = {
         revenue: { label: "Umsatz (est.)", color: "hsl(var(--chart-1))" },
     } as const;
@@ -60,6 +65,14 @@ export function DashboardTopProductsBarChart(props: {
                     <Bar dataKey="revenue" fill="var(--color-revenue)" radius={6} />
                 </BarChart>
             </ChartContainer>
+
+            <div className="mt-3 text-xs text-muted-foreground">
+                Top 5 Produkte generieren{" "}
+                <span className="font-medium text-foreground">
+                    {concentrationPct.toFixed(1)}%
+                </span>{" "}
+                des Top-Produkt-Umsatzes.
+            </div>
         </div>
     );
 }
