@@ -74,11 +74,15 @@ export type DashboardDto = {
     };
 };
 
+export type DashboardRevenueComparePointDto = {
+    revenue_total: number;
+    revenue_paid: number;
+    revenue_unpaid: number;
+    rx_count: number;
+};
+
 export type DashboardRevenueCompareAlignedDto = {
     day: number;
-    current_revenue_total: number;
-    prev_revenue_total: number;
-    current_paid: number;
-    current_unpaid: number;
-    current_rx_count: number;
+    current: DashboardRevenueComparePointDto;
+    prev: DashboardRevenueComparePointDto;
 };
