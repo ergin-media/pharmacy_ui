@@ -4,16 +4,13 @@
 import { useDashboardQuery } from "../queries/dashboard.queries";
 
 import { DashboardRevenueHero } from "../components/DashboardRevenueHero";
-import { DashboardRevenueAreaChart } from "../components/DashboardRevenueAreaChart";
 import { DashboardRiskCards } from "../components/DashboardRiskCards";
 import { DashboardWorkflowBarChart } from "../components/DashboardWorkflowBarChart";
 import { DashboardPaymentPieChart } from "../components/DashboardPaymentPieChart";
 import { DashboardTopProductsBarChart } from "../components/DashboardTopProductsBarChart";
 import { DashboardTopProvidersBarChart } from "../components/DashboardTopProvidersBarChart";
 import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
-import { DashboardRevenueShareStackedChart } from "../components/DashboardRevenueShareStackedChart";
-import { DashboardRevenueDeltaWaterfallChart } from "../components/DashboardRevenueDeltaWaterfallChart";
-import { DashboardRevenueMoMGroupedBarChart } from "../components/DashboardRevenueMoMGroupedBarChart";
+import { DashboardRevenueCurrentMonthBarChart } from "../components/DashboardRevenueCurrentMonthBarChart";
 
 export function DashboardPage() {
     const { data, isLoading } = useDashboardQuery();
@@ -40,7 +37,7 @@ export function DashboardPage() {
             <DashboardGrowthMessage momPct={d.economy.revenue_vs_prev_month_pct} />
 
             {/* 2️⃣ Revenue Chart */}
-            <DashboardRevenueMoMGroupedBarChart
+            <DashboardRevenueCurrentMonthBarChart
                 data={d.timeseries.revenue_daily_compare_aligned}
             />
 
