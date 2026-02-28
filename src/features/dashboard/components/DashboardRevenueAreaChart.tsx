@@ -1,6 +1,3 @@
-// src/features/dashboard/components/DashboardRevenueAreaChart.tsx
-"use client";
-
 import type { DashboardRevenueCompareAlignedDto } from "../types/dashboard.dto";
 import {
     ChartContainer,
@@ -9,7 +6,14 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import { AreaChart, Area, CartesianGrid, XAxis, YAxis, Line } from "recharts";
+import {
+    ComposedChart,
+    Area,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Line,
+} from "recharts";
 
 type ChartRow = {
     day: number;
@@ -19,6 +23,16 @@ type ChartRow = {
     current_rx_count: number;
     prev_revenue_total: number;
 };
+
+const chartConfig = {
+    current_revenue_total: { label: "Umsatz (aktuell)", color: "var(--chart-1)" },
+    current_paid: { label: "Bezahlt", color: "var(--chart-2)" },
+    current_unpaid: { label: "Offen", color: "var(--chart-3)" },
+    current_rx_count: { label: "RX", color: "var(--chart-4)" },
+    prev_revenue_total: { label: "Vormonat", color: "var(--chart-5)" },
+} as const;
+
+type ChartKey = keyof typeof chartConfig;
 
 export function DashboardRevenueAreaChart(props: {
     data: DashboardRevenueCompareAlignedDto[];
@@ -34,14 +48,6 @@ export function DashboardRevenueAreaChart(props: {
         prev_revenue_total: d.prev.revenue_total,
     }));
 
-    const chartConfig = {
-        current_revenue_total: { label: "Umsatz (aktuell)", color: "var(--chart-1)" },
-        current_paid: { label: "Bezahlt", color: "var(--chart-2)" },
-        current_unpaid: { label: "Offen", color: "var(--chart-3)" },
-        current_rx_count: { label: "RX", color: "var(--chart-4)" },
-        prev_revenue_total: { label: "Vormonat", color: "var(--chart-5)" },
-    } as const;
-
     return (
         <div className="rounded-xl border p-4 bg-white">
             <div className="mb-3">
@@ -52,13 +58,32 @@ export function DashboardRevenueAreaChart(props: {
             </div>
 
             <ChartContainer config={chartConfig} className="h-72 w-full">
-                <AreaChart data={rows} margin={{ left: 12, right: 12 }}>
+                <ComposedChart data={rows} margin={{ left: 12, right: 12 }}>
                     <CartesianGrid vertical={false} />
 
-                    <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
+                    <XAxis
+                        dataKey="day"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                    />
 
-                    <YAxis yAxisId="revenue" tickLine={false} axisLine={false} width={60} />
-                    <YAxis yAxisId="rx" orientation="right" tickLine={false} axisLine={false} width={40} />
+                    {/* Revenue axis (links) */}
+                    <YAxis
+                        yAxisId="revenue"
+                        tickLine={false}
+                        axisLine={false}
+                        width={60}
+                    />
+
+                    {/* RX axis (rechts) */}
+                    <YAxis
+                        yAxisId="rx"
+                        orientation="right"
+                        tickLine={false}
+                        axisLine={false}
+                        width={40}
+                    />
 
                     <ChartTooltip
                         cursor={false}
@@ -66,11 +91,13 @@ export function DashboardRevenueAreaChart(props: {
                             <ChartTooltipContent
                                 labelKey="day"
                                 formatter={(value, name) => {
-                                    const key = String(name) as keyof typeof chartConfig;
+                                    const key = String(name) as ChartKey;
 
                                     if (key === "current_rx_count") return [String(value), "RX"];
 
-                                    if (key in chartConfig) return [`${value} €`, chartConfig[key].label];
+                                    if (key in chartConfig) {
+                                        return [`${Number(value).toFixed(2)} €`, chartConfig[key].label];
+                                    }
 
                                     return [String(value), String(name)];
                                 }}
@@ -88,7 +115,7 @@ export function DashboardRevenueAreaChart(props: {
                         stackId="revenue"
                         fill="var(--color-current_paid)"
                         stroke="var(--color-current_paid)"
-                        fillOpacity={0.4}
+                        fillOpacity={0.35}
                     />
                     <Area
                         yAxisId="revenue"
@@ -97,7 +124,7 @@ export function DashboardRevenueAreaChart(props: {
                         stackId="revenue"
                         fill="var(--color-current_unpaid)"
                         stroke="var(--color-current_unpaid)"
-                        fillOpacity={0.4}
+                        fillOpacity={0.35}
                     />
 
                     {/* Aktueller Gesamtumsatz */}
@@ -110,13 +137,13 @@ export function DashboardRevenueAreaChart(props: {
                         dot={false}
                     />
 
-                    {/* Vormonat Vergleichslinie */}
+                    {/* ✅ Vormonat Vergleichslinie */}
                     <Line
                         yAxisId="revenue"
                         type="monotone"
                         dataKey="prev_revenue_total"
                         stroke="var(--color-prev_revenue_total)"
-                        strokeWidth={2}
+                        strokeWidth={2.5}
                         strokeDasharray="6 6"
                         dot={false}
                     />
@@ -130,7 +157,7 @@ export function DashboardRevenueAreaChart(props: {
                         strokeWidth={2}
                         dot={false}
                     />
-                </AreaChart>
+                </ComposedChart>
             </ChartContainer>
         </div>
     );
