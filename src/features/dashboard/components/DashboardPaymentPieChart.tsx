@@ -21,12 +21,12 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
     ];
 
     const chartConfig = {
-        paid: { label: "Bezahlt", color: "hsl(var(--chart-2))" },
-        unpaid: { label: "Unbezahlt", color: "hsl(var(--chart-3))" },
+        paid: { label: "Bezahlt", color: "var(--chart-2)" },
+        unpaid: { label: "Unbezahlt", color: "var(--chart-3)" },
     } as const;
 
     return (
-        <div className="rounded-xl border p-4">
+        <div className="rounded-xl border p-4 bg-white">
             <div className="mb-3">
                 <div className="text-sm font-medium">Payments</div>
                 <div className="text-xs text-muted-foreground">Paid vs. Unpaid</div>

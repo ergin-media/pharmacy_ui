@@ -28,7 +28,7 @@ function RiskCard(props: {
     return (
         <div
             onClick={onClick}
-            className={`cursor-pointer rounded-xl border p-4 transition hover:bg-muted/40 ${border}`}
+            className={`cursor-pointer rounded-xl border p-4 transition hover:bg-muted/40 bg-white ${border}`}
         >
             <div className="flex items-center justify-between mb-2">
                 <div className="text-xs text-muted-foreground">{title}</div>

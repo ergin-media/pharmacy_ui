@@ -8,7 +8,7 @@ export function DashboardGrowthMessage(props: { momPct: number }) {
     const positive = momPct >= 0;
 
     return (
-        <div className="rounded-xl border p-4 bg-muted/40">
+        <div className="rounded-xl border p-4 bg-white">
             <div className="flex items-center gap-2 text-sm font-medium">
                 {positive ? (
                     <ArrowUp className="size-4 text-green-600" />

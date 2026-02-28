@@ -25,11 +25,11 @@ export function DashboardTopProductsBarChart(props: {
         totalRevenue > 0 ? (top5Revenue / totalRevenue) * 100 : 0;
 
     const chartConfig = {
-        revenue: { label: "Umsatz (est.)", color: "hsl(var(--chart-1))" },
+        revenue: { label: "Umsatz (est.)", color: "var(--chart-1)" },
     } as const;
 
     return (
-        <div className="rounded-xl border p-4">
+        <div className="rounded-xl border p-4 bg-white">
             <div className="mb-3">
                 <div className="text-sm font-medium">Top Produkte</div>
                 <div className="text-xs text-muted-foreground">Umsatz (geschätzt)</div>

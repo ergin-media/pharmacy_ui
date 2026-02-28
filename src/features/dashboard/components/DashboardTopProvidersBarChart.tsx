@@ -18,11 +18,11 @@ export function DashboardTopProvidersBarChart(props: {
     }));
 
     const chartConfig = {
-        rx: { label: "RX", color: "hsl(var(--chart-2))" },
+        rx: { label: "RX", color: "var(--chart-2)" },
     } as const;
 
     return (
-        <div className="rounded-xl border p-4">
+        <div className="rounded-xl border p-4 bg-white">
             <div className="mb-3">
                 <div className="text-sm font-medium">Top Provider</div>
                 <div className="text-xs text-muted-foreground">RX Volumen</div>

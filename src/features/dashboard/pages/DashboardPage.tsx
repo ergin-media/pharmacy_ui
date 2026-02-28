@@ -43,21 +43,21 @@ export function DashboardPage() {
 
             {/* 3️⃣ Cash Block */}
             <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-xl border p-4">
+                <div className="rounded-xl border p-4 bg-white">
                     <div className="text-xs text-muted-foreground">Bezahlt (Monat)</div>
                     <div className="text-2xl font-semibold">
                         {d.economy.revenue_paid_month.toFixed(2)} €
                     </div>
                 </div>
 
-                <div className="rounded-xl border p-4">
+                <div className="rounded-xl border p-4 bg-white">
                     <div className="text-xs text-muted-foreground">Unbezahlt (Monat)</div>
                     <div className="text-2xl font-semibold">
                         {d.economy.revenue_unpaid_month.toFixed(2)} €
                     </div>
                 </div>
 
-                <div className="rounded-xl border p-4">
+                <div className="rounded-xl border p-4 bg-white">
                     <div className="text-xs text-muted-foreground">
                         Offene Forderungen
                     </div>

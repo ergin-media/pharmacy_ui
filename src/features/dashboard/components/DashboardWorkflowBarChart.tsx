@@ -26,11 +26,11 @@ export function DashboardWorkflowBarChart(props: { workflow: WorkflowCounts }) {
     ];
 
     const chartConfig = {
-        value: { label: "Anzahl", color: "hsl(var(--chart-1))" },
+        value: { label: "Anzahl", color: "var(--chart-1)" },
     } as const;
 
     return (
-        <div className="rounded-xl border p-4">
+        <div className="rounded-xl border p-4 bg-white">
             <div className="mb-3">
                 <div className="text-sm font-medium">Workflow</div>
                 <div className="text-xs text-muted-foreground">Status-Verteilung</div>

@@ -35,15 +35,15 @@ export function DashboardRevenueAreaChart(props: {
     }));
 
     const chartConfig = {
-        current_revenue_total: { label: "Umsatz (aktuell)", color: "hsl(var(--chart-1))" },
-        current_paid: { label: "Bezahlt", color: "hsl(var(--chart-2))" },
-        current_unpaid: { label: "Offen", color: "hsl(var(--chart-3))" },
-        current_rx_count: { label: "RX", color: "hsl(var(--chart-4))" },
-        prev_revenue_total: { label: "Vormonat", color: "hsl(var(--chart-5))" },
+        current_revenue_total: { label: "Umsatz (aktuell)", color: "var(--chart-1)" },
+        current_paid: { label: "Bezahlt", color: "var(--chart-2)" },
+        current_unpaid: { label: "Offen", color: "var(--chart-3)" },
+        current_rx_count: { label: "RX", color: "var(--chart-4)" },
+        prev_revenue_total: { label: "Vormonat", color: "var(--chart-5)" },
     } as const;
 
     return (
-        <div className="rounded-xl border p-4">
+        <div className="rounded-xl border p-4 bg-white">
             <div className="mb-3">
                 <div className="text-sm font-medium">Umsatzvergleich (Aligned MoM)</div>
                 <div className="text-xs text-muted-foreground">

@@ -24,7 +24,7 @@ export function DashboardRevenueHero(props: {
     const isPositive = momPct >= 0;
 
     return (
-        <div className="rounded-2xl border p-6">
+        <div className="rounded-2xl border p-6 bg-white">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <div className="text-sm text-muted-foreground">
