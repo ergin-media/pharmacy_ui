@@ -10,6 +10,7 @@ import { DashboardWorkflowBarChart } from "../components/DashboardWorkflowBarCha
 import { DashboardTopProductsBarChart } from "../components/DashboardTopProductsBarChart";
 import { DashboardTopProvidersBarChart } from "../components/DashboardTopProvidersBarChart";
 import { DashboardRiskBarChart } from "../components/DashboardRiskBarChart";
+import { DashboardRiskCards } from "../components/DashboardRiskCards";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
@@ -58,6 +59,8 @@ export function DashboardPage() {
                                         d.risk.rx_with_pricing_base_price_missing,
                                 }}
                             />
+
+                            <DashboardRiskCards risk={d.risk} />
 
                             <div className="grid gap-3 lg:grid-cols-3">
                                 <div className="lg:col-span-2">
