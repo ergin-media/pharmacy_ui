@@ -38,7 +38,7 @@ export function DashboardPage() {
 
             {/* 2️⃣ Revenue Chart */}
             <DashboardRevenueAreaChart
-                data={d.timeseries?.revenue_daily_current_month ?? []}
+                data={d.timeseries.revenue_daily_compare_aligned}
             />
 
             {/* 3️⃣ Cash Block */}

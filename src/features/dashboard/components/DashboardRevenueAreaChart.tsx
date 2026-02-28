@@ -1,8 +1,6 @@
-// src/features/dashboard/components/DashboardRevenueAreaChart.tsx
 "use client";
 
-import type { DashboardTimeSeriesPointDto } from "../types/dashboard.dto";
-import { formatDayLabel } from "../lib/dashboard.format";
+import type { DashboardRevenueCompareAlignedDto } from "../types/dashboard.dto";
 import {
     ChartContainer,
     ChartTooltip,
@@ -20,47 +18,74 @@ import {
 } from "recharts";
 
 export function DashboardRevenueAreaChart(props: {
-    data: DashboardTimeSeriesPointDto[];
+    data: DashboardRevenueCompareAlignedDto[];
 }) {
     const { data } = props;
 
+    // 🔥 Daten normalisieren (WICHTIG)
+    const normalized = data.map((d) => ({
+        day: d.day,
+
+        current_revenue_total: d.current?.revenue_total ?? 0,
+        current_paid: d.current?.revenue_paid ?? 0,
+        current_unpaid: d.current?.revenue_unpaid ?? 0,
+        current_rx_count: d.current?.rx_count ?? 0,
+
+        prev_revenue_total: d.prev?.revenue_total ?? 0,
+    }));
+
     const chartConfig = {
-        revenue_total: { label: "Umsatz", color: "hsl(var(--chart-1))" },
-        revenue_paid: { label: "Bezahlt", color: "hsl(var(--chart-2))" },
-        revenue_unpaid: { label: "Offen", color: "hsl(var(--chart-3))" },
-        rx_count: { label: "RX", color: "hsl(var(--chart-4))" },
+        current_revenue_total: {
+            label: "Umsatz (aktuell)",
+            color: "hsl(var(--chart-1))",
+        },
+        current_paid: {
+            label: "Bezahlt",
+            color: "hsl(var(--chart-2))",
+        },
+        current_unpaid: {
+            label: "Offen",
+            color: "hsl(var(--chart-3))",
+        },
+        current_rx_count: {
+            label: "RX",
+            color: "hsl(var(--chart-4))",
+        },
+        prev_revenue_total: {
+            label: "Vormonat",
+            color: "hsl(var(--chart-5))",
+        },
     } as const;
 
     return (
         <div className="rounded-xl border p-4">
             <div className="mb-3">
-                <div className="text-sm font-medium">Umsatzverlauf (Monat)</div>
+                <div className="text-sm font-medium">
+                    Umsatzvergleich (Aligned MoM)
+                </div>
                 <div className="text-xs text-muted-foreground">
-                    Total, bezahlt und offen pro Tag
+                    Aktueller Monat vs. gleicher Zeitraum im Vormonat
                 </div>
             </div>
 
             <ChartContainer config={chartConfig} className="h-72 w-full">
-                <AreaChart data={data} margin={{ left: 12, right: 12 }}>
+                <AreaChart data={normalized} margin={{ left: 12, right: 12 }}>
                     <CartesianGrid vertical={false} />
 
                     <XAxis
-                        dataKey="date"
+                        dataKey="day"
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
-                        tickFormatter={formatDayLabel}
                     />
 
-                    {/* ✅ Revenue axis (left) */}
                     <YAxis
                         yAxisId="revenue"
                         tickLine={false}
                         axisLine={false}
-                        width={52}
+                        width={60}
                     />
 
-                    {/* ✅ RX axis (right) */}
                     <YAxis
                         yAxisId="rx"
                         orientation="right"
@@ -73,12 +98,18 @@ export function DashboardRevenueAreaChart(props: {
                         cursor={false}
                         content={
                             <ChartTooltipContent
-                                labelKey="date"
+                                labelKey="day"
                                 formatter={(value, name) => {
-                                    if (name === "revenue_total") return [`${value} €`, "Umsatz"];
-                                    if (name === "revenue_paid") return [`${value} €`, "Bezahlt"];
-                                    if (name === "revenue_unpaid") return [`${value} €`, "Offen"];
-                                    if (name === "rx_count") return [String(value), "RX"];
+                                    const key = String(name) as keyof typeof chartConfig;
+
+                                    if (key === "current_rx_count") {
+                                        return [String(value), "RX"];
+                                    }
+
+                                    if (key in chartConfig) {
+                                        return [`${value} €`, chartConfig[key].label];
+                                    }
+
                                     return [String(value), String(name)];
                                 }}
                             />
@@ -87,44 +118,55 @@ export function DashboardRevenueAreaChart(props: {
 
                     <ChartLegend content={<ChartLegendContent />} />
 
-                    {/* ✅ RX Count -> right axis */}
-                    <Line
-                        yAxisId="rx"
+                    {/* Stacked Revenue */}
+                    <Area
+                        yAxisId="revenue"
                         type="monotone"
-                        dataKey="rx_count"
-                        stroke="var(--color-rx_count)"
-                        strokeWidth={2}
+                        dataKey="current_paid"
+                        stackId="revenue"
+                        fill="var(--color-current_paid)"
+                        stroke="var(--color-current_paid)"
+                        fillOpacity={0.4}
+                    />
+
+                    <Area
+                        yAxisId="revenue"
+                        type="monotone"
+                        dataKey="current_unpaid"
+                        stackId="revenue"
+                        fill="var(--color-current_unpaid)"
+                        stroke="var(--color-current_unpaid)"
+                        fillOpacity={0.4}
+                    />
+
+                    {/* Current Total */}
+                    <Line
+                        yAxisId="revenue"
+                        type="monotone"
+                        dataKey="current_revenue_total"
+                        stroke="var(--color-current_revenue_total)"
+                        strokeWidth={3}
                         dot={false}
                     />
 
-                    {/* ✅ Revenue -> left axis */}
-                    <Area
-                        yAxisId="revenue"
-                        type="monotone"
-                        dataKey="revenue_paid"
-                        stackId="revenue"
-                        fill="var(--color-revenue_paid)"
-                        stroke="var(--color-revenue_paid)"
-                        fillOpacity={0.4}
-                    />
-
-                    <Area
-                        yAxisId="revenue"
-                        type="monotone"
-                        dataKey="revenue_unpaid"
-                        stackId="revenue"
-                        fill="var(--color-revenue_unpaid)"
-                        stroke="var(--color-revenue_unpaid)"
-                        fillOpacity={0.4}
-                    />
-
-                    {/* Total nur als Linie */}
+                    {/* Previous Month */}
                     <Line
                         yAxisId="revenue"
                         type="monotone"
-                        dataKey="revenue_total"
-                        stroke="var(--color-revenue_total)"
-                        strokeWidth={3}
+                        dataKey="prev_revenue_total"
+                        stroke="var(--color-prev_revenue_total)"
+                        strokeWidth={2}
+                        strokeDasharray="6 6"
+                        dot={false}
+                    />
+
+                    {/* RX */}
+                    <Line
+                        yAxisId="rx"
+                        type="monotone"
+                        dataKey="current_rx_count"
+                        stroke="var(--color-current_rx_count)"
+                        strokeWidth={2}
                         dot={false}
                     />
                 </AreaChart>

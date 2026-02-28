@@ -63,11 +63,22 @@ export type DashboardDto = {
         avg_grams_per_rx_month: number;
         new_patients_30d: number;
     };
-    timeseries?: {
+    timeseries: {
         revenue_daily_current_month: DashboardTimeSeriesPointDto[];
+        revenue_daily_prev_month: DashboardTimeSeriesPointDto[];
+        revenue_daily_compare_aligned: DashboardRevenueCompareAlignedDto[];
     };
     _meta?: {
         generated_at?: string;
         cache?: { hit?: boolean; ttl_seconds?: number };
     };
+};
+
+export type DashboardRevenueCompareAlignedDto = {
+    day: number;
+    current_revenue_total: number;
+    prev_revenue_total: number;
+    current_paid: number;
+    current_unpaid: number;
+    current_rx_count: number;
 };
