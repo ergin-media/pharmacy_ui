@@ -30,11 +30,17 @@ export function DashboardKpiGrid(props: {
         <div className="grid gap-3 md:grid-cols-4">
             <div className="rounded-xl border p-4">
                 <div className="text-xs text-muted-foreground">Umsatz Monat</div>
+
                 <div className="text-2xl font-semibold">
                     {formatEUR(economy.revenue_month)}
                 </div>
+
                 <div className="text-xs text-muted-foreground">
-                    vs. Vormonat {formatPct(economy.revenue_vs_prev_month_pct)}
+                    Vormonat: {formatEUR(economy.revenue_prev_month)}
+                </div>
+
+                <div className="text-xs text-muted-foreground">
+                    Veränderung: {formatPct(economy.revenue_vs_prev_month_pct)}
                 </div>
             </div>
 

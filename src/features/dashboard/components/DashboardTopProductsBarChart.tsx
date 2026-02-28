@@ -15,6 +15,8 @@ export function DashboardTopProductsBarChart(props: {
     const data = (props.products ?? []).slice(0, 8).map((p) => ({
         name: p.name,
         revenue: p.revenue_estimated,
+        grams: p.grams_total,
+        rx: p.rx_documents_count,
     }));
 
     const chartConfig = {
@@ -39,7 +41,22 @@ export function DashboardTopProductsBarChart(props: {
                         tickLine={false}
                         axisLine={false}
                     />
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <ChartTooltip
+                        content={({ active, payload }) => {
+                            if (!active || !payload?.length) return null;
+
+                            const item = payload[0].payload;
+
+                            return (
+                                <div className="rounded-md border bg-background p-3 text-xs shadow-md">
+                                    <div className="font-medium mb-1">{item.name}</div>
+                                    <div>Umsatz: {item.revenue.toFixed(2)} €</div>
+                                    <div>Gramm gesamt: {item.grams}</div>
+                                    <div>RX Dokumente: {item.rx}</div>
+                                </div>
+                            );
+                        }}
+                    />
                     <Bar dataKey="revenue" fill="var(--color-revenue)" radius={6} />
                 </BarChart>
             </ChartContainer>
