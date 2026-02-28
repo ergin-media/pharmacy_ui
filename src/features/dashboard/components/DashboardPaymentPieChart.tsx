@@ -1,3 +1,6 @@
+// src/features/dashboard/components/DashboardPaymentPieChart.tsx
+"use client";
+
 import {
     ChartContainer,
     ChartTooltip,
@@ -7,10 +10,7 @@ import {
 } from "@/components/ui/chart";
 import { PieChart, Pie, Cell } from "recharts";
 
-type PaymentCounts = {
-    unpaid: number;
-    paid: number;
-};
+type PaymentCounts = { unpaid: number; paid: number };
 
 export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
     const { payment } = props;
@@ -25,15 +25,11 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
         unpaid: { label: "Unbezahlt", color: "hsl(var(--chart-3))" },
     } as const;
 
-    const total = payment.paid + payment.unpaid;
-
     return (
         <div className="rounded-xl border p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">Payments</div>
-                <div className="text-xs text-muted-foreground">
-                    Anteil bezahlt vs. unbezahlt
-                </div>
+                <div className="text-xs text-muted-foreground">Paid vs. Unpaid</div>
             </div>
 
             <ChartContainer config={chartConfig} className="h-64 w-full">
@@ -49,19 +45,11 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
                         paddingAngle={4}
                     >
                         {data.map((entry) => (
-                            <Cell
-                                key={entry.key}
-                                fill={`var(--color-${entry.key})`}
-                            />
+                            <Cell key={entry.key} fill={`var(--color-${entry.key})`} />
                         ))}
                     </Pie>
-                    {/* optional: Center label via CSS/overlay */}
                 </PieChart>
             </ChartContainer>
-
-            <div className="mt-3 text-xs text-muted-foreground">
-                Gesamt: <span className="text-foreground font-medium">{total}</span>
-            </div>
         </div>
     );
 }

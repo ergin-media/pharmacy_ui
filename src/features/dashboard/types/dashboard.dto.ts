@@ -1,8 +1,6 @@
 // src/features/dashboard/types/dashboard.dto.ts
-import type { ISODateTime } from "@/shared/types/db";
-
 export type DashboardTimeSeriesPointDto = {
-    date: string; // "YYYY-MM-DD"
+    date: string; // YYYY-MM-DD
     revenue_total: number;
     revenue_paid: number;
     revenue_unpaid: number;
@@ -14,10 +12,8 @@ export type DashboardTopProductDto = {
     manufacturer: string | null;
     name: string;
     product_code: string | null;
-
     rx_items_count: number;
     rx_documents_count: number;
-
     grams_total: number;
     revenue_estimated: number;
 };
@@ -31,22 +27,17 @@ export type DashboardTopProviderDto = {
 
 export type DashboardDto = {
     ok: true;
-
     economy: {
         revenue_today: number;
         revenue_month: number;
         revenue_prev_month: number;
         revenue_vs_prev_month_pct: number;
-
         rx_count_month: number;
         avg_rx_value_month: number;
-
         revenue_paid_month: number;
         revenue_unpaid_month: number;
-
         open_receivables: number;
     };
-
     operations: {
         workflow: {
             pending: number;
@@ -59,7 +50,6 @@ export type DashboardDto = {
             paid: number;
         };
     };
-
     risk: {
         rx_with_unmapped_items: number;
         rx_with_pricing_base_price_missing: number;
@@ -67,23 +57,17 @@ export type DashboardDto = {
         products_missing_base_price: number;
         revenue_risk_total: number;
     };
-
     analytics: {
         top_products: DashboardTopProductDto[];
         top_providers: DashboardTopProviderDto[];
         avg_grams_per_rx_month: number;
         new_patients_30d: number;
     };
-
     timeseries?: {
-        revenue_daily_current_month?: DashboardTimeSeriesPointDto[];
+        revenue_daily_current_month: DashboardTimeSeriesPointDto[];
     };
-
     _meta?: {
-        generated_at?: ISODateTime | string;
-        cache?: {
-            hit?: boolean;
-            ttl_seconds?: number;
-        };
+        generated_at?: string;
+        cache?: { hit?: boolean; ttl_seconds?: number };
     };
 };

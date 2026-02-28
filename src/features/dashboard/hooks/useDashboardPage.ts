@@ -3,13 +3,15 @@ import { useDashboardQuery } from "../queries/dashboard.queries";
 
 export function useDashboardPage() {
     const query = useDashboardQuery();
+    const data = query.data;
+
+    const actions = {
+        refresh: () => query.refetch(),
+    };
 
     return {
         query,
-        data: query.data,
-        meta: query.data?._meta,
-        actions: {
-            refresh: () => query.refetch(),
-        },
+        data,
+        actions,
     };
 }

@@ -1,4 +1,8 @@
+// src/features/dashboard/components/DashboardRevenueAreaChart.tsx
+"use client";
+
 import type { DashboardTimeSeriesPointDto } from "../types/dashboard.dto";
+import { formatDayLabel } from "../lib/dashboard.format";
 import {
     ChartContainer,
     ChartTooltip,
@@ -6,18 +10,7 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import {
-    AreaChart,
-    Area,
-    CartesianGrid,
-    XAxis,
-    YAxis,
-} from "recharts";
-
-function formatDayLabel(date: string) {
-    // date = "YYYY-MM-DD" -> "01", "02" ...
-    return date.slice(8, 10);
-}
+import { AreaChart, Area, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export function DashboardRevenueAreaChart(props: {
     data: DashboardTimeSeriesPointDto[];
@@ -30,8 +23,6 @@ export function DashboardRevenueAreaChart(props: {
         revenue_unpaid: { label: "Offen", color: "hsl(var(--chart-3))" },
     } as const;
 
-    const hasData = Array.isArray(data) && data.length > 0;
-
     return (
         <div className="rounded-xl border p-4">
             <div className="mb-3">
@@ -41,64 +32,46 @@ export function DashboardRevenueAreaChart(props: {
                 </div>
             </div>
 
-            {hasData ? (
-                <ChartContainer config={chartConfig} className="h-72 w-full">
-                    <AreaChart data={data} margin={{ left: 12, right: 12 }}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            tickFormatter={formatDayLabel}
-                        />
-                        <YAxis
-                            tickLine={false}
-                            axisLine={false}
-                            width={48}
-                        />
-                        <ChartTooltip
-                            cursor={false}
-                            content={
-                                <ChartTooltipContent
-                                    labelKey="date"
-                                    nameKey="name"
-                                />
-                            }
-                        />
-                        <ChartLegend content={<ChartLegendContent />} />
+            <ChartContainer config={chartConfig} className="h-72 w-full">
+                <AreaChart data={data} margin={{ left: 12, right: 12 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                        dataKey="date"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tickFormatter={formatDayLabel}
+                    />
+                    <YAxis tickLine={false} axisLine={false} width={48} />
+                    <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent labelKey="date" />}
+                    />
+                    <ChartLegend content={<ChartLegendContent />} />
 
-                        <Area
-                            type="monotone"
-                            dataKey="revenue_total"
-                            stackId="1"
-                            fill="var(--color-revenue_total)"
-                            stroke="var(--color-revenue_total)"
-                            fillOpacity={0.25}
-                        />
-                        <Area
-                            type="monotone"
-                            dataKey="revenue_paid"
-                            stackId="2"
-                            fill="var(--color-revenue_paid)"
-                            stroke="var(--color-revenue_paid)"
-                            fillOpacity={0.25}
-                        />
-                        <Area
-                            type="monotone"
-                            dataKey="revenue_unpaid"
-                            stackId="3"
-                            fill="var(--color-revenue_unpaid)"
-                            stroke="var(--color-revenue_unpaid)"
-                            fillOpacity={0.25}
-                        />
-                    </AreaChart>
-                </ChartContainer>
-            ) : (
-                <div className="flex h-72 items-center justify-center text-sm text-muted-foreground">
-                    Keine Timeseries-Daten verfügbar.
-                </div>
-            )}
+                    <Area
+                        type="monotone"
+                        dataKey="revenue_total"
+                        fill="var(--color-revenue_total)"
+                        stroke="var(--color-revenue_total)"
+                        fillOpacity={0.25}
+                    />
+                    <Area
+                        type="monotone"
+                        dataKey="revenue_paid"
+                        fill="var(--color-revenue_paid)"
+                        stroke="var(--color-revenue_paid)"
+                        fillOpacity={0.25}
+                    />
+                    <Area
+                        type="monotone"
+                        dataKey="revenue_unpaid"
+                        fill="var(--color-revenue_unpaid)"
+                        stroke="var(--color-revenue_unpaid)"
+                        fillOpacity={0.25}
+                    />
+                </AreaChart>
+            </ChartContainer>
         </div>
     );
 }
