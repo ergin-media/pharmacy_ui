@@ -11,6 +11,7 @@ import { DashboardPaymentPieChart } from "../components/DashboardPaymentPieChart
 import { DashboardTopProductsBarChart } from "../components/DashboardTopProductsBarChart";
 import { DashboardTopProvidersBarChart } from "../components/DashboardTopProvidersBarChart";
 import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
+import { DashboardRevenueShareStackedChart } from "../components/DashboardRevenueShareStackedChart";
 
 export function DashboardPage() {
     const { data, isLoading } = useDashboardQuery();
@@ -37,7 +38,7 @@ export function DashboardPage() {
             <DashboardGrowthMessage momPct={d.economy.revenue_vs_prev_month_pct} />
 
             {/* 2️⃣ Revenue Chart */}
-            <DashboardRevenueAreaChart
+            <DashboardRevenueShareStackedChart
                 data={d.timeseries.revenue_daily_compare_aligned}
             />
 
