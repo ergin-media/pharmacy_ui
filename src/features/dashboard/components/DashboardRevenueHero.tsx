@@ -1,5 +1,5 @@
+import { formatEUR, formatInt, formatPct } from "@/shared/lib/format/figures";
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { formatEUR, formatPct } from "../lib/dashboard.format";
 
 export function DashboardRevenueHero(props: {
     revenueMonth: number;
@@ -65,7 +65,7 @@ export function DashboardRevenueHero(props: {
                         <div className="text-muted-foreground">
                             Rezepte (letzte 30 Tage)
                         </div>
-                        <div className="text-lg font-semibold">{rxCountMonth}</div>
+                        <div className="text-lg font-semibold">{formatInt(rxCountMonth)}</div>
                     </div>
 
                     <div>

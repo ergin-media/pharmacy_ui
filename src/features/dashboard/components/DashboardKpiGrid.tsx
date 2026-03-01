@@ -1,5 +1,5 @@
 // src/features/dashboard/components/DashboardKpiGrid.tsx
-import { formatEUR, formatInt, formatPct } from "../lib/dashboard.format";
+import { formatEUR, formatInt, formatPct } from "@/shared/lib/format/figures";
 import type { DashboardPeriod } from "../types/dashboard.dto";
 
 export function DashboardKpiGrid(props: {

@@ -1,7 +1,7 @@
 "use client";
 
+import { formatPct } from "@/shared/lib/format/figures";
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { formatPct } from "../lib/dashboard.format";
 
 export function DashboardGrowthMessage(props: { momPct: number }) {
     const { momPct } = props;

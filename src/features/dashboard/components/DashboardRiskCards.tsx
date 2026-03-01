@@ -1,7 +1,7 @@
 // src/features/dashboard/components/DashboardRiskCards.tsx
 import { useNavigate } from "react-router";
 import { AlertTriangle, Users, Package, Euro } from "lucide-react";
-import { formatEUR } from "../lib/dashboard.format";
+import { formatEUR, formatInt } from "@/shared/lib/format/figures";
 
 type RiskProps = {
     rx_with_unmapped_items: number;
@@ -28,9 +28,9 @@ function RiskCard(props: {
     return (
         <div
             onClick={onClick}
-            className={`cursor-pointer rounded-xl border p-4 transition hover:bg-muted/40 bg-white ${border}`}
+            className={`cursor-pointer rounded-xl border bg-white p-4 transition hover:bg-muted/40 ${border}`}
         >
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2 flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">{title}</div>
                 {icon}
             </div>
@@ -45,41 +45,32 @@ export function DashboardRiskCards(props: { risk: RiskProps }) {
 
     return (
         <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-5">
-
             <RiskCard
-                title="Unmapped Items"
-                value={risk.rx_with_unmapped_items}
+                title="Nicht zugeordnete Positionen"
+                value={formatInt(risk.rx_with_unmapped_items)}
                 icon={<Package className="size-4 text-amber-500" />}
-                onClick={() =>
-                    navigate("/rx?unmapped=1")
-                }
+                onClick={() => navigate("/rx?unmapped=1")}
             />
 
             <RiskCard
-                title="Pricing Missing"
-                value={risk.rx_with_pricing_base_price_missing}
+                title="Fehlende Preisgrundlage"
+                value={formatInt(risk.rx_with_pricing_base_price_missing)}
                 icon={<AlertTriangle className="size-4 text-amber-500" />}
-                onClick={() =>
-                    navigate("/rx?pricing_missing=1")
-                }
+                onClick={() => navigate("/rx?pricing_missing=1")}
             />
 
             <RiskCard
-                title="Patient Issues"
-                value={risk.rx_with_patient_issues}
+                title="Patientendaten unvollständig"
+                value={formatInt(risk.rx_with_patient_issues)}
                 icon={<Users className="size-4 text-amber-500" />}
-                onClick={() =>
-                    navigate("/patients?issues=with_issues")
-                }
+                onClick={() => navigate("/patients?issues=with_issues")}
             />
 
             <RiskCard
-                title="Products ohne Basispreis"
-                value={risk.products_missing_base_price}
+                title="Produkte ohne Basispreis"
+                value={formatInt(risk.products_missing_base_price)}
                 icon={<Package className="size-4 text-amber-500" />}
-                onClick={() =>
-                    navigate("/products?missing_base_price=1")
-                }
+                onClick={() => navigate("/products?missing_base_price=1")}
             />
 
             <RiskCard
@@ -87,9 +78,7 @@ export function DashboardRiskCards(props: { risk: RiskProps }) {
                 value={formatEUR(risk.revenue_risk_total)}
                 icon={<Euro className="size-4 text-destructive" />}
                 variant="danger"
-                onClick={() =>
-                    navigate("/rx?risk_revenue=1")
-                }
+                onClick={() => navigate("/rx?risk_revenue=1")}
             />
         </div>
     );

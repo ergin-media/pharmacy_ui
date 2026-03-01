@@ -8,6 +8,7 @@ import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
 
 import { useDashboardPage } from "../hooks/useDashboardPage";
 import { DashboardRevenueDailyBarChart } from "../components/DashboardRevenueDailyBarChart";
+import { formatEUR } from "@/shared/lib/format/figures";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
@@ -103,7 +104,7 @@ export function DashboardPage() {
                         Bezahlt ({vm.period === "rolling_30d" ? "letzte 30 Tage" : "Zeitraum"})
                     </div>
                     <div className="text-2xl font-semibold">
-                        {d.economy.revenue_paid_month.toFixed(2)} €
+                        {formatEUR(d.economy.revenue_paid_month)}
                     </div>
                 </div>
 
@@ -112,14 +113,14 @@ export function DashboardPage() {
                         Unbezahlt ({vm.period === "rolling_30d" ? "letzte 30 Tage" : "Zeitraum"})
                     </div>
                     <div className="text-2xl font-semibold">
-                        {d.economy.revenue_unpaid_month.toFixed(2)} €
+                        {formatEUR(d.economy.revenue_unpaid_month)}
                     </div>
                 </div>
 
                 <div className="rounded-xl border bg-white p-4">
                     <div className="text-xs text-muted-foreground">Offene Forderungen</div>
                     <div className="text-2xl font-semibold">
-                        {d.economy.open_receivables.toFixed(2)} €
+                        {formatEUR(d.economy.open_receivables)}
                     </div>
                 </div>
             </div>
