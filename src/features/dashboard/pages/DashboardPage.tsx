@@ -5,7 +5,6 @@ import { DashboardPaymentPieChart } from "../components/DashboardPaymentPieChart
 import { DashboardTopProductsBarChart } from "../components/DashboardTopProductsBarChart";
 import { DashboardTopProvidersBarChart } from "../components/DashboardTopProvidersBarChart";
 import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
-import { DashboardRevenueCurrentMonthBarChart } from "../components/DashboardRevenueCurrentMonthBarChart";
 
 import { useDashboardPage } from "../hooks/useDashboardPage";
 import { DashboardRevenueDailyBarChart } from "../components/DashboardRevenueDailyBarChart";

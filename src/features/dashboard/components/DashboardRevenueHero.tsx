@@ -1,6 +1,3 @@
-// src/features/dashboard/components/DashboardRevenueHero.tsx
-"use client";
-
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { formatEUR, formatPct } from "../lib/dashboard.format";
 
@@ -24,11 +21,12 @@ export function DashboardRevenueHero(props: {
     const isPositive = momPct >= 0;
 
     return (
-        <div className="rounded-2xl border p-6 bg-white">
+        <div className="rounded-2xl border bg-white p-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                {/* Haupt KPI */}
                 <div>
                     <div className="text-sm text-muted-foreground">
-                        Umsatz Monat
+                        Umsatz (letzte 30 Tage)
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -49,27 +47,32 @@ export function DashboardRevenueHero(props: {
                         </div>
                     </div>
 
-                    <div className="text-xs text-muted-foreground mt-1">
-                        Vormonat: {formatEUR(revenuePrevMonth)}
+                    <div className="mt-1 text-xs text-muted-foreground">
+                        Vergleich Vormonat: {formatEUR(revenuePrevMonth)}
                     </div>
                 </div>
 
+                {/* Secondary KPIs */}
                 <div className="flex flex-wrap gap-8 text-sm">
                     <div>
                         <div className="text-muted-foreground">Umsatz heute</div>
-                        <div className="font-semibold text-lg">
+                        <div className="text-lg font-semibold">
                             {formatEUR(revenueToday)}
                         </div>
                     </div>
 
                     <div>
-                        <div className="text-muted-foreground">RX Monat</div>
-                        <div className="font-semibold text-lg">{rxCountMonth}</div>
+                        <div className="text-muted-foreground">
+                            Rezepte (letzte 30 Tage)
+                        </div>
+                        <div className="text-lg font-semibold">{rxCountMonth}</div>
                     </div>
 
                     <div>
-                        <div className="text-muted-foreground">Ø RX Wert</div>
-                        <div className="font-semibold text-lg">
+                        <div className="text-muted-foreground">
+                            Ø Umsatz pro Rezept
+                        </div>
+                        <div className="text-lg font-semibold">
                             {formatEUR(avgRxValue)}
                         </div>
                     </div>
