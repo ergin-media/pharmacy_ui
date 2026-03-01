@@ -1,3 +1,4 @@
+// src/features/provider-products/components/ProviderProductsMappingsToolbar.tsx
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -16,6 +17,8 @@ import {
     type MappedTabValue,
 } from "../lib/provider-products.constants";
 
+import type { ProviderProductsProviderDto } from "../types/providers.dto";
+
 export function ProviderProductsMappingsToolbar(props: {
     total: number;
 
@@ -24,6 +27,11 @@ export function ProviderProductsMappingsToolbar(props: {
 
     search: string;
     onSearchChange: (v: string) => void;
+
+    // ✅ Provider Filter
+    providers: ProviderProductsProviderDto[];
+    providerId: number | null; // null => alle
+    onProviderChange: (providerId: number | null) => void;
 
     page: number;
     totalPages: number;
@@ -42,6 +50,11 @@ export function ProviderProductsMappingsToolbar(props: {
         onTabChange,
         search,
         onSearchChange,
+
+        providers,
+        providerId,
+        onProviderChange,
+
         page,
         totalPages,
         onPageChange,
@@ -81,6 +94,29 @@ export function ProviderProductsMappingsToolbar(props: {
 
                 <Separator orientation="vertical" className="h-4" />
 
+                {/* ✅ Provider Select */}
+                <Select
+                    value={providerId === null ? "all" : String(providerId)}
+                    onValueChange={(v) =>
+                        onProviderChange(v === "all" ? null : Number(v))
+                    }
+                    disabled={disableControls}
+                >
+                    <SelectTrigger className="w-56">
+                        <SelectValue placeholder="Provider auswählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Alle Provider</SelectItem>
+                        {providers.map((p) => (
+                            <SelectItem key={p.id} value={String(p.id)}>
+                                {p.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Separator orientation="vertical" className="h-4" />
+
                 <div className="w-full sm:w-96">
                     <Input
                         value={search}
@@ -109,7 +145,9 @@ export function ProviderProductsMappingsToolbar(props: {
                         ))}
                     </SelectContent>
                 </Select>
+
                 <Separator orientation="vertical" className="h-4" />
+
                 <Pagination
                     page={page}
                     totalPages={totalPages}

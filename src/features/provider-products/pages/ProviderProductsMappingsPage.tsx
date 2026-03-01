@@ -1,3 +1,4 @@
+// src/features/provider-products/pages/ProviderProductsMappingsPage.tsx
 import { ProviderProductsListTable } from "../components/ProviderProductsListTable";
 
 import { Pagination } from "@/components/ui/pagination";
@@ -8,10 +9,14 @@ import {
     PER_PAGE_OPTIONS,
     type MappedTabValue,
 } from "../lib/provider-products.constants";
+
 import { useProviderProductsMappingsPage } from "../hooks/useProviderProductsMappingsPage";
+import { useProviderProductsProvidersQuery } from "../queries/providers.queries";
 
 export function ProviderProductsMappingsPage() {
     const vm = useProviderProductsMappingsPage();
+    const providersQuery = useProviderProductsProvidersQuery();
+
     const {
         filters,
         query,
@@ -22,6 +27,8 @@ export function ProviderProductsMappingsPage() {
         disableControls,
         busyRowIds,
     } = vm;
+
+    const providers = providersQuery.data?.items ?? [];
 
     return (
         <Card>
@@ -44,7 +51,18 @@ export function ProviderProductsMappingsPage() {
                     onPerPageChange={actions.setPerPage}
                     isLoading={query.isFetching}
                     disableControls={disableControls}
+                    // ✅ Provider Filter neu
+                    providers={providers}
+                    providerId={filters.providerId ?? null}
+                    onProviderChange={(id) => actions.setProviderId(id)}
                 />
+
+                {/* Optional: Hinweis wenn Provider-Liste nicht geladen werden konnte */}
+                {providersQuery.isError ? (
+                    <div className="rounded-xl border bg-white p-3 text-sm text-destructive">
+                        Hinweis: Provider-Liste konnte nicht geladen werden.
+                    </div>
+                ) : null}
 
                 <ProviderProductsListTable
                     items={query.data?.items ?? []}
@@ -54,7 +72,7 @@ export function ProviderProductsMappingsPage() {
                     pharmacyProducts={pharmacyProducts}
                     pharmacyProductsLoading={pharmacyProductsQuery.isFetching}
                     onSetMapping={actions.setMapping}
-                    onRemoveMapping={actions.removeMapping} // ✅ wieder da
+                    onRemoveMapping={actions.removeMapping}
                     busyRowIds={busyRowIds}
                 />
 

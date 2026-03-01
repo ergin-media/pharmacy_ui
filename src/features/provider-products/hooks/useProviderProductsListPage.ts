@@ -31,6 +31,10 @@ export function useProviderProductsListPage() {
         Math.min(200, spGetInt(sp, "per_page", DEFAULT_PER_PAGE)),
     );
 
+    // ✅ Provider (optional) – via provider_id in URL
+    const providerIdRaw = spGetInt(sp, "provider_id", 0);
+    const providerId = providerIdRaw > 0 ? providerIdRaw : null;
+
     const mappedRaw = spGetString(sp, "mapped") ?? "";
     const mapped: ProviderProductsMappedFilter = (
         MAPPED_ALLOWED as readonly string[]
@@ -62,6 +66,8 @@ export function useProviderProductsListPage() {
             per_page: number;
             mapped: ProviderProductsMappedFilter;
             sort: ProviderProductsSort;
+            provider_id: number | null;
+            search: string;
         }>,
     ) {
         const n = new URLSearchParams(sp);
@@ -72,15 +78,21 @@ export function useProviderProductsListPage() {
         if (next.mapped !== undefined) spSetOrDelete(n, "mapped", next.mapped);
         if (next.sort !== undefined) spSetOrDelete(n, "sort", next.sort);
 
+        // ✅ provider_id in URL (Default: weglassen)
+        if (next.provider_id !== undefined) {
+            if (!next.provider_id) spSetOrDelete(n, "provider_id", "");
+            else spSetInt(n, "provider_id", next.provider_id);
+        }
+
+        // ✅ search in URL
+        if (next.search !== undefined) spSetOrDelete(n, "search", next.search);
+
         setSp(n, { replace: true });
     }
 
     // debounced search -> URL (+ page reset)
     useEffect(() => {
-        const n = new URLSearchParams(sp);
-        spSetInt(n, "page", 1);
-        spSetOrDelete(n, "search", debouncedSearch);
-        setSp(n, { replace: true });
+        patch({ page: 1, search: debouncedSearch });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearch]);
 
@@ -91,8 +103,9 @@ export function useProviderProductsListPage() {
             mapped: mapped === "" ? undefined : mapped,
             search: debouncedSearchParam,
             sort,
+            provider_id: providerId ?? undefined,
         }),
-        [page, perPage, mapped, debouncedSearchParam, sort],
+        [page, perPage, mapped, debouncedSearchParam, sort, providerId],
     );
 
     const query = useProviderProductsListQuery(params);
@@ -145,7 +158,11 @@ export function useProviderProductsListPage() {
         setPage: (v: number) => patch({ page: v }),
         refresh: () => query.refetch(),
 
-        // ✅ neu
+        // ✅ Provider Filter
+        setProviderId: (next: number | null) =>
+            patch({ page: 1, provider_id: next }),
+
+        // ✅ Row busy helpers
         runRowAction,
         isRowBusy,
     };
@@ -154,6 +171,7 @@ export function useProviderProductsListPage() {
         filters: {
             page,
             perPage,
+            providerId, // ✅ neu
             mapped,
             searchInput,
             sort,
@@ -163,7 +181,6 @@ export function useProviderProductsListPage() {
         query,
         meta: { total, totalPages },
 
-        // ✅ neu
         busyRowIds,
 
         actions,
