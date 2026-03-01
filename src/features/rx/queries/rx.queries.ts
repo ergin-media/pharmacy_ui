@@ -13,6 +13,9 @@ export const rxKeys = {
             {
                 page: p.page ?? 1,
                 per_page: p.per_page ?? 25,
+
+                queue: p.queue ?? "",
+
                 parse_status: p.parse_status ?? "",
                 provider: p.provider ?? "",
                 workflow_status: p.workflow_status ?? "",

@@ -7,6 +7,7 @@ import type {
     FulfillmentType as DbFulfillmentType,
     RxUnit as DbRxUnit,
 } from "@/shared/types/db";
+import type { RxQueue } from "../lib/rx.queues";
 
 export type RxParseStatus = DbRxParseStatus;
 export type RxFulfillmentType = DbFulfillmentType;
@@ -114,8 +115,11 @@ export interface RxListResponseDto {
 export interface RxListQueryParams {
     page?: number;
     per_page?: number;
-    parse_status?: RxParseStatus;
 
+    // ✅ Backend-Queue
+    queue?: RxQueue;
+
+    parse_status?: RxParseStatus;
     workflow_status?: RxWorkflowStatus;
     payment_state?: RxPaymentState;
 

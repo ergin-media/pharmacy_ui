@@ -11,21 +11,7 @@ import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
 import { RxListTableSkeleton } from "../components/RxListTableSkeleton";
 import { useRxPanels } from "../hooks/useRxPanels";
-
-// ✅ Neue Queue Tabs (du kannst Labels natürlich feinjustieren)
-const RX_QUEUE_TABS = [
-    { value: "all", label: "Alle" },
-    { value: "inbox", label: "Eingang / Neu" },
-    { value: "offer_create", label: "Angebot erstellen" },
-    { value: "offer_send", label: "Angebot versenden" }, // falls du es getrennt willst
-    { value: "await_payment", label: "Warten auf Zahlung" },
-    { value: "paid_not_started", label: "Bezahlt (nicht gestartet)" },
-    { value: "packaging", label: "Vorbereitung" },
-    { value: "shipping", label: "Versand" },
-    { value: "pickup", label: "Abholung" },
-    { value: "completed", label: "Abgeschlossen" },
-    { value: "clarify", label: "Klärfälle" },
-] as const;
+import { RX_QUEUE_TABS } from "../lib/rx.queues";
 
 export function RxListPage() {
     const vm = useRxListPage();
