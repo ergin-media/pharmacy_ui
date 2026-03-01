@@ -42,7 +42,7 @@ export function DashboardRevenueDailyBarChart(props: {
 
     const chartConfig = {
         revenue_total: { label: "Umsatz", color: "var(--chart-1)" },
-        rx_count: { label: "RX", color: "var(--chart-4)" },
+        rx_count: { label: "Rezepte", color: "var(--chart-4)" },
     } as const;
 
     return (
@@ -52,7 +52,9 @@ export function DashboardRevenueDailyBarChart(props: {
                     {title ?? "Umsatz pro Tag"}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                    {rangeLabel ? `Zeitraum: ${rangeLabel}` : "Tagesumsatz mit RX-Volumen"}
+                    {rangeLabel
+                        ? `Zeitraum: ${rangeLabel} · Umsatz & Rezepte pro Tag`
+                        : "Umsatz & Rezepte pro Tag"}
                 </div>
             </div>
 
@@ -98,8 +100,9 @@ export function DashboardRevenueDailyBarChart(props: {
                                     if (key === "revenue_total") {
                                         return [`${Number(value).toFixed(2)} €`, "Umsatz"];
                                     }
+
                                     if (key === "rx_count") {
-                                        return [String(value), "RX"];
+                                        return [String(value), "Rezepte"];
                                     }
 
                                     return [String(value), key];
