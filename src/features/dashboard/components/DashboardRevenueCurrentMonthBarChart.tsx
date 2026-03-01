@@ -1,4 +1,6 @@
-import type { DashboardRevenueCompareAlignedDto } from "../types/dashboard.dto";
+"use client";
+
+import type { DashboardTimeSeriesPointDto } from "../types/dashboard.dto";
 import {
     ChartContainer,
     ChartTooltip,
@@ -6,28 +8,27 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import {
-    BarChart,
-    Bar,
-    CartesianGrid,
-    XAxis,
-    YAxis,
-    Line,
-} from "recharts";
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 
 type Row = {
-    day: number;
+    date: string; // YYYY-MM-DD
     revenue_total: number;
     rx_count: number;
 };
 
+function formatDayTick(isoDate: string) {
+    // "2026-02-28" -> "28.02"
+    const d = new Date(`${isoDate}T00:00:00`);
+    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+}
+
 export function DashboardRevenueCurrentMonthBarChart(props: {
-    data: DashboardRevenueCompareAlignedDto[];
+    data: DashboardTimeSeriesPointDto[];
 }) {
     const rows: Row[] = (props.data ?? []).map((d) => ({
-        day: d.day,
-        revenue_total: d.current?.revenue_total ?? 0,
-        rx_count: d.current?.rx_count ?? 0,
+        date: d.date,
+        revenue_total: d.revenue_total ?? 0,
+        rx_count: d.rx_count ?? 0,
     }));
 
     const chartConfig = {
@@ -38,9 +39,7 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
     return (
         <div className="rounded-xl border p-4 bg-card">
             <div className="mb-3">
-                <div className="text-sm font-medium">
-                    Umsatz pro Tag (aktueller Monat)
-                </div>
+                <div className="text-sm font-medium">Umsatz pro Tag (letzte 30 Tage)</div>
                 <div className="text-xs text-muted-foreground">
                     Tagesumsatz mit RX-Volumen
                 </div>
@@ -51,10 +50,12 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                     <CartesianGrid vertical={false} />
 
                     <XAxis
-                        dataKey="day"
+                        dataKey="date"
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
+                        tickFormatter={formatDayTick}
+                        interval="preserveStartEnd"
                     />
 
                     {/* Umsatz Achse */}
@@ -78,13 +79,17 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         cursor={false}
                         content={
                             <ChartTooltipContent
-                                labelKey="day"
+                                labelKey="date"
                                 formatter={(value, name) => {
-                                    if (name === "revenue_total")
+                                    const key = String(name);
+
+                                    if (key === "revenue_total") {
                                         return [`${Number(value).toFixed(2)} €`, "Umsatz"];
-                                    if (name === "rx_count")
+                                    }
+                                    if (key === "rx_count") {
                                         return [String(value), "RX"];
-                                    return [String(value), String(name)];
+                                    }
+                                    return [String(value), key];
                                 }}
                             />
                         }
@@ -100,7 +105,7 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         radius={6}
                     />
 
-                    {/* RX als Linie oben drüber (optional, sehr clean) */}
+                    {/* RX als Linie */}
                     <Line
                         yAxisId="rx"
                         type="monotone"
