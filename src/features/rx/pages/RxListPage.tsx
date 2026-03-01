@@ -11,13 +11,13 @@ import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
 import { RxListTableSkeleton } from "../components/RxListTableSkeleton";
 import { useRxPanels } from "../hooks/useRxPanels";
-import { RX_QUEUE_TABS } from "../lib/rx.queues";
+import { RX_QUEUE_TABS, type RxQueue } from "../lib/rx.queues";
 
 export function RxListPage() {
     const vm = useRxListPage();
     const panels = useRxPanels();
 
-    const tabValue = vm.filters.tabValue ?? "all";
+    const tabValue = vm.filters.tabValue;
 
     return (
         <Card>
@@ -61,7 +61,7 @@ export function RxListPage() {
                         {/* ✅ Queue Tabs */}
                         <Tabs
                             value={tabValue}
-                            onValueChange={(v) => vm.actions.setQueue(v === "all" ? "" : (v as any))}
+                            onValueChange={(v) => vm.actions.setQueue(v as RxQueue)}
                         >
                             <TabsList className="flex flex-wrap">
                                 {RX_QUEUE_TABS.map((t) => (
