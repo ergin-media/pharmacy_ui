@@ -1,22 +1,37 @@
+// src/features/rx/pages/RxListPage.tsx
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Pagination } from "@/components/ui/pagination";
 
 import { useRxListPage } from "../hooks/useRxListPage";
 import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
-
-import { WORKFLOW_TABS } from "../lib/rx.constants";
-import { useRxPanels } from "../hooks/useRxPanels";
-import { Pagination } from "@/components/ui/pagination";
 import { RxListTableSkeleton } from "../components/RxListTableSkeleton";
+import { useRxPanels } from "../hooks/useRxPanels";
+
+// ✅ Neue Queue Tabs (du kannst Labels natürlich feinjustieren)
+const RX_QUEUE_TABS = [
+    { value: "all", label: "Alle" },
+    { value: "inbox", label: "Eingang / Neu" },
+    { value: "offer_create", label: "Angebot erstellen" },
+    { value: "offer_send", label: "Angebot versenden" }, // falls du es getrennt willst
+    { value: "await_payment", label: "Warten auf Zahlung" },
+    { value: "paid_not_started", label: "Bezahlt (nicht gestartet)" },
+    { value: "packaging", label: "Vorbereitung" },
+    { value: "shipping", label: "Versand" },
+    { value: "pickup", label: "Abholung" },
+    { value: "completed", label: "Abgeschlossen" },
+    { value: "clarify", label: "Klärfälle" },
+] as const;
 
 export function RxListPage() {
     const vm = useRxListPage();
     const panels = useRxPanels();
 
-    // Tabs: controlled
-    const tabValue = vm.filters.workflowStatus ?? "all";
+    const tabValue = vm.filters.tabValue ?? "all";
 
     return (
         <Card>
@@ -49,30 +64,21 @@ export function RxListPage() {
                 ) : vm.query.isError ? (
                     <div className="flex items-center gap-2">
                         <div className="text-sm text-destructive">
-                            Fehler:{" "}
-                            {(vm.query.error as Error)?.message ?? "unknown"}
+                            Fehler: {(vm.query.error as Error)?.message ?? "unknown"}
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={vm.actions.refresh}
-                        >
+                        <Button variant="outline" size="sm" onClick={vm.actions.refresh}>
                             Erneut versuchen
                         </Button>
                     </div>
                 ) : (
                     <>
-                        {/* Tabs -> setzen workflow_status */}
+                        {/* ✅ Queue Tabs */}
                         <Tabs
                             value={tabValue}
-                            onValueChange={(v) =>
-                                vm.actions.setWorkflowStatus(
-                                    v === "all" ? "" : v,
-                                )
-                            }
+                            onValueChange={(v) => vm.actions.setQueue(v === "all" ? "" : (v as any))}
                         >
                             <TabsList className="flex flex-wrap">
-                                {WORKFLOW_TABS.map((t) => (
+                                {RX_QUEUE_TABS.map((t) => (
                                     <TabsTrigger key={t.value} value={t.value}>
                                         {t.label}
                                     </TabsTrigger>
@@ -80,13 +86,9 @@ export function RxListPage() {
                             </TabsList>
                         </Tabs>
 
-                        {/* Header-Zeile oben + Pagination rechts */}
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="text-sm text-muted-foreground">
-                                Gesamt:{" "}
-                                <span className="font-medium text-foreground">
-                                    {vm.meta.total}
-                                </span>
+                                Gesamt: <span className="font-medium text-foreground">{vm.meta.total}</span>
                             </div>
 
                             <Pagination
@@ -106,7 +108,6 @@ export function RxListPage() {
                             onMore={(id) => console.log("more", id)}
                             onCreateInvoice={(id) => panels.invoice.open(id)}
                             isLoading={vm.query.isFetching}
-                            // ✅ neu:
                             onReparse={vm.actions.reparse}
                             reparseBusyId={vm.meta.reparseBusyId}
                         />

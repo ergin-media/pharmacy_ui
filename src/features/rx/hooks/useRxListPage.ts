@@ -6,6 +6,7 @@ import type {
     RxParseStatus,
     RxWorkflowStatus,
     RxPaymentState,
+    RxListQueryParams,
 } from "../types/rx.dto";
 import {
     ALLOWED_WORKFLOW,
@@ -23,6 +24,25 @@ import {
     spSetOrDelete,
 } from "@/shared/lib/url/searchParams";
 import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
+import type { RxQueue } from "../lib/rx.queues";
+
+const QUEUES = [
+    "inbox",
+    "offer_create",
+    "offer_send",
+    "await_payment",
+    "paid_not_started",
+    "packaging",
+    "shipping",
+    "pickup",
+    "completed",
+    "clarify",
+] as const;
+
+function normalizeQueue(v: string | null): RxQueue | undefined {
+    const s = (v ?? "").trim();
+    return (QUEUES as readonly string[]).includes(s) ? (s as RxQueue) : undefined;
+}
 
 export function useRxListPage() {
     const [sp, setSp] = useSearchParams();
@@ -30,44 +50,40 @@ export function useRxListPage() {
     const page = Math.max(1, spGetInt(sp, "page", 1));
     const perPage = Math.max(1, Math.min(100, spGetInt(sp, "per_page", 10)));
 
-    const parseStatusRaw = spGetString(sp, "parse_status");
-    const parseStatus: RxParseStatus | undefined = (
-        ALLOWED_STATUSES as string[]
-    ).includes(parseStatusRaw)
+    // ✅ UI Tabs steuern direkt queue
+    const queue = normalizeQueue(spGetString(sp, "queue"));
+
+    // optional advanced filters
+    const parseStatusRaw = spGetString(sp, "parse_status") ?? "";
+    const parseStatus: RxParseStatus | undefined = (ALLOWED_STATUSES as readonly string[]).includes(parseStatusRaw)
         ? (parseStatusRaw as RxParseStatus)
         : undefined;
 
-    const providerRaw = spGetString(sp, "provider");
-    const provider = providerRaw ? providerRaw : undefined;
-
-    const workflowRaw = spGetString(sp, "workflow_status");
-    const workflowStatus: RxWorkflowStatus | undefined = (
-        ALLOWED_WORKFLOW as string[]
-    ).includes(workflowRaw)
+    const workflowRaw = spGetString(sp, "workflow_status") ?? "";
+    const workflowStatus: RxWorkflowStatus | undefined = (ALLOWED_WORKFLOW as readonly string[]).includes(workflowRaw)
         ? (workflowRaw as RxWorkflowStatus)
         : undefined;
 
-    const paymentRaw = spGetString(sp, "payment_state");
-    const paymentState: RxPaymentState | undefined = (
-        ALLOWED_PAYMENT as string[]
-    ).includes(paymentRaw)
+    const paymentRaw = spGetString(sp, "payment_state") ?? "";
+    const paymentState: RxPaymentState | undefined = (ALLOWED_PAYMENT as readonly string[]).includes(paymentRaw)
         ? (paymentRaw as RxPaymentState)
         : undefined;
 
-    // --- Search: URL -> local input state ---
-    const searchRaw = spGetString(sp, "search");
+    const providerRaw = spGetString(sp, "provider") ?? "";
+    const provider = providerRaw ? providerRaw : undefined;
+
+    // Search (controlled)
+    const searchRaw = spGetString(sp, "search") ?? "";
     const [searchInput, setSearchInput] = useState(searchRaw);
 
     useEffect(() => {
         setSearchInput(searchRaw);
     }, [searchRaw]);
 
-    const debouncedSearchInput = useDebouncedValue(
-        searchInput.trim() || undefined,
-        500,
-    );
+    const debouncedSearch = useDebouncedValue(searchInput.trim(), 500);
+    const debouncedSearchParam = debouncedSearch || undefined;
 
-    const sortRaw = spGetString(sp, "sort");
+    const sortRaw = spGetString(sp, "sort") ?? "";
     const sort: RxSort = (ALLOWED_SORTS as readonly string[]).includes(sortRaw)
         ? (sortRaw as RxSort)
         : DEFAULT_SORT;
@@ -76,6 +92,7 @@ export function useRxListPage() {
         next: Partial<{
             page: number;
             per_page: number;
+            queue: string;
             parse_status: string;
             workflow_status: string;
             payment_state: string;
@@ -89,60 +106,60 @@ export function useRxListPage() {
         if (next.page !== undefined) spSetInt(n, "page", next.page);
         if (next.per_page !== undefined) spSetInt(n, "per_page", next.per_page);
 
-        if (next.parse_status !== undefined)
-            spSetOrDelete(n, "parse_status", next.parse_status);
+        if (next.queue !== undefined) spSetOrDelete(n, "queue", next.queue);
 
-        if (next.provider !== undefined)
-            spSetOrDelete(n, "provider", next.provider);
+        if (next.parse_status !== undefined) spSetOrDelete(n, "parse_status", next.parse_status);
+        if (next.workflow_status !== undefined) spSetOrDelete(n, "workflow_status", next.workflow_status);
+        if (next.payment_state !== undefined) spSetOrDelete(n, "payment_state", next.payment_state);
 
-        if (next.workflow_status !== undefined)
-            spSetOrDelete(n, "workflow_status", next.workflow_status);
-
-        if (next.payment_state !== undefined)
-            spSetOrDelete(n, "payment_state", next.payment_state);
-
+        if (next.provider !== undefined) spSetOrDelete(n, "provider", next.provider);
         if (next.sort !== undefined) spSetOrDelete(n, "sort", next.sort);
 
         setSp(n, { replace: true });
     }
 
+    // debounced search -> URL (+ page reset)
     useEffect(() => {
         const n = new URLSearchParams(sp);
         spSetInt(n, "page", 1);
-        spSetOrDelete(n, "search", debouncedSearchInput ?? "");
+        spSetOrDelete(n, "search", debouncedSearch);
         setSp(n, { replace: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedSearchInput]);
+    }, [debouncedSearch]);
 
-    const params = useMemo(
+    const params = useMemo<RxListQueryParams>(
         () => ({
             page,
             per_page: perPage,
+
+            // ✅ Backend Queue steuert Hauptfilter
+            queue,
+
+            // optional advanced filters (kannst du später auch deaktivieren)
             parse_status: parseStatus,
             workflow_status: workflowStatus,
             payment_state: paymentState,
+
             provider,
-            search: debouncedSearchInput,
+            search: debouncedSearchParam,
             sort,
         }),
         [
             page,
             perPage,
+            queue,
             parseStatus,
             workflowStatus,
             paymentState,
             provider,
-            debouncedSearchInput,
+            debouncedSearchParam,
             sort,
         ],
     );
 
     const query = useRxListQuery(params);
 
-    // ✅ NEW: Reparse mutation
     const reparseMutation = useReparseRxMutation();
-
-    // ✅ busy row id (nur die eine Zeile)
     const reparseBusyId =
         reparseMutation.isPending && typeof reparseMutation.variables === "number"
             ? reparseMutation.variables
@@ -152,24 +169,26 @@ export function useRxListPage() {
     const totalPages = query.data?.total_pages ?? 1;
 
     const actions = {
-        setParseStatus: (v: string) =>
-            patch({ page: 1, parse_status: v === "all" ? "" : v }),
+        // ✅ Tabs -> queue setzen
+        setQueue: (v: RxQueue | "") =>
+            patch({
+                page: 1,
+                queue: v,
+            }),
 
+        // optional advanced actions
+        setParseStatus: (v: string) => patch({ page: 1, parse_status: v === "all" ? "" : v }),
         setWorkflowStatus: (v: string) => patch({ page: 1, workflow_status: v }),
-
         setPaymentState: (v: string) => patch({ page: 1, payment_state: v }),
-
         setProvider: (v: string) => patch({ page: 1, provider: v }),
 
         setSearch: (v: string) => setSearchInput(v),
-
         setSort: (v: string) => patch({ page: 1, sort: v }),
         setPerPage: (v: number) => patch({ page: 1, per_page: v }),
         setPage: (v: number) => patch({ page: v }),
 
         refresh: () => query.refetch(),
 
-        // ✅ NEW: Reparse Action
         reparse: async (id: number) => {
             await reparseMutation.mutateAsync(id);
         },
@@ -179,24 +198,25 @@ export function useRxListPage() {
         filters: {
             page,
             perPage,
+
+            queue,
+            tabValue: queue ?? "inbox", // default Tab
+
             parseStatus,
             workflowStatus,
             paymentState,
+
             providerRaw,
             searchRaw: searchInput,
             sort,
         },
         query,
-
         meta: {
             total,
             totalPages,
-
-            // ✅ NEW: expose reparse state
             reparseBusyId,
             isReparseBusy: reparseMutation.isPending,
         },
-
         actions,
     };
 }

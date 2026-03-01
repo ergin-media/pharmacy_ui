@@ -17,7 +17,7 @@ export type RxWorkflowStatus =
     | "completed"
     | "rejected";
 
-export type RxPaymentState = "unpaid" | "paid";
+export type RxPaymentState = "unpaid" | "paid" | "refunded";
 
 
 
