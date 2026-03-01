@@ -1,12 +1,5 @@
-// src/features/dashboard/components/DashboardTopProvidersBarChart.tsx
-"use client";
-
 import type { DashboardTopProviderDto } from "../types/dashboard.dto";
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export function DashboardTopProvidersBarChart(props: {
@@ -14,18 +7,18 @@ export function DashboardTopProvidersBarChart(props: {
 }) {
     const data = (props.providers ?? []).slice(0, 8).map((p) => ({
         name: p.name,
-        rx: p.rx_documents_count,
+        recipes: p.rx_documents_count, // ✅ RX -> Rezepte
     }));
 
     const chartConfig = {
-        rx: { label: "RX", color: "var(--chart-2)" },
+        recipes: { label: "Rezepte", color: "var(--chart-2)" },
     } as const;
 
     return (
-        <div className="rounded-xl border p-4 bg-white">
+        <div className="rounded-xl border bg-white p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">Top Provider</div>
-                <div className="text-xs text-muted-foreground">RX Volumen</div>
+                <div className="text-xs text-muted-foreground">Rezeptvolumen</div>
             </div>
 
             <ChartContainer config={chartConfig} className="h-80 w-full">
@@ -39,8 +32,17 @@ export function DashboardTopProvidersBarChart(props: {
                         tickLine={false}
                         axisLine={false}
                     />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="rx" fill="var(--color-rx)" radius={6} />
+                    <ChartTooltip
+                        content={
+                            <ChartTooltipContent
+                                formatter={(value, name) => {
+                                    if (name === "recipes") return [String(value), "Rezepte"];
+                                    return [String(value), String(name)];
+                                }}
+                            />
+                        }
+                    />
+                    <Bar dataKey="recipes" fill="var(--color-recipes)" radius={6} />
                 </BarChart>
             </ChartContainer>
         </div>
