@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 
-// ✅ passt zu timeseries.revenue_daily (rolling_30d) und auch mtd/prev_month Serien
 export type DashboardRevenueDailyDto = {
     date: string; // "2026-02-28"
     revenue_total: number;
@@ -21,15 +20,17 @@ type Row = {
 };
 
 function formatDEDayMonth(isoDate: string) {
-    // "2026-02-28" -> "28.02"
     const d = new Date(`${isoDate}T00:00:00`);
-    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+    return d.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+    });
 }
 
-export function DashboardRevenueCurrentMonthBarChart(props: {
+export function DashboardRevenueDailyBarChart(props: {
     data: DashboardRevenueDailyDto[];
-    rangeLabel?: string; // ✅ optional: "31.01 – 01.03"
-    title?: string; // ✅ optional override
+    rangeLabel?: string;
+    title?: string;
 }) {
     const { data, rangeLabel, title } = props;
 
@@ -48,7 +49,7 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
         <div className="rounded-xl border bg-card p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">
-                    {title ?? "Umsatz pro Tag (letzte 30 Tage)"}
+                    {title ?? "Umsatz pro Tag"}
                 </div>
                 <div className="text-xs text-muted-foreground">
                     {rangeLabel ? `Zeitraum: ${rangeLabel}` : "Tagesumsatz mit RX-Volumen"}
@@ -68,7 +69,6 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         tickFormatter={formatDEDayMonth}
                     />
 
-                    {/* Umsatz Achse */}
                     <YAxis
                         yAxisId="revenue"
                         tickLine={false}
@@ -76,7 +76,6 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         width={72}
                     />
 
-                    {/* RX Achse */}
                     <YAxis
                         yAxisId="rx"
                         orientation="right"
@@ -90,7 +89,9 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         content={
                             <ChartTooltipContent
                                 labelKey="date"
-                                labelFormatter={(label) => `Datum: ${formatDEDayMonth(String(label))}`}
+                                labelFormatter={(label) =>
+                                    `Datum: ${formatDEDayMonth(String(label))}`
+                                }
                                 formatter={(value, name) => {
                                     const key = String(name);
 
@@ -100,6 +101,7 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                                     if (key === "rx_count") {
                                         return [String(value), "RX"];
                                     }
+
                                     return [String(value), key];
                                 }}
                             />
@@ -108,7 +110,6 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
 
                     <ChartLegend content={<ChartLegendContent />} />
 
-                    {/* Umsatz Balken */}
                     <Bar
                         yAxisId="revenue"
                         dataKey="revenue_total"
@@ -116,7 +117,6 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         radius={6}
                     />
 
-                    {/* RX Linie */}
                     <Line
                         yAxisId="rx"
                         type="monotone"

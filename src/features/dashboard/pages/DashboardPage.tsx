@@ -1,5 +1,3 @@
-"use client";
-
 import { DashboardRevenueHero } from "../components/DashboardRevenueHero";
 import { DashboardRiskCards } from "../components/DashboardRiskCards";
 import { DashboardWorkflowBarChart } from "../components/DashboardWorkflowBarChart";
@@ -10,21 +8,18 @@ import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
 import { DashboardRevenueCurrentMonthBarChart } from "../components/DashboardRevenueCurrentMonthBarChart";
 
 import { useDashboardPage } from "../hooks/useDashboardPage";
-
-function formatDEDate(isoDate: string) {
-    // isoDate: "2026-02-28"
-    const d = new Date(`${isoDate}T00:00:00`);
-    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
-}
+import { DashboardRevenueDailyBarChart } from "../components/DashboardRevenueDailyBarChart";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
     const { data, isFetching, isError, error } = vm.query;
 
+    // ✅ Loading nur wenn wirklich gar keine Daten da sind
     if (isFetching && !data) {
         return <div className="p-6">Lade Dashboard...</div>;
     }
 
+    // ✅ Error nur "hard fail" wenn keine Daten vorhanden sind
     if (isError && !data) {
         return (
             <div className="p-6">
@@ -41,24 +36,13 @@ export function DashboardPage() {
 
     const d = data;
 
-    const revenueDaily = vm.series.revenueDaily ?? [];
-
-    // Optional: leere 0-Tage am Monatsanfang rausfiltern
-    const revenueDailyClean = revenueDaily.filter(
-        (row) => row.revenue_total !== 0 || row.rx_count !== 0,
-    );
-
-    // Zeitraum aus Serie ableiten (für CFO-Feeling)
-    const rangeStart = revenueDaily[0]?.date;
-    const rangeEnd = revenueDaily[revenueDaily.length - 1]?.date;
-    const rangeLabel =
-        rangeStart && rangeEnd
-            ? `${formatDEDate(rangeStart)} – ${formatDEDate(rangeEnd)}`
-            : "Letzte 30 Tage";
+    // ✅ kommt jetzt aus dem Hook (gefiltert + period-aware)
+    const revenueDailyClean = vm.series.revenueDailyClean ?? [];
+    const rangeLabel = vm.meta.rangeLabel;
 
     return (
         <div className="space-y-6 p-6">
-            {/* Soft Warning wenn Refetch failed */}
+            {/* Soft Warning wenn Refetch failed aber stale data vorhanden */}
             {isError ? (
                 <div className="rounded-xl border bg-white p-3 text-sm text-destructive">
                     Hinweis: Dashboard konnte nicht aktualisiert werden – es werden ggf.
@@ -71,16 +55,24 @@ export function DashboardPage() {
                 <div>
                     <div className="text-lg font-semibold">Dashboard</div>
                     <div className="text-xs text-muted-foreground">
-                        Zeitraum: <span className="font-medium text-foreground">{rangeLabel}</span>
+                        Zeitraum:{" "}
+                        <span className="font-medium text-foreground">{rangeLabel}</span>
                     </div>
                 </div>
 
+                {/* Badge -> zeigt tatsächlich den gewählten Zeitraum */}
                 <div className="rounded-full border bg-white px-3 py-1 text-xs text-muted-foreground">
-                    Letzte 30 Tage
+                    {vm.period === "rolling_30d"
+                        ? "Letzte 30 Tage"
+                        : vm.period === "mtd"
+                            ? "Monat bis heute"
+                            : vm.period === "prev_month"
+                                ? "Vormonat"
+                                : "YTD"}
                 </div>
             </div>
 
-            {/* 1️⃣ Revenue Hero (Semantik: rolling 30d) */}
+            {/* 1️⃣ Revenue Hero */}
             <DashboardRevenueHero
                 revenueMonth={d.economy.revenue_month}
                 revenuePrevMonth={d.economy.revenue_prev_month}
@@ -92,32 +84,40 @@ export function DashboardPage() {
 
             <DashboardGrowthMessage momPct={d.economy.revenue_vs_prev_month_pct} />
 
-            {/* 2️⃣ Revenue Chart (rolling_30d) */}
+            {/* 2️⃣ Revenue Chart */}
             {revenueDailyClean.length > 0 ? (
-                <DashboardRevenueCurrentMonthBarChart data={revenueDailyClean} />
+                <DashboardRevenueDailyBarChart
+                    data={vm.series.revenueDailyClean}
+                    rangeLabel={vm.meta.rangeLabel}
+                    title="Umsatz pro Tag (letzte 30 Tage)"
+                />
             ) : (
                 <div className="rounded-xl border bg-white p-4 text-sm text-muted-foreground">
                     Noch keine Umsatzdaten verfügbar.
                 </div>
             )}
 
-            {/* 3️⃣ Cash Block (rolling_30d wording) */}
+            {/* 3️⃣ Cash Block */}
             <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-xl border p-4 bg-white">
-                    <div className="text-xs text-muted-foreground">Bezahlt (letzte 30 Tage)</div>
+                <div className="rounded-xl border bg-white p-4">
+                    <div className="text-xs text-muted-foreground">
+                        Bezahlt ({vm.period === "rolling_30d" ? "letzte 30 Tage" : "Zeitraum"})
+                    </div>
                     <div className="text-2xl font-semibold">
                         {d.economy.revenue_paid_month.toFixed(2)} €
                     </div>
                 </div>
 
-                <div className="rounded-xl border p-4 bg-white">
-                    <div className="text-xs text-muted-foreground">Unbezahlt (letzte 30 Tage)</div>
+                <div className="rounded-xl border bg-white p-4">
+                    <div className="text-xs text-muted-foreground">
+                        Unbezahlt ({vm.period === "rolling_30d" ? "letzte 30 Tage" : "Zeitraum"})
+                    </div>
                     <div className="text-2xl font-semibold">
                         {d.economy.revenue_unpaid_month.toFixed(2)} €
                     </div>
                 </div>
 
-                <div className="rounded-xl border p-4 bg-white">
+                <div className="rounded-xl border bg-white p-4">
                     <div className="text-xs text-muted-foreground">Offene Forderungen</div>
                     <div className="text-2xl font-semibold">
                         {d.economy.open_receivables.toFixed(2)} €
