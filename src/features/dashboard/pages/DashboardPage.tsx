@@ -15,11 +15,13 @@ export function DashboardPage() {
     const vm = useDashboardPage();
     const { data, isFetching, isError, error } = vm.query;
 
+    // ⏳ Initial Loading
     if (isFetching && !data) {
         return <div className="p-6">Lade Dashboard...</div>;
     }
 
-    if (isError) {
+    // ❌ Hard Error nur wenn KEINE Daten vorhanden
+    if (isError && !data) {
         return (
             <div className="p-6">
                 <div className="text-sm text-destructive">
@@ -30,17 +32,28 @@ export function DashboardPage() {
     }
 
     if (!data) {
-        return <div className="p-6">Keine Daten.</div>;
+        return <div className="p-6">Keine Daten verfügbar.</div>;
     }
 
     const d = data;
 
-    // ✅ safe: timeseries kann fehlen
-    const aligned =
-        d.timeseries?.revenue_daily_compare_aligned ?? [];
+    // ✅ rolling_30d Serie
+    const revenueDaily = vm.series.revenueDaily ?? [];
+
+    // Optional: leere 0-Tage am Monatsanfang entfernen
+    const revenueDailyClean = revenueDaily.filter(
+        (row) => row.revenue_total !== 0 || row.rx_count !== 0
+    );
 
     return (
         <div className="space-y-6 p-6">
+            {/* Soft Warning wenn Refetch failed */}
+            {isError ? (
+                <div className="rounded-xl border bg-white p-3 text-sm text-destructive">
+                    Hinweis: Dashboard konnte nicht aktualisiert werden – es werden ggf. ältere Daten angezeigt.
+                </div>
+            ) : null}
+
             {/* 1️⃣ Revenue Hero */}
             <DashboardRevenueHero
                 revenueMonth={d.economy.revenue_month}
@@ -53,26 +66,30 @@ export function DashboardPage() {
 
             <DashboardGrowthMessage momPct={d.economy.revenue_vs_prev_month_pct} />
 
-            {/* 2️⃣ Revenue Chart */}
-            {aligned.length > 0 ? (
-                <DashboardRevenueCurrentMonthBarChart data={aligned} />
+            {/* 2️⃣ Revenue Chart (rolling_30d) */}
+            {revenueDailyClean.length > 0 ? (
+                <DashboardRevenueCurrentMonthBarChart data={revenueDailyClean} />
             ) : (
                 <div className="rounded-xl border bg-white p-4 text-sm text-muted-foreground">
-                    Noch keine Vergleichsdaten verfügbar.
+                    Noch keine Umsatzdaten verfügbar.
                 </div>
             )}
 
             {/* 3️⃣ Cash Block */}
             <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-xl border p-4 bg-white">
-                    <div className="text-xs text-muted-foreground">Bezahlt</div>
+                    <div className="text-xs text-muted-foreground">
+                        Bezahlt (30 Tage)
+                    </div>
                     <div className="text-2xl font-semibold">
                         {d.economy.revenue_paid_month.toFixed(2)} €
                     </div>
                 </div>
 
                 <div className="rounded-xl border p-4 bg-white">
-                    <div className="text-xs text-muted-foreground">Unbezahlt</div>
+                    <div className="text-xs text-muted-foreground">
+                        Unbezahlt (30 Tage)
+                    </div>
                     <div className="text-2xl font-semibold">
                         {d.economy.revenue_unpaid_month.toFixed(2)} €
                     </div>
@@ -90,8 +107,12 @@ export function DashboardPage() {
 
             {/* 4️⃣ Wachstumstreiber */}
             <div className="grid gap-6 lg:grid-cols-2">
-                <DashboardTopProductsBarChart products={d.analytics.top_products} />
-                <DashboardTopProvidersBarChart providers={d.analytics.top_providers} />
+                <DashboardTopProductsBarChart
+                    products={d.analytics.top_products}
+                />
+                <DashboardTopProvidersBarChart
+                    providers={d.analytics.top_providers}
+                />
             </div>
 
             {/* 5️⃣ Risiko */}
@@ -99,8 +120,12 @@ export function DashboardPage() {
 
             {/* 6️⃣ Operatives */}
             <div className="grid gap-6 lg:grid-cols-2">
-                <DashboardWorkflowBarChart workflow={d.operations.workflow} />
-                <DashboardPaymentPieChart payment={d.operations.payment} />
+                <DashboardWorkflowBarChart
+                    workflow={d.operations.workflow}
+                />
+                <DashboardPaymentPieChart
+                    payment={d.operations.payment}
+                />
             </div>
         </div>
     );
