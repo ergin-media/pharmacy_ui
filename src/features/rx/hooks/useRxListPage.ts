@@ -200,7 +200,7 @@ export function useRxListPage() {
             perPage,
 
             queue,
-            tabValue: queue ?? "inbox", // default Tab
+            tabValue: (queue ?? "inbox") as RxQueue, // default Tab
 
             parseStatus,
             workflowStatus,

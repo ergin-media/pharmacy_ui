@@ -11,7 +11,6 @@ export type RxQueue =
     | "clarify";            // Klärfälle
 
 export const RX_QUEUE_TABS: { value: RxQueue | "all"; label: string }[] = [
-    { value: "all", label: "Alle" },
     { value: "inbox", label: "Eingang / Neu" },
     { value: "offer_create", label: "Angebot erstellen" },
     { value: "await_payment", label: "Warten auf Zahlung" },
