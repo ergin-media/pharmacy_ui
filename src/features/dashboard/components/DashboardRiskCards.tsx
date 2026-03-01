@@ -44,7 +44,7 @@ export function DashboardRiskCards(props: { risk: RiskProps }) {
     const navigate = useNavigate();
 
     return (
-        <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-5">
+        <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-4">
             <RiskCard
                 title="Nicht zugeordnete Positionen"
                 value={formatInt(risk.rx_with_unmapped_items)}
@@ -73,6 +73,7 @@ export function DashboardRiskCards(props: { risk: RiskProps }) {
                 onClick={() => navigate("/products?missing_base_price=1")}
             />
 
+            {/*}
             <RiskCard
                 title="Gefährdeter Umsatz"
                 value={formatEUR(risk.revenue_risk_total)}
@@ -80,6 +81,7 @@ export function DashboardRiskCards(props: { risk: RiskProps }) {
                 variant="danger"
                 onClick={() => navigate("/rx?risk_revenue=1")}
             />
+            {*/}
         </div>
     );
 }
