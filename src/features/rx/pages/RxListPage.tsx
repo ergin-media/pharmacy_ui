@@ -12,12 +12,15 @@ import { RxListTable } from "../components/RxListTable";
 import { RxListTableSkeleton } from "../components/RxListTableSkeleton";
 import { useRxPanels } from "../hooks/useRxPanels";
 import { RX_QUEUE_TABS, type RxQueue } from "../lib/rx.queues";
+import { Badge } from "@/components/ui/badge";
+import { formatCount } from "@/shared/lib/format/figures";
 
 export function RxListPage() {
     const vm = useRxListPage();
     const panels = useRxPanels();
 
     const tabValue = vm.filters.tabValue;
+    //const countsByQueue = vm.meta.queueCounts ?? {};
 
     return (
         <Card>
@@ -63,13 +66,33 @@ export function RxListPage() {
                             value={tabValue}
                             onValueChange={(v) => vm.actions.setQueue(v as RxQueue)}
                         >
-                            <TabsList className="flex flex-wrap">
-                                {RX_QUEUE_TABS.map((t) => (
-                                    <TabsTrigger key={t.value} value={t.value}>
-                                        {t.label}
-                                    </TabsTrigger>
-                                ))}
-                            </TabsList>
+                            <Tabs value={tabValue} onValueChange={(v) => vm.actions.setQueue(v as any)}>
+                                <TabsList className="flex flex-wrap">
+                                    {RX_QUEUE_TABS.map((t) => {
+                                        const Icon = t.icon;
+                                        const count = 0; //countsByQueue[t.value];
+
+                                        // optional: nur zeigen wenn > 0
+                                        const showBadge = typeof count === "number" && count > 0;
+
+                                        return (
+                                            <TabsTrigger key={t.value} value={t.value} className="gap-2">
+                                                <Icon className="h-4 w-4" />
+                                                <span>{t.label}</span>
+
+                                                {showBadge ? (
+                                                    <Badge
+                                                        variant={t.value === "clarify" ? "destructive" : "secondary"}
+                                                        className="ml-1 h-5 rounded-full px-2 text-[11px]"
+                                                    >
+                                                        {formatCount(count)}
+                                                    </Badge>
+                                                ) : null}
+                                            </TabsTrigger>
+                                        );
+                                    })}
+                                </TabsList>
+                            </Tabs>
                         </Tabs>
 
                         <div className="flex flex-wrap items-center justify-between gap-3">

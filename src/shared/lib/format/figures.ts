@@ -23,3 +23,8 @@ export function formatDayLabel(date: string) {
     // YYYY-MM-DD -> DD
     return date?.slice(8, 10) ?? "";
 }
+
+export function formatCount(n: number) {
+    if (n > 99) return "99+";
+    return String(n);
+}
