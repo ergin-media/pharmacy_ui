@@ -14,6 +14,7 @@ import { useRxPanels } from "../hooks/useRxPanels";
 import { RX_QUEUE_TABS, type RxQueue } from "../lib/rx.queues";
 import { Badge } from "@/components/ui/badge";
 import { formatCount } from "@/shared/lib/format/figures";
+import { Separator } from "@base-ui/react/separator";
 
 export function RxListPage() {
     const vm = useRxListPage();
@@ -76,19 +77,22 @@ export function RxListPage() {
                                         const showBadge = typeof count === "number" && count > 0;
 
                                         return (
-                                            <TabsTrigger key={t.value} value={t.value} className="gap-2">
-                                                <Icon className="h-4 w-4" />
-                                                <span>{t.label}</span>
+                                            <>
+                                                <TabsTrigger key={t.value} value={t.value} className="gap-2">
+                                                    <Icon className="h-4 w-4" />
+                                                    <span>{t.label}</span>
 
-                                                {showBadge ? (
-                                                    <Badge
-                                                        variant={t.value === "clarify" ? "destructive" : "secondary"}
-                                                        className="ml-1 h-5 rounded-full px-2 text-[11px]"
-                                                    >
-                                                        {formatCount(count)}
-                                                    </Badge>
-                                                ) : null}
-                                            </TabsTrigger>
+                                                    {showBadge ? (
+                                                        <Badge
+                                                            variant={t.value === "clarify" ? "destructive" : "secondary"}
+                                                            className="ml-1 h-5 rounded-full px-2 text-[11px]"
+                                                        >
+                                                            {formatCount(count)}
+                                                        </Badge>
+                                                    ) : null}
+                                                </TabsTrigger>
+                                                <Separator orientation="vertical" className="h-4 w-px bg-black/10 last-of-type:hidden" />
+                                            </>
                                         );
                                     })}
                                 </TabsList>
