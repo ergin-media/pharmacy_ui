@@ -11,10 +11,10 @@ import { RxListToolbar } from "../components/RxListToolbar";
 import { RxListTable } from "../components/RxListTable";
 import { RxListTableSkeleton } from "../components/RxListTableSkeleton";
 import { useRxPanels } from "../hooks/useRxPanels";
-import { RX_QUEUE_TABS, type RxQueue } from "../lib/rx.queues";
+import { RX_QUEUES, type RxQueue } from "../lib/rx.queues";
 import { Badge } from "@/components/ui/badge";
 import { formatCount } from "@/shared/lib/format/figures";
-import { Separator } from "@base-ui/react/separator";
+import { Separator } from "@/components/ui/separator";
 
 export function RxListPage() {
     const vm = useRxListPage();
@@ -54,9 +54,14 @@ export function RxListPage() {
                 ) : vm.query.isError ? (
                     <div className="flex items-center gap-2">
                         <div className="text-sm text-destructive">
-                            Fehler: {(vm.query.error as Error)?.message ?? "unknown"}
+                            Fehler:{" "}
+                            {(vm.query.error as Error)?.message ?? "unknown"}
                         </div>
-                        <Button variant="outline" size="sm" onClick={vm.actions.refresh}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={vm.actions.refresh}
+                        >
                             Erneut versuchen
                         </Button>
                     </div>
@@ -65,43 +70,53 @@ export function RxListPage() {
                         {/* ✅ Queue Tabs */}
                         <Tabs
                             value={tabValue}
-                            onValueChange={(v) => vm.actions.setQueue(v as RxQueue)}
+                            onValueChange={(v) =>
+                                vm.actions.setQueue(v as RxQueue)
+                            }
                         >
-                            <Tabs value={tabValue} onValueChange={(v) => vm.actions.setQueue(v as any)}>
-                                <TabsList className="flex flex-wrap">
-                                    {RX_QUEUE_TABS.map((t) => {
-                                        const Icon = t.icon;
-                                        const count = 0; //countsByQueue[t.value];
-
-                                        // optional: nur zeigen wenn > 0
-                                        const showBadge = typeof count === "number" && count > 0;
+                            <TabsList className="flex flex-wrap items-center gap-1">
+                                {Object.entries(RX_QUEUES).map(
+                                    ([value, config]) => {
+                                        const Icon = config.icon;
+                                        const count =
+                                            vm.meta.queueCounts?.[
+                                                value as RxQueue
+                                            ] ?? 0;
 
                                         return (
                                             <>
-                                                <TabsTrigger key={t.value} value={t.value} className="gap-2">
+                                                <TabsTrigger
+                                                    key={value}
+                                                    value={value}
+                                                    className="gap-2"
+                                                >
                                                     <Icon className="h-4 w-4" />
-                                                    <span>{t.label}</span>
+                                                    <span>{config.label}</span>
 
-                                                    {showBadge ? (
-                                                        <Badge
-                                                            variant={t.value === "clarify" ? "destructive" : "secondary"}
-                                                            className="ml-1 h-5 rounded-full px-2 text-[11px]"
-                                                        >
-                                                            {formatCount(count)}
-                                                        </Badge>
-                                                    ) : null}
+                                                    <Badge
+                                                        variant={config.variant}
+                                                        className=""
+                                                    >
+                                                        {formatCount(count)}
+                                                    </Badge>
                                                 </TabsTrigger>
-                                                <Separator orientation="vertical" className="h-4 w-px bg-black/10 last-of-type:hidden" />
+                                                <Separator
+                                                    orientation="vertical"
+                                                    className="h-4 w-px bg-black/10 last-of-type:hidden"
+                                                />
                                             </>
                                         );
-                                    })}
-                                </TabsList>
-                            </Tabs>
+                                    },
+                                )}
+                            </TabsList>
                         </Tabs>
 
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="text-sm text-muted-foreground">
-                                Gesamt: <span className="font-medium text-foreground">{vm.meta.total}</span>
+                                Gesamt:{" "}
+                                <span className="font-medium text-foreground">
+                                    {vm.meta.total}
+                                </span>
                             </div>
 
                             <Pagination
@@ -115,6 +130,7 @@ export function RxListPage() {
 
                         <RxListTable
                             items={vm.query.data?.items ?? []}
+                            page={vm.filters.page} // ✅ NEW
                             perPage={vm.filters.perPage}
                             onOpen={(id) => console.log("open", id)}
                             onPdf={(id) => console.log("pdf", id)}

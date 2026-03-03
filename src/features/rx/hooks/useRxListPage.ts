@@ -41,7 +41,9 @@ const QUEUES = [
 
 function normalizeQueue(v: string | null): RxQueue | undefined {
     const s = (v ?? "").trim();
-    return (QUEUES as readonly string[]).includes(s) ? (s as RxQueue) : undefined;
+    return (QUEUES as readonly string[]).includes(s)
+        ? (s as RxQueue)
+        : undefined;
 }
 
 export function useRxListPage() {
@@ -55,17 +57,23 @@ export function useRxListPage() {
 
     // optional advanced filters
     const parseStatusRaw = spGetString(sp, "parse_status") ?? "";
-    const parseStatus: RxParseStatus | undefined = (ALLOWED_STATUSES as readonly string[]).includes(parseStatusRaw)
+    const parseStatus: RxParseStatus | undefined = (
+        ALLOWED_STATUSES as readonly string[]
+    ).includes(parseStatusRaw)
         ? (parseStatusRaw as RxParseStatus)
         : undefined;
 
     const workflowRaw = spGetString(sp, "workflow_status") ?? "";
-    const workflowStatus: RxWorkflowStatus | undefined = (ALLOWED_WORKFLOW as readonly string[]).includes(workflowRaw)
+    const workflowStatus: RxWorkflowStatus | undefined = (
+        ALLOWED_WORKFLOW as readonly string[]
+    ).includes(workflowRaw)
         ? (workflowRaw as RxWorkflowStatus)
         : undefined;
 
     const paymentRaw = spGetString(sp, "payment_state") ?? "";
-    const paymentState: RxPaymentState | undefined = (ALLOWED_PAYMENT as readonly string[]).includes(paymentRaw)
+    const paymentState: RxPaymentState | undefined = (
+        ALLOWED_PAYMENT as readonly string[]
+    ).includes(paymentRaw)
         ? (paymentRaw as RxPaymentState)
         : undefined;
 
@@ -108,11 +116,15 @@ export function useRxListPage() {
 
         if (next.queue !== undefined) spSetOrDelete(n, "queue", next.queue);
 
-        if (next.parse_status !== undefined) spSetOrDelete(n, "parse_status", next.parse_status);
-        if (next.workflow_status !== undefined) spSetOrDelete(n, "workflow_status", next.workflow_status);
-        if (next.payment_state !== undefined) spSetOrDelete(n, "payment_state", next.payment_state);
+        if (next.parse_status !== undefined)
+            spSetOrDelete(n, "parse_status", next.parse_status);
+        if (next.workflow_status !== undefined)
+            spSetOrDelete(n, "workflow_status", next.workflow_status);
+        if (next.payment_state !== undefined)
+            spSetOrDelete(n, "payment_state", next.payment_state);
 
-        if (next.provider !== undefined) spSetOrDelete(n, "provider", next.provider);
+        if (next.provider !== undefined)
+            spSetOrDelete(n, "provider", next.provider);
         if (next.sort !== undefined) spSetOrDelete(n, "sort", next.sort);
 
         setSp(n, { replace: true });
@@ -161,12 +173,14 @@ export function useRxListPage() {
 
     const reparseMutation = useReparseRxMutation();
     const reparseBusyId =
-        reparseMutation.isPending && typeof reparseMutation.variables === "number"
+        reparseMutation.isPending &&
+        typeof reparseMutation.variables === "number"
             ? reparseMutation.variables
             : null;
 
     const total = query.data?.total ?? 0;
     const totalPages = query.data?.total_pages ?? 1;
+    const queueCounts = query.data?.queue_counts ?? {};
 
     const actions = {
         // ✅ Tabs -> queue setzen
@@ -177,8 +191,10 @@ export function useRxListPage() {
             }),
 
         // optional advanced actions
-        setParseStatus: (v: string) => patch({ page: 1, parse_status: v === "all" ? "" : v }),
-        setWorkflowStatus: (v: string) => patch({ page: 1, workflow_status: v }),
+        setParseStatus: (v: string) =>
+            patch({ page: 1, parse_status: v === "all" ? "" : v }),
+        setWorkflowStatus: (v: string) =>
+            patch({ page: 1, workflow_status: v }),
         setPaymentState: (v: string) => patch({ page: 1, payment_state: v }),
         setProvider: (v: string) => patch({ page: 1, provider: v }),
 
@@ -214,6 +230,7 @@ export function useRxListPage() {
         meta: {
             total,
             totalPages,
+            queueCounts,
             reparseBusyId,
             isReparseBusy: reparseMutation.isPending,
         },

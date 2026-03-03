@@ -1,3 +1,4 @@
+// RxListTable.tsx
 import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
 import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
 import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
@@ -30,7 +31,10 @@ import { rxShouldShowReparse, rxUnmappedCount } from "../lib/rx.reparse";
 export function RxListTable(props: {
     items: RxListItemDto[];
     isLoading?: boolean;
+
+    page: number; // ✅ NEW
     perPage: number;
+
     onOpen?: (id: number) => void;
     onPdf?: (id: number) => void;
     onMore?: (id: number) => void;
@@ -42,6 +46,7 @@ export function RxListTable(props: {
     const {
         items,
         isLoading,
+        page,
         perPage,
         onOpen,
         onPdf,
@@ -51,12 +56,17 @@ export function RxListTable(props: {
         reparseBusyId,
     } = props;
 
+    const baseIndex = Math.max(0, (page - 1) * perPage);
+
     return (
         <div className="overflow-x-auto rounded-md border">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-65 ps-3">Patient</TableHead>
+                        {/* ✅ NEW */}
+                        <TableHead className="w-14 ps-3">#</TableHead>
+
+                        <TableHead className="w-65">Patient</TableHead>
                         <TableHead className="w-55">Plattform</TableHead>
                         <TableHead>Artikel</TableHead>
                         <TableHead className="w-35 text-right">
@@ -79,18 +89,20 @@ export function RxListTable(props: {
                     ) : items.length === 0 ? (
                         <TableRow>
                             <TableCell
-                                colSpan={8}
+                                colSpan={9}
                                 className="text-muted-foreground"
                             >
                                 Keine Ergebnisse.
                             </TableCell>
                         </TableRow>
                     ) : (
-                        items.map((r) => {
+                        items.map((r, idx) => {
                             const rowId = Number(r.id);
                             const isReparseBusy =
                                 reparseBusyId != null &&
                                 Number(reparseBusyId) === rowId;
+
+                            const rowNumber = baseIndex + idx + 1;
 
                             const summary = r.summary ?? undefined;
                             const priceMeta = getPriceMeta(summary);
@@ -115,14 +127,21 @@ export function RxListTable(props: {
                                 r.patient?.email ?? r.patient?.phone ?? "—";
 
                             return (
-                                <TableRow key={r.id} className="hover:bg-muted/50">
+                                <TableRow
+                                    key={r.id}
+                                    className="hover:bg-muted/50"
+                                >
+                                    <TableCell className="ps-3 text-muted-foreground">
+                                        {`${rowNumber}.`}
+                                    </TableCell>
+
                                     {/* Patient */}
-                                    <TableCell className="ps-3">
+                                    <TableCell>
                                         <div className="font-medium">
                                             {patientTitle}
                                         </div>
                                         <div className="max-w-60 truncate text-xs text-muted-foreground">
-                                            {patientSub}
+                                            {`ID: ${r.id} | ${patientSub}`}
                                         </div>
                                     </TableCell>
 
@@ -149,7 +168,10 @@ export function RxListTable(props: {
                                     {/* Gesamtmenge */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
-                                            {formatQuantity(totalQty, totalUnit)}
+                                            {formatQuantity(
+                                                totalQty,
+                                                totalUnit,
+                                            )}
                                         </div>
                                     </TableCell>
 
@@ -164,7 +186,10 @@ export function RxListTable(props: {
                                                         : "text-muted-foreground opacity-50",
                                                 ].join(" ")}
                                             >
-                                                {formatMoney(priceCents, currency)}
+                                                {formatMoney(
+                                                    priceCents,
+                                                    currency,
+                                                )}
                                             </div>
                                         </div>
                                     </TableCell>
@@ -201,7 +226,9 @@ export function RxListTable(props: {
 
                                             <div className="text-xs text-muted-foreground">
                                                 <span className="font-medium text-foreground">
-                                                    {r.parse_status as RxParseStatus}
+                                                    {
+                                                        r.parse_status as RxParseStatus
+                                                    }
                                                 </span>
                                             </div>
 
@@ -211,8 +238,14 @@ export function RxListTable(props: {
                                                         variant="outline"
                                                         size="sm"
                                                         className="h-7 px-2"
-                                                        onClick={() => onReparse?.(rowId)}
-                                                        disabled={Boolean(isLoading) || isReparseBusy}
+                                                        onClick={() =>
+                                                            onReparse?.(rowId)
+                                                        }
+                                                        disabled={
+                                                            Boolean(
+                                                                isLoading,
+                                                            ) || isReparseBusy
+                                                        }
                                                     >
                                                         {isReparseBusy ? (
                                                             <Loader2 className="mr-2 size-4 animate-spin" />
@@ -230,7 +263,10 @@ export function RxListTable(props: {
                                     <TableCell className="text-right pe-3">
                                         <div className="flex justify-end">
                                             <RxRowActionsMenu
-                                                disabled={Boolean(isLoading) || isReparseBusy}
+                                                disabled={
+                                                    Boolean(isLoading) ||
+                                                    isReparseBusy
+                                                }
                                                 onOpen={() => onOpen?.(rowId)}
                                                 onPdf={() => onPdf?.(rowId)}
                                                 onMore={() => onMore?.(rowId)}

@@ -20,8 +20,6 @@ export type RxWorkflowStatus =
 
 export type RxPaymentState = "unpaid" | "paid" | "refunded";
 
-
-
 export type RxItem = {
     id: Id;
     rx_document_id: Id;
@@ -110,6 +108,7 @@ export interface RxListResponseDto {
     per_page: number;
     total: number;
     total_pages: number;
+    queue_counts: number;
 }
 
 export interface RxListQueryParams {
