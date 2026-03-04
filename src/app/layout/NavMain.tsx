@@ -58,9 +58,9 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>{label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="p-0">{label}</SidebarGroupLabel>
 
-            <SidebarMenu>
+            <SidebarMenu className="p-0">
                 {items.map((item) => {
                     const hasChildren =
                         Array.isArray(item.items) && item.items.length > 0;

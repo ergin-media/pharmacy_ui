@@ -41,12 +41,12 @@ export function DashboardPage() {
     const rangeLabel = vm.meta.rangeLabel;
 
     return (
-        <div className="space-y-6 p-6">
+        <div>
             {/* Soft Warning wenn Refetch failed aber stale data vorhanden */}
             {isError ? (
                 <div className="rounded-xl border bg-white p-3 text-sm text-destructive">
-                    Hinweis: Dashboard konnte nicht aktualisiert werden – es werden ggf.
-                    ältere Daten angezeigt.
+                    Hinweis: Dashboard konnte nicht aktualisiert werden – es
+                    werden ggf. ältere Daten angezeigt.
                 </div>
             ) : null}
 
@@ -56,7 +56,9 @@ export function DashboardPage() {
                     <div className="text-lg font-semibold">Dashboard</div>
                     <div className="text-xs text-muted-foreground">
                         Zeitraum:{" "}
-                        <span className="font-medium text-foreground">{rangeLabel}</span>
+                        <span className="font-medium text-foreground">
+                            {rangeLabel}
+                        </span>
                     </div>
                 </div>
 
@@ -65,10 +67,10 @@ export function DashboardPage() {
                     {vm.period === "rolling_30d"
                         ? "Letzte 30 Tage"
                         : vm.period === "mtd"
-                            ? "Monat bis heute"
-                            : vm.period === "prev_month"
-                                ? "Vormonat"
-                                : "YTD"}
+                          ? "Monat bis heute"
+                          : vm.period === "prev_month"
+                            ? "Vormonat"
+                            : "YTD"}
                 </div>
             </div>
 
@@ -82,7 +84,9 @@ export function DashboardPage() {
                 momPct={d.economy.revenue_vs_prev_month_pct}
             />
 
-            <DashboardGrowthMessage momPct={d.economy.revenue_vs_prev_month_pct} />
+            <DashboardGrowthMessage
+                momPct={d.economy.revenue_vs_prev_month_pct}
+            />
 
             {/* 2️⃣ Revenue Chart */}
             {revenueDailyClean.length > 0 ? (
@@ -101,7 +105,11 @@ export function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-xl border bg-white p-4">
                     <div className="text-xs text-muted-foreground">
-                        Bezahlt ({vm.period === "rolling_30d" ? "letzte 30 Tage" : "Zeitraum"})
+                        Bezahlt (
+                        {vm.period === "rolling_30d"
+                            ? "letzte 30 Tage"
+                            : "Zeitraum"}
+                        )
                     </div>
                     <div className="text-2xl font-semibold">
                         {formatEUR(d.economy.revenue_paid_month)}
@@ -110,7 +118,11 @@ export function DashboardPage() {
 
                 <div className="rounded-xl border bg-white p-4">
                     <div className="text-xs text-muted-foreground">
-                        Unbezahlt ({vm.period === "rolling_30d" ? "letzte 30 Tage" : "Zeitraum"})
+                        Unbezahlt (
+                        {vm.period === "rolling_30d"
+                            ? "letzte 30 Tage"
+                            : "Zeitraum"}
+                        )
                     </div>
                     <div className="text-2xl font-semibold">
                         {formatEUR(d.economy.revenue_unpaid_month)}
@@ -118,7 +130,9 @@ export function DashboardPage() {
                 </div>
 
                 <div className="rounded-xl border bg-white p-4">
-                    <div className="text-xs text-muted-foreground">Offene Forderungen</div>
+                    <div className="text-xs text-muted-foreground">
+                        Offene Forderungen
+                    </div>
                     <div className="text-2xl font-semibold">
                         {formatEUR(d.economy.open_receivables)}
                     </div>
@@ -127,8 +141,12 @@ export function DashboardPage() {
 
             {/* 4️⃣ Wachstumstreiber */}
             <div className="grid gap-6 lg:grid-cols-2">
-                <DashboardTopProductsBarChart products={d.analytics.top_products} />
-                <DashboardTopProvidersBarChart providers={d.analytics.top_providers} />
+                <DashboardTopProductsBarChart
+                    products={d.analytics.top_products}
+                />
+                <DashboardTopProvidersBarChart
+                    providers={d.analytics.top_providers}
+                />
             </div>
 
             {/* 5️⃣ Risiko */}

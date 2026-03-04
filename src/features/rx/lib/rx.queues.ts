@@ -30,27 +30,27 @@ export const RX_QUEUES = {
     paid_not_started: {
         label: "Bezahlt",
         icon: BadgeCheck,
-        variant: "secondary",
+        variant: "neutral",
     },
     packaging: {
         label: "In Vorbereitung",
         icon: Package,
-        variant: "secondary",
+        variant: "neutral",
     },
     shipping: {
         label: "Versand",
         icon: Truck,
-        variant: "secondary",
+        variant: "neutral",
     },
     pickup: {
         label: "Abholung",
         icon: Store,
-        variant: "secondary",
+        variant: "neutral",
     },
     completed: {
         label: "Abgeschlossen",
         icon: CheckCircle2,
-        variant: "secondary",
+        variant: "neutral",
     },
     clarify: {
         label: "Klärfälle",
