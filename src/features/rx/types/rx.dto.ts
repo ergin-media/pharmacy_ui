@@ -102,13 +102,15 @@ export interface RxListItemDto {
     } | null;
 }
 
+export type RxQueueCounts = Partial<Record<RxQueue, number>>;
+
 export interface RxListResponseDto {
     items: RxListItemDto[];
     page: number;
     per_page: number;
     total: number;
     total_pages: number;
-    queue_counts: number;
+    queue_counts: RxQueueCounts;
 }
 
 export interface RxListQueryParams {

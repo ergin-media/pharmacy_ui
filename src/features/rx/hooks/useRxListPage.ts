@@ -7,6 +7,7 @@ import type {
     RxWorkflowStatus,
     RxPaymentState,
     RxListQueryParams,
+    RxQueueCounts,
 } from "../types/rx.dto";
 import {
     ALLOWED_WORKFLOW,
@@ -174,13 +175,13 @@ export function useRxListPage() {
     const reparseMutation = useReparseRxMutation();
     const reparseBusyId =
         reparseMutation.isPending &&
-        typeof reparseMutation.variables === "number"
+            typeof reparseMutation.variables === "number"
             ? reparseMutation.variables
             : null;
 
     const total = query.data?.total ?? 0;
     const totalPages = query.data?.total_pages ?? 1;
-    const queueCounts = query.data?.queue_counts ?? {};
+    const queueCounts: RxQueueCounts = query.data?.queue_counts ?? {};
 
     const actions = {
         // ✅ Tabs -> queue setzen
