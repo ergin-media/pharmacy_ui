@@ -21,7 +21,7 @@ export function DashboardRevenueHero(props: {
     const isPositive = momPct >= 0;
 
     return (
-        <div className="rounded-2xl border bg-white p-6">
+        <div className="rounded-lg bg-white p-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 {/* Haupt KPI */}
                 <div>
@@ -35,8 +35,11 @@ export function DashboardRevenueHero(props: {
                         </div>
 
                         <div
-                            className={`flex items-center gap-1 text-sm font-medium ${isPositive ? "text-green-600" : "text-destructive"
-                                }`}
+                            className={`flex items-center gap-1 text-sm font-medium ${
+                                isPositive
+                                    ? "text-green-600"
+                                    : "text-destructive"
+                            }`}
                         >
                             {isPositive ? (
                                 <ArrowUp className="size-4" />
@@ -55,7 +58,9 @@ export function DashboardRevenueHero(props: {
                 {/* Secondary KPIs */}
                 <div className="flex flex-wrap gap-8 text-sm">
                     <div>
-                        <div className="text-muted-foreground">Umsatz heute</div>
+                        <div className="text-muted-foreground">
+                            Umsatz heute
+                        </div>
                         <div className="text-lg font-semibold">
                             {formatEUR(revenueToday)}
                         </div>
@@ -65,7 +70,9 @@ export function DashboardRevenueHero(props: {
                         <div className="text-muted-foreground">
                             Rezepte (letzte 30 Tage)
                         </div>
-                        <div className="text-lg font-semibold">{formatInt(rxCountMonth)}</div>
+                        <div className="text-lg font-semibold">
+                            {formatInt(rxCountMonth)}
+                        </div>
                     </div>
 
                     <div>

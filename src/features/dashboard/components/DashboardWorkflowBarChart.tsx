@@ -30,18 +30,28 @@ export function DashboardWorkflowBarChart(props: { workflow: WorkflowCounts }) {
     } as const;
 
     return (
-        <div className="rounded-xl border p-4 bg-white">
+        <div className="rounded-lg p-4 bg-white">
             <div className="mb-3">
                 <div className="text-sm font-medium">Workflow</div>
-                <div className="text-xs text-muted-foreground">Status-Verteilung</div>
+                <div className="text-xs text-muted-foreground">
+                    Status-Verteilung
+                </div>
             </div>
 
             <ChartContainer config={chartConfig} className="h-64 w-full">
                 <BarChart data={data} margin={{ left: 12, right: 12 }}>
                     <CartesianGrid vertical={false} />
-                    <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
+                    <XAxis
+                        dataKey="label"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                    />
                     <YAxis tickLine={false} axisLine={false} width={40} />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                    <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent />}
+                    />
                     <Bar dataKey="value" fill="var(--color-value)" radius={6} />
                 </BarChart>
             </ChartContainer>

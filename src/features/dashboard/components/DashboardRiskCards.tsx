@@ -1,7 +1,7 @@
 // src/features/dashboard/components/DashboardRiskCards.tsx
 import { useNavigate } from "react-router";
-import { AlertTriangle, Users, Package, Euro } from "lucide-react";
-import { formatEUR, formatInt } from "@/shared/lib/format/figures";
+import { AlertTriangle, Users, Package } from "lucide-react";
+import { formatInt } from "@/shared/lib/format/figures";
 
 type RiskProps = {
     rx_with_unmapped_items: number;
@@ -21,14 +21,12 @@ function RiskCard(props: {
     const { title, value, icon, variant = "warning", onClick } = props;
 
     const border =
-        variant === "danger"
-            ? "border-destructive/50"
-            : "border-amber-500/40";
+        variant === "danger" ? "border-destructive/50" : "border-amber-500/40";
 
     return (
         <div
             onClick={onClick}
-            className={`cursor-pointer rounded-xl border bg-white p-4 transition hover:bg-muted/40 ${border}`}
+            className={`cursor-pointer rounded-lg bg-white p-4 transition hover:bg-muted/40 ${border}`}
         >
             <div className="mb-2 flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">{title}</div>

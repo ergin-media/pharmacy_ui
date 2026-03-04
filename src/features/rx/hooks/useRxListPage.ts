@@ -175,12 +175,15 @@ export function useRxListPage() {
     const reparseMutation = useReparseRxMutation();
     const reparseBusyId =
         reparseMutation.isPending &&
-            typeof reparseMutation.variables === "number"
+        typeof reparseMutation.variables === "number"
             ? reparseMutation.variables
             : null;
 
     const total = query.data?.total ?? 0;
-    const totalPages = query.data?.total_pages ?? 1;
+    const totalPages =
+        query.data?.total_pages && query.data?.total_pages > 0
+            ? query.data?.total_pages
+            : 1;
     const queueCounts: RxQueueCounts = query.data?.queue_counts ?? {};
 
     const actions = {

@@ -46,7 +46,7 @@ export function DashboardRevenueDailyBarChart(props: {
     } as const;
 
     return (
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-lg bg-card p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">
                     {title ?? "Umsatz pro Tag"}
@@ -98,7 +98,10 @@ export function DashboardRevenueDailyBarChart(props: {
                                     const key = String(name);
 
                                     if (key === "revenue_total") {
-                                        return [`${Number(value).toFixed(2)} €`, "Umsatz"];
+                                        return [
+                                            `${Number(value).toFixed(2)} €`,
+                                            "Umsatz",
+                                        ];
                                     }
 
                                     if (key === "rx_count") {

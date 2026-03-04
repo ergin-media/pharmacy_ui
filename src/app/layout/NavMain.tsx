@@ -58,9 +58,9 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel className="p-0">{label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="ps-5">{label}</SidebarGroupLabel>
 
-            <SidebarMenu className="p-0">
+            <SidebarMenu className="p-2 gap-1">
                 {items.map((item) => {
                     const hasChildren =
                         Array.isArray(item.items) && item.items.length > 0;
@@ -83,7 +83,7 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                             <SidebarMenuButton
                                 isActive={active}
                                 disabled={item.disabled}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-1.5 pe-3"
                                 onClick={() => {
                                     if (item.disabled) return;
 
@@ -104,7 +104,7 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                                 {hasChildren ? (
                                     <ChevronRight
                                         className={[
-                                            "ml-auto size-4 shrink-0 transition-transform duration-200",
+                                            "size-4 shrink-0 transition-transform duration-200",
                                             isOpen ? "rotate-90" : "",
                                         ].join(" ")}
                                     />

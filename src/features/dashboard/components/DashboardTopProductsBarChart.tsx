@@ -29,14 +29,20 @@ export function DashboardTopProductsBarChart(props: {
     } as const;
 
     return (
-        <div className="rounded-xl border p-4 bg-white">
+        <div className="rounded-lg p-4 bg-white">
             <div className="mb-3">
                 <div className="text-sm font-medium">Top Produkte</div>
-                <div className="text-xs text-muted-foreground">Umsatz (geschätzt)</div>
+                <div className="text-xs text-muted-foreground">
+                    Umsatz (geschätzt)
+                </div>
             </div>
 
             <ChartContainer config={chartConfig} className="h-80 w-full">
-                <BarChart data={data} layout="vertical" margin={{ left: 12, right: 12 }}>
+                <BarChart
+                    data={data}
+                    layout="vertical"
+                    margin={{ left: 12, right: 12 }}
+                >
                     <CartesianGrid horizontal={false} />
                     <XAxis type="number" tickLine={false} axisLine={false} />
                     <YAxis
@@ -54,15 +60,23 @@ export function DashboardTopProductsBarChart(props: {
 
                             return (
                                 <div className="rounded-md border bg-background p-3 text-xs shadow-md">
-                                    <div className="font-medium mb-1">{item.name}</div>
-                                    <div>Umsatz: {item.revenue.toFixed(2)} €</div>
+                                    <div className="font-medium mb-1">
+                                        {item.name}
+                                    </div>
+                                    <div>
+                                        Umsatz: {item.revenue.toFixed(2)} €
+                                    </div>
                                     <div>Gramm gesamt: {item.grams}</div>
                                     <div>RX Dokumente: {item.rx}</div>
                                 </div>
                             );
                         }}
                     />
-                    <Bar dataKey="revenue" fill="var(--color-revenue)" radius={6} />
+                    <Bar
+                        dataKey="revenue"
+                        fill="var(--color-revenue)"
+                        radius={6}
+                    />
                 </BarChart>
             </ChartContainer>
 

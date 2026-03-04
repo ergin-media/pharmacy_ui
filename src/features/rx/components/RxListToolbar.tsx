@@ -21,6 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 export function RxListToolbar(props: {
     parseStatus?: RxParseStatus;
@@ -69,69 +70,7 @@ export function RxListToolbar(props: {
     const disableControls = isFetching;
 
     return (
-        <div className="flex flex-wrap items-center gap-2">
-            {/* Parse Status */}
-            <Select
-                value={parseStatus ?? "all"}
-                onValueChange={onParseStatusChange}
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-55">
-                    <SelectValue placeholder="Parse-Status" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Alle Parse-Status</SelectItem>
-                    <SelectItem value="pending">pending</SelectItem>
-                    <SelectItem value="parsed">parsed</SelectItem>
-                    <SelectItem value="failed">failed</SelectItem>
-                    <SelectItem value="parsed_with_warnings">
-                        parsed_with_warnings
-                    </SelectItem>
-                </SelectContent>
-            </Select>
-
-            {/* Workflow Status */}
-            <Select
-                value={workflowStatus ?? "all"}
-                onValueChange={(v) =>
-                    onWorkflowStatusChange(v === "all" ? "" : v)
-                }
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-55">
-                    <SelectValue placeholder="Workflow" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Alle Workflows</SelectItem>
-                    {WORKFLOW_OPTIONS.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                            {o.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-
-            {/* Payment State */}
-            <Select
-                value={paymentState ?? "all"}
-                onValueChange={(v) =>
-                    onPaymentStateChange(v === "all" ? "" : v)
-                }
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-55">
-                    <SelectValue placeholder="Payment" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Alle Payments</SelectItem>
-                    {PAYMENT_OPTIONS.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                            {o.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-
+        <div className="flex flex-1 flex-wrap items-center gap-4">
             {/* Provider */}
             <Select
                 value={providerRaw || "all"}
@@ -151,6 +90,8 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
+            <Separator orientation="vertical" className="h-4" />
+
             {/* Suche bleibt Input */}
             <Input
                 value={searchRaw}
@@ -158,51 +99,119 @@ export function RxListToolbar(props: {
                 className="w-80"
                 onChange={(e) => onSearchChange(e.target.value)}
             />
-
-            {/* Sort */}
+            {/* Parse Status 
             <Select
-                value={sort}
-                onValueChange={onSortChange}
+                value={parseStatus ?? "all"}
+                onValueChange={onParseStatusChange}
                 disabled={disableControls}
             >
-                <SelectTrigger className="w-56">
-                    <SelectValue placeholder="Sortierung" />
+                <SelectTrigger className="w-55">
+                    <SelectValue placeholder="Parse-Status" />
                 </SelectTrigger>
                 <SelectContent>
-                    {SORT_OPTIONS.map((s) => (
-                        <SelectItem key={s.value} value={s.value}>
-                            {s.label}
+                    <SelectItem value="all">Alle Parse-Status</SelectItem>
+                    <SelectItem value="pending">pending</SelectItem>
+                    <SelectItem value="parsed">parsed</SelectItem>
+                    <SelectItem value="failed">failed</SelectItem>
+                    <SelectItem value="parsed_with_warnings">
+                        parsed_with_warnings
+                    </SelectItem>
+                </SelectContent>
+            </Select>
+            */}
+
+            {/* Workflow Status 
+            <Select
+                value={workflowStatus ?? "all"}
+                onValueChange={(v) =>
+                    onWorkflowStatusChange(v === "all" ? "" : v)
+                }
+                disabled={disableControls}
+            >
+                <SelectTrigger className="w-55">
+                    <SelectValue placeholder="Workflow" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Alle Workflows</SelectItem>
+                    {WORKFLOW_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                            {o.label}
                         </SelectItem>
                     ))}
                 </SelectContent>
             </Select>
+            */}
 
-            {/* Per Page */}
+            {/* Payment State 
             <Select
-                value={String(perPage)}
-                onValueChange={(v) => onPerPageChange(Number(v))}
+                value={paymentState ?? "all"}
+                onValueChange={(v) =>
+                    onPaymentStateChange(v === "all" ? "" : v)
+                }
                 disabled={disableControls}
             >
-                <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Pro Seite" />
+                <SelectTrigger className="w-55">
+                    <SelectValue placeholder="Payment" />
                 </SelectTrigger>
                 <SelectContent>
-                    {PER_PAGE_OPTIONS.map((n) => (
-                        <SelectItem key={n} value={String(n)}>
-                            {n} / Seite
+                    <SelectItem value="all">Alle Payments</SelectItem>
+                    {PAYMENT_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                            {o.label}
                         </SelectItem>
                     ))}
                 </SelectContent>
             </Select>
+            */}
 
-            {/* Refresh */}
-            <Button
-                variant="outline"
-                onClick={onRefresh}
-                disabled={disableControls}
-            >
-                Aktualisieren
-            </Button>
+            <div className="ml-auto flex gap-2 items-center">
+                {/* Sort 
+                <Select
+                    value={sort}
+                    onValueChange={onSortChange}
+                    disabled={disableControls}
+                >
+                    <SelectTrigger className="w-56">
+                        <SelectValue placeholder="Sortierung" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {SORT_OPTIONS.map((s) => (
+                            <SelectItem key={s.value} value={s.value}>
+                                {s.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                */}
+
+                {/* Per Page */}
+                <Select
+                    value={String(perPage)}
+                    onValueChange={(v) => onPerPageChange(Number(v))}
+                    disabled={disableControls}
+                >
+                    <SelectTrigger className="w-40">
+                        <SelectValue placeholder="Pro Seite" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {PER_PAGE_OPTIONS.map((n) => (
+                            <SelectItem key={n} value={String(n)}>
+                                {n} / Seite
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                {/* Refresh
+                <Button
+                    variant="outline"
+                    onClick={onRefresh}
+                    disabled={disableControls}
+                >
+                    Aktualisieren
+                </Button>
+                 */}
+            </div>
         </div>
     );
 }

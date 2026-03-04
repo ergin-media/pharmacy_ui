@@ -19,20 +19,22 @@ export function RxQueueTabs(props: {
             onValueChange={(v) => onChange(v as RxQueue)}
             orientation="vertical"
         >
-            <TabsList className="h-auto w-full flex-col items-stretch bg-transparent">
+            <TabsList className="h-auto w-full flex-col items-stretch bg-transparent gap-1.5 p-0 rounded-0">
                 {Object.entries(RX_QUEUES).map(([key, config]) => {
                     const queue = key as RxQueue;
                     const Icon = config.icon;
                     const count = counts?.[queue] ?? 0;
+                    const badeBackgroundColor =
+                        queue === "clarify" ? "bg-red-500" : "bg-white";
 
                     return (
                         <TabsTrigger
                             key={queue}
                             value={queue}
                             className={[
-                                "w-full justify-between gap-2",
-                                "data-[state=active]:bg-muted",
-                                "px-3 py-2 ",
+                                "w-full justify-between gap-2 rounded-lg",
+                                "data-active:bg-background hover:bg-background",
+                                "px-1.5 py-2 text-foreground font-normal group-data-[variant=default]/tabs-list:data-active:shadow-none",
                             ].join(" ")}
                         >
                             <span className="flex items-center gap-2 min-w-0">
@@ -42,7 +44,7 @@ export function RxQueueTabs(props: {
 
                             <Badge
                                 variant={config.variant}
-                                className="h-5 rounded-full px-2 text-[11px] shrink-0"
+                                className={`h-5 rounded-full px-2 text-[11px] shrink-0 ${badeBackgroundColor}`}
                             >
                                 {formatCount(count)}
                             </Badge>

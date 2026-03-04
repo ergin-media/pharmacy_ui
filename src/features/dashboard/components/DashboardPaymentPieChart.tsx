@@ -25,15 +25,23 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
     ];
 
     const chartConfig = {
-        paid: { label: `Bezahlt (${formatInt(payment.paid)})`, color: "#16a34a" }, // grün
-        unpaid: { label: `Offen (${formatInt(payment.unpaid)})`, color: "#dc2626" }, // rot
+        paid: {
+            label: `Bezahlt (${formatInt(payment.paid)})`,
+            color: "#16a34a",
+        }, // grün
+        unpaid: {
+            label: `Offen (${formatInt(payment.unpaid)})`,
+            color: "#dc2626",
+        }, // rot
     } as const;
 
     return (
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-lg bg-white p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">Zahlungsstatus</div>
-                <div className="text-xs text-muted-foreground">Bezahlt vs. Offen</div>
+                <div className="text-xs text-muted-foreground">
+                    Bezahlt vs. Offen
+                </div>
             </div>
 
             {/* ✅ Outer wrapper gives a stable size + overlay positioning */}
@@ -44,8 +52,12 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
                             content={
                                 <ChartTooltipContent
                                     formatter={(value, _name, item) => {
-                                        const key = (item?.payload?.key ?? "") as keyof typeof chartConfig;
-                                        const label = chartConfig[key]?.label ?? item?.payload?.label ?? "Wert";
+                                        const key = (item?.payload?.key ??
+                                            "") as keyof typeof chartConfig;
+                                        const label =
+                                            chartConfig[key]?.label ??
+                                            item?.payload?.label ??
+                                            "Wert";
                                         return [String(value), label];
                                     }}
                                 />
@@ -53,7 +65,9 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
                         />
 
                         {/* ✅ Legend labels should come from config via key */}
-                        <ChartLegend content={<ChartLegendContent nameKey="key" />} />
+                        <ChartLegend
+                            content={<ChartLegendContent nameKey="key" />}
+                        />
 
                         <Pie
                             data={data}
@@ -64,7 +78,10 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
                             paddingAngle={4}
                         >
                             {data.map((entry) => (
-                                <Cell key={entry.key} fill={`var(--color-${entry.key})`} />
+                                <Cell
+                                    key={entry.key}
+                                    fill={`var(--color-${entry.key})`}
+                                />
                             ))}
                         </Pie>
                     </PieChart>
@@ -72,7 +89,9 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
 
                 {/* ✅ Center KPI overlay */}
                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center -top-6">
-                    <div className="text-2xl font-bold">{paidPct.toFixed(0)}%</div>
+                    <div className="text-2xl font-bold">
+                        {paidPct.toFixed(0)}%
+                    </div>
                     <div className="text-xs text-muted-foreground">bezahlt</div>
                 </div>
             </div>

@@ -1,5 +1,9 @@
 import type { DashboardTopProviderDto } from "../types/dashboard.dto";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export function DashboardTopProvidersBarChart(props: {
@@ -15,14 +19,20 @@ export function DashboardTopProvidersBarChart(props: {
     } as const;
 
     return (
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-lg bg-white p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">Top Provider</div>
-                <div className="text-xs text-muted-foreground">Rezeptvolumen</div>
+                <div className="text-xs text-muted-foreground">
+                    Rezeptvolumen
+                </div>
             </div>
 
             <ChartContainer config={chartConfig} className="h-80 w-full">
-                <BarChart data={data} layout="vertical" margin={{ left: 12, right: 12 }}>
+                <BarChart
+                    data={data}
+                    layout="vertical"
+                    margin={{ left: 12, right: 12 }}
+                >
                     <CartesianGrid horizontal={false} />
                     <XAxis type="number" tickLine={false} axisLine={false} />
                     <YAxis
@@ -36,13 +46,18 @@ export function DashboardTopProvidersBarChart(props: {
                         content={
                             <ChartTooltipContent
                                 formatter={(value, name) => {
-                                    if (name === "recipes") return [String(value), "Rezepte"];
+                                    if (name === "recipes")
+                                        return [String(value), "Rezepte"];
                                     return [String(value), String(name)];
                                 }}
                             />
                         }
                     />
-                    <Bar dataKey="recipes" fill="var(--color-recipes)" radius={6} />
+                    <Bar
+                        dataKey="recipes"
+                        fill="var(--color-recipes)"
+                        radius={6}
+                    />
                 </BarChart>
             </ChartContainer>
         </div>

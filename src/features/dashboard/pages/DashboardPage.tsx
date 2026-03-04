@@ -9,6 +9,7 @@ import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
 import { useDashboardPage } from "../hooks/useDashboardPage";
 import { DashboardRevenueDailyBarChart } from "../components/DashboardRevenueDailyBarChart";
 import { formatEUR } from "@/shared/lib/format/figures";
+import { TypographyH1 } from "@/components/ui/typography";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
@@ -41,10 +42,10 @@ export function DashboardPage() {
     const rangeLabel = vm.meta.rangeLabel;
 
     return (
-        <div>
+        <>
             {/* Soft Warning wenn Refetch failed aber stale data vorhanden */}
             {isError ? (
-                <div className="rounded-xl border bg-white p-3 text-sm text-destructive">
+                <div className="rounded-lg bg-white p-3 text-sm text-destructive">
                     Hinweis: Dashboard konnte nicht aktualisiert werden – es
                     werden ggf. ältere Daten angezeigt.
                 </div>
@@ -53,7 +54,7 @@ export function DashboardPage() {
             {/* Header: Zeitraum */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <div className="text-lg font-semibold">Dashboard</div>
+                    <TypographyH1 className="mb-1">Dashboard</TypographyH1>
                     <div className="text-xs text-muted-foreground">
                         Zeitraum:{" "}
                         <span className="font-medium text-foreground">
@@ -96,14 +97,14 @@ export function DashboardPage() {
                     title="Umsatz pro Tag (letzte 30 Tage)"
                 />
             ) : (
-                <div className="rounded-xl border bg-white p-4 text-sm text-muted-foreground">
+                <div className="rounded-lg bg-white p-4 text-sm text-muted-foreground">
                     Noch keine Umsatzdaten verfügbar.
                 </div>
             )}
 
             {/* 3️⃣ Cash Block */}
             <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-xl border bg-white p-4">
+                <div className="rounded-lg bg-white p-4">
                     <div className="text-xs text-muted-foreground">
                         Bezahlt (
                         {vm.period === "rolling_30d"
@@ -116,7 +117,7 @@ export function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="rounded-xl border bg-white p-4">
+                <div className="rounded-lg bg-white p-4">
                     <div className="text-xs text-muted-foreground">
                         Unbezahlt (
                         {vm.period === "rolling_30d"
@@ -129,7 +130,7 @@ export function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="rounded-xl border bg-white p-4">
+                <div className="rounded-lg bg-white p-4">
                     <div className="text-xs text-muted-foreground">
                         Offene Forderungen
                     </div>
@@ -157,6 +158,6 @@ export function DashboardPage() {
                 <DashboardWorkflowBarChart workflow={d.operations.workflow} />
                 <DashboardPaymentPieChart payment={d.operations.payment} />
             </div>
-        </div>
+        </>
     );
 }
