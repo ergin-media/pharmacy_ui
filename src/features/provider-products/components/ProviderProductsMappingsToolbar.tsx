@@ -66,8 +66,8 @@ export function ProviderProductsMappingsToolbar(props: {
     } = props;
 
     return (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4 flex-1">
                 <div className="text-sm text-muted-foreground">
                     <span className="me-1">Gesamt:</span>
                     <span className="font-medium text-foreground">{total}</span>
@@ -94,6 +94,17 @@ export function ProviderProductsMappingsToolbar(props: {
 
                 <Separator orientation="vertical" className="h-4" />
 
+                <div className="flex-1">
+                    <Input
+                        value={search}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        placeholder="Suche (externer Name)…"
+                        disabled={disableControls}
+                    />
+                </div>
+
+                <Separator orientation="vertical" className="h-4" />
+
                 {/* ✅ Provider Select */}
                 <Select
                     value={providerId === null ? "all" : String(providerId)}
@@ -102,7 +113,7 @@ export function ProviderProductsMappingsToolbar(props: {
                     }
                     disabled={disableControls}
                 >
-                    <SelectTrigger className="w-56">
+                    <SelectTrigger className="w-40">
                         <SelectValue placeholder="Provider auswählen" />
                     </SelectTrigger>
                     <SelectContent>
@@ -114,18 +125,9 @@ export function ProviderProductsMappingsToolbar(props: {
                         ))}
                     </SelectContent>
                 </Select>
-
-                <Separator orientation="vertical" className="h-4" />
-
-                <div className="w-full sm:w-96">
-                    <Input
-                        value={search}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                        placeholder="Suche (externer Name)…"
-                        disabled={disableControls}
-                    />
-                </div>
             </div>
+
+            <Separator orientation="vertical" className="h-4" />
 
             <div className="flex items-center gap-4">
                 {/* Per Page */}
@@ -145,8 +147,6 @@ export function ProviderProductsMappingsToolbar(props: {
                         ))}
                     </SelectContent>
                 </Select>
-
-                <Separator orientation="vertical" className="h-4" />
 
                 <Pagination
                     page={page}

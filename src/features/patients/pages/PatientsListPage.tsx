@@ -5,6 +5,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { usePatientsListPage } from "../hooks/usePatientsListPage";
 import { PatientsToolbar } from "../components/PatientsToolbar";
 import { PatientsListTable } from "../components/PatientsListTable";
+import { Separator } from "@/components/ui/separator";
 
 export function PatientsListPage() {
     const vm = usePatientsListPage();
@@ -13,19 +14,6 @@ export function PatientsListPage() {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>Patienten</CardTitle>
-
-                <PatientsToolbar
-                    searchRaw={vm.filters.searchRaw}
-                    sort={vm.filters.sort}
-                    issues={vm.filters.issues}
-                    perPage={vm.filters.perPage}
-                    isFetching={vm.query.isFetching}
-                    onSearchChange={vm.actions.setSearch}
-                    onSortChange={vm.actions.setSort}
-                    onIssuesChange={vm.actions.setIssues}
-                    onPerPageChange={vm.actions.setPerPage}
-                    onRefresh={vm.actions.refresh}
-                />
             </CardHeader>
 
             <CardContent className="space-y-3">
@@ -45,13 +33,28 @@ export function PatientsListPage() {
                     </div>
                 ) : (
                     <>
-                        <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex flex-1 items-center gap-4">
                             <div className="text-sm text-muted-foreground">
                                 Gesamt:{" "}
                                 <span className="font-medium text-foreground">
                                     {vm.meta.total}
                                 </span>
                             </div>
+
+                            <Separator orientation="vertical" className="h-4" />
+
+                            <PatientsToolbar
+                                searchRaw={vm.filters.searchRaw}
+                                sort={vm.filters.sort}
+                                issues={vm.filters.issues}
+                                perPage={vm.filters.perPage}
+                                isFetching={vm.query.isFetching}
+                                onSearchChange={vm.actions.setSearch}
+                                onSortChange={vm.actions.setSort}
+                                onIssuesChange={vm.actions.setIssues}
+                                onPerPageChange={vm.actions.setPerPage}
+                                onRefresh={vm.actions.refresh}
+                            />
 
                             <Pagination
                                 page={vm.filters.page}

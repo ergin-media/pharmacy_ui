@@ -20,7 +20,8 @@ export function PharmacyProductsListPage() {
                         <div className="flex items-center gap-2">
                             <div className="text-sm text-destructive">
                                 Fehler:{" "}
-                                {(vm.query.error as Error)?.message ?? "unknown"}
+                                {(vm.query.error as Error)?.message ??
+                                    "unknown"}
                             </div>
                             <Button
                                 variant="outline"
@@ -40,7 +41,10 @@ export function PharmacyProductsListPage() {
                                     </span>
                                 </div>
 
-                                <Separator orientation="vertical" className="h-4" />
+                                <Separator
+                                    orientation="vertical"
+                                    className="h-4"
+                                />
 
                                 <PharmacyProductsToolbar
                                     activeRaw={vm.filters.activeRaw}
@@ -50,22 +54,22 @@ export function PharmacyProductsListPage() {
                                     perPage={vm.filters.perPage}
                                     isFetching={vm.query.isFetching}
                                     onActiveChange={vm.actions.setActive}
-                                    onManufacturerChange={vm.actions.setManufacturer}
+                                    onManufacturerChange={
+                                        vm.actions.setManufacturer
+                                    }
                                     onSearchChange={vm.actions.setSearch}
                                     onSortChange={vm.actions.setSort}
                                     onPerPageChange={vm.actions.setPerPage}
                                     onRefresh={vm.actions.refresh}
                                 />
 
-                                <div className="ml-auto">
-                                    <Pagination
-                                        page={vm.filters.page}
-                                        totalPages={vm.meta.totalPages}
-                                        onPageChange={vm.actions.setPage}
-                                        isLoading={vm.query.isFetching}
-                                        showStatus={false}
-                                    />
-                                </div>
+                                <Pagination
+                                    page={vm.filters.page}
+                                    totalPages={vm.meta.totalPages}
+                                    onPageChange={vm.actions.setPage}
+                                    isLoading={vm.query.isFetching}
+                                    showStatus={false}
+                                />
                             </div>
 
                             <PharmacyProductsListTable

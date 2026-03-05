@@ -12,6 +12,7 @@ import {
     PER_PAGE_OPTIONS,
     SORT_OPTIONS,
 } from "../lib/pharmacy-products.constants.ts";
+import { Separator } from "@/components/ui/separator.tsx";
 
 export function PharmacyProductsToolbar(props: {
     activeRaw: string;
@@ -46,7 +47,7 @@ export function PharmacyProductsToolbar(props: {
     const disableControls = isFetching;
 
     return (
-        <div className="flex flex-1 flex-wrap items-center gap-2">
+        <div className="flex flex-1 flex-wrap items-center gap-4">
             {/* Active 
             <Select
                 value={activeRaw ?? ""}
@@ -83,8 +84,10 @@ export function PharmacyProductsToolbar(props: {
                 value={searchRaw}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Suche (Name / Code)…"
-                className="w-60"
+                className="w-60 flex-1"
             />
+
+            <Separator orientation="vertical" className="h-4" />
 
             {/* Sort 
             <Select

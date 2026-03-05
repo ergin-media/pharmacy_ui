@@ -11,6 +11,7 @@ import {
 import type { PatientsIssues, PatientsSort } from "../types/patients.list.dto";
 import { ISSUES_FILTER_OPTIONS } from "../lib/patients.constants";
 import { RotateCcw } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const SORT_OPTIONS: Array<{ value: PatientsSort; label: string }> = [
     { value: "created_at_desc", label: "Neueste zuerst" },
@@ -46,20 +47,22 @@ export function PatientsToolbar(props: {
     } = props;
 
     return (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-4 flex-1">
             <Input
                 value={searchRaw}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Suche nach Name, E-Mail, Telefon…"
-                className="w-72"
+                className="flex-1"
                 disabled={isFetching}
             />
+
+            <Separator orientation="vertical" className="h-4" />
 
             <Select
                 value={issues}
                 onValueChange={(v) => onIssuesChange(v as PatientsIssues)}
             >
-                <SelectTrigger className="w-56" disabled={isFetching}>
+                <SelectTrigger className="w-40" disabled={isFetching}>
                     <SelectValue placeholder="Filter" />
                 </SelectTrigger>
                 <SelectContent>
@@ -71,11 +74,13 @@ export function PatientsToolbar(props: {
                 </SelectContent>
             </Select>
 
+            <Separator orientation="vertical" className="h-4" />
+
             <Select
                 value={sort}
                 onValueChange={(v) => onSortChange(v as PatientsSort)}
             >
-                <SelectTrigger className="w-52" disabled={isFetching}>
+                <SelectTrigger className="w-40" disabled={isFetching}>
                     <SelectValue placeholder="Sortierung" />
                 </SelectTrigger>
                 <SelectContent>
@@ -86,6 +91,8 @@ export function PatientsToolbar(props: {
                     ))}
                 </SelectContent>
             </Select>
+
+            <Separator orientation="vertical" className="h-4" />
 
             <Select
                 value={String(perPage)}
@@ -103,6 +110,7 @@ export function PatientsToolbar(props: {
                 </SelectContent>
             </Select>
 
+            {/*
             <Button
                 variant="outline"
                 size="sm"
@@ -113,6 +121,7 @@ export function PatientsToolbar(props: {
                 <RotateCcw className="size-4" />
                 Aktualisieren
             </Button>
+            */}
         </div>
     );
 }

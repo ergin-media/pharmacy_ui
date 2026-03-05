@@ -71,13 +71,23 @@ export function RxListToolbar(props: {
 
     return (
         <div className="flex flex-1 flex-wrap items-center gap-4">
+            {/* Suche bleibt Input */}
+            <Input
+                value={searchRaw}
+                placeholder="Suche (Patient, Bestell-ID)"
+                className="w-80 flex-1"
+                onChange={(e) => onSearchChange(e.target.value)}
+            />
+
+            <Separator orientation="vertical" className="h-4" />
+
             {/* Provider */}
             <Select
                 value={providerRaw || "all"}
                 onValueChange={(v) => onProviderChange(v === "all" ? "" : v)}
                 disabled={disableControls}
             >
-                <SelectTrigger className="w-55 flex-1">
+                <SelectTrigger className="w-40">
                     <SelectValue placeholder="Provider" />
                 </SelectTrigger>
                 <SelectContent>
@@ -89,16 +99,6 @@ export function RxListToolbar(props: {
                     ))}
                 </SelectContent>
             </Select>
-
-            <Separator orientation="vertical" className="h-4" />
-
-            {/* Suche bleibt Input */}
-            <Input
-                value={searchRaw}
-                placeholder="Suche (Patient, Bestell-ID)"
-                className="w-80 flex-1"
-                onChange={(e) => onSearchChange(e.target.value)}
-            />
 
             <Separator orientation="vertical" className="h-4" />
 
