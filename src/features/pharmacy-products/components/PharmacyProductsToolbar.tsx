@@ -46,8 +46,8 @@ export function PharmacyProductsToolbar(props: {
     const disableControls = isFetching;
 
     return (
-        <div className="flex flex-wrap items-center gap-2">
-            {/* Active */}
+        <div className="flex flex-1 flex-wrap items-center gap-2">
+            {/* Active 
             <Select
                 value={activeRaw ?? ""}
                 onValueChange={onActiveChange}
@@ -65,6 +65,7 @@ export function PharmacyProductsToolbar(props: {
                     ))}
                 </SelectContent>
             </Select>
+            */}
 
             {/* Manufacturer (simple input for now) */}
 
@@ -85,7 +86,7 @@ export function PharmacyProductsToolbar(props: {
                 className="w-60"
             />
 
-            {/* Sort */}
+            {/* Sort 
             <Select
                 value={sort}
                 onValueChange={onSortChange}
@@ -102,6 +103,7 @@ export function PharmacyProductsToolbar(props: {
                     ))}
                 </SelectContent>
             </Select>
+            */}
 
             {/* Per Page */}
             <Select
@@ -109,7 +111,7 @@ export function PharmacyProductsToolbar(props: {
                 onValueChange={(v) => onPerPageChange(Number(v))}
                 disabled={disableControls}
             >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-40 ml-auto">
                     <SelectValue placeholder="Pro Seite" />
                 </SelectTrigger>
                 <SelectContent>
@@ -121,6 +123,7 @@ export function PharmacyProductsToolbar(props: {
                 </SelectContent>
             </Select>
 
+            {/* 
             <Button
                 variant="outline"
                 onClick={onRefresh}
@@ -128,6 +131,7 @@ export function PharmacyProductsToolbar(props: {
             >
                 Aktualisieren
             </Button>
+            */}
         </div>
     );
 }

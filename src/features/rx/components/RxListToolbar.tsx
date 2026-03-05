@@ -77,7 +77,7 @@ export function RxListToolbar(props: {
                 onValueChange={(v) => onProviderChange(v === "all" ? "" : v)}
                 disabled={disableControls}
             >
-                <SelectTrigger className="w-55">
+                <SelectTrigger className="w-55 flex-1">
                     <SelectValue placeholder="Provider" />
                 </SelectTrigger>
                 <SelectContent>
@@ -96,9 +96,12 @@ export function RxListToolbar(props: {
             <Input
                 value={searchRaw}
                 placeholder="Suche (Patient, Bestell-ID)"
-                className="w-80"
+                className="w-80 flex-1"
                 onChange={(e) => onSearchChange(e.target.value)}
             />
+
+            <Separator orientation="vertical" className="h-4" />
+
             {/* Parse Status 
             <Select
                 value={parseStatus ?? "all"}
