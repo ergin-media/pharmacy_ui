@@ -157,7 +157,7 @@ export function ProviderProductsListTable(props: {
                                     </TableCell>
 
                                     {/* Aktionen */}
-                                    <TableCell className="sticky right-0 text-right pe-3">
+                                    <TableCell className="text-right pe-3">
                                         <div className="flex justify-end">
                                             <ProviderProductRowActionsMenu
                                                 disabled={

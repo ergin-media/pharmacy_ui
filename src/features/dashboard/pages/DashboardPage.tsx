@@ -17,16 +17,14 @@ export function DashboardPage() {
 
     // ✅ Loading nur wenn wirklich gar keine Daten da sind
     if (isFetching && !data) {
-        return <div className="p-6">Lade Dashboard...</div>;
+        return <div>Lade Dashboard...</div>;
     }
 
     // ✅ Error nur "hard fail" wenn keine Daten vorhanden sind
     if (isError && !data) {
         return (
-            <div className="p-6">
-                <div className="text-sm text-destructive">
-                    Fehler: {(error as Error)?.message ?? "unknown"}
-                </div>
+            <div className="text-sm text-destructive">
+                Fehler: {(error as Error)?.message ?? "unknown"}
             </div>
         );
     }
@@ -42,7 +40,7 @@ export function DashboardPage() {
     const rangeLabel = vm.meta.rangeLabel;
 
     return (
-        <>
+        <div className="grid gap-4">
             {/* Soft Warning wenn Refetch failed aber stale data vorhanden */}
             {isError ? (
                 <div className="rounded-lg bg-white p-3 text-sm text-destructive">
@@ -68,10 +66,10 @@ export function DashboardPage() {
                     {vm.period === "rolling_30d"
                         ? "Letzte 30 Tage"
                         : vm.period === "mtd"
-                          ? "Monat bis heute"
-                          : vm.period === "prev_month"
-                            ? "Vormonat"
-                            : "YTD"}
+                            ? "Monat bis heute"
+                            : vm.period === "prev_month"
+                                ? "Vormonat"
+                                : "YTD"}
                 </div>
             </div>
 
@@ -141,7 +139,7 @@ export function DashboardPage() {
             </div>
 
             {/* 4️⃣ Wachstumstreiber */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 lg:grid-cols-2">
                 <DashboardTopProductsBarChart
                     products={d.analytics.top_products}
                 />
@@ -154,10 +152,10 @@ export function DashboardPage() {
             <DashboardRiskCards risk={d.risk} />
 
             {/* 6️⃣ Operatives */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 lg:grid-cols-2">
                 <DashboardWorkflowBarChart workflow={d.operations.workflow} />
                 <DashboardPaymentPieChart payment={d.operations.payment} />
             </div>
-        </>
+        </div>
     );
 }

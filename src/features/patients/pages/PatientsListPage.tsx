@@ -6,54 +6,70 @@ import { usePatientsListPage } from "../hooks/usePatientsListPage";
 import { PatientsToolbar } from "../components/PatientsToolbar";
 import { PatientsListTable } from "../components/PatientsListTable";
 import { Separator } from "@/components/ui/separator";
+import { TypographyH1 } from "@/components/ui/typography";
 
 export function PatientsListPage() {
     const vm = usePatientsListPage();
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle>Patienten</CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-3">
-                {vm.query.isError ? (
-                    <div className="flex items-center gap-2">
-                        <div className="text-sm text-destructive">
-                            Fehler:{" "}
-                            {(vm.query.error as Error)?.message ?? "unknown"}
+        <>
+            <TypographyH1 className="mb-4">Patienten</TypographyH1>
+            <Card>
+                <CardContent className="grid gap-4">
+                    {vm.query.isError ? (
+                        <div className="flex items-center gap-2">
+                            <div className="text-sm text-destructive">
+                                Fehler:{" "}
+                                {(vm.query.error as Error)?.message ?? "unknown"}
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={vm.actions.refresh}
+                            >
+                                Erneut versuchen
+                            </Button>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={vm.actions.refresh}
-                        >
-                            Erneut versuchen
-                        </Button>
-                    </div>
-                ) : (
-                    <>
-                        <div className="flex flex-1 items-center gap-4">
-                            <div className="text-sm text-muted-foreground">
-                                Gesamt:{" "}
-                                <span className="font-medium text-foreground">
-                                    {vm.meta.total}
-                                </span>
+                    ) : (
+                        <>
+                            <div className="flex flex-1 items-center gap-4">
+                                <div className="text-sm text-muted-foreground">
+                                    Gesamt:{" "}
+                                    <span className="font-medium text-foreground">
+                                        {vm.meta.total}
+                                    </span>
+                                </div>
+
+                                <Separator orientation="vertical" className="h-4" />
+
+                                <PatientsToolbar
+                                    searchRaw={vm.filters.searchRaw}
+                                    sort={vm.filters.sort}
+                                    issues={vm.filters.issues}
+                                    perPage={vm.filters.perPage}
+                                    isFetching={vm.query.isFetching}
+                                    onSearchChange={vm.actions.setSearch}
+                                    onSortChange={vm.actions.setSort}
+                                    onIssuesChange={vm.actions.setIssues}
+                                    onPerPageChange={vm.actions.setPerPage}
+                                    onRefresh={vm.actions.refresh}
+                                />
+
+                                <Pagination
+                                    page={vm.filters.page}
+                                    totalPages={vm.meta.totalPages}
+                                    onPageChange={vm.actions.setPage}
+                                    isLoading={vm.query.isFetching}
+                                    showStatus={false}
+                                />
                             </div>
 
-                            <Separator orientation="vertical" className="h-4" />
-
-                            <PatientsToolbar
-                                searchRaw={vm.filters.searchRaw}
-                                sort={vm.filters.sort}
-                                issues={vm.filters.issues}
+                            <PatientsListTable
+                                items={vm.query.data?.items ?? []}
+                                isLoading={vm.query.isFetching}
                                 perPage={vm.filters.perPage}
-                                isFetching={vm.query.isFetching}
-                                onSearchChange={vm.actions.setSearch}
+                                sort={vm.filters.sort}
                                 onSortChange={vm.actions.setSort}
-                                onIssuesChange={vm.actions.setIssues}
-                                onPerPageChange={vm.actions.setPerPage}
-                                onRefresh={vm.actions.refresh}
                             />
 
                             <Pagination
@@ -61,28 +77,12 @@ export function PatientsListPage() {
                                 totalPages={vm.meta.totalPages}
                                 onPageChange={vm.actions.setPage}
                                 isLoading={vm.query.isFetching}
-                                showStatus={false}
+                                showStatus={true}
                             />
-                        </div>
-
-                        <PatientsListTable
-                            items={vm.query.data?.items ?? []}
-                            isLoading={vm.query.isFetching}
-                            perPage={vm.filters.perPage}
-                            sort={vm.filters.sort}
-                            onSortChange={vm.actions.setSort}
-                        />
-
-                        <Pagination
-                            page={vm.filters.page}
-                            totalPages={vm.meta.totalPages}
-                            onPageChange={vm.actions.setPage}
-                            isLoading={vm.query.isFetching}
-                            showStatus={true}
-                        />
-                    </>
-                )}
-            </CardContent>
-        </Card>
+                        </>
+                    )}
+                </CardContent>
+            </Card>
+        </>
     );
 }
