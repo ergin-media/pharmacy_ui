@@ -26,6 +26,7 @@ export function DashboardPage() {
     const { data, isFetching, isError, error } = vm.query;
 
     const rangeLabel = vm.meta.rangeLabel;
+    const isLoading = isFetching && !data;
 
     return (
         <div className="grid gap-4">
@@ -34,10 +35,11 @@ export function DashboardPage() {
                 title="Dashboard"
                 rangeLabel={rangeLabel}
                 period={vm.period}
+                loading={isLoading}
             />
 
             {/* Initial loading */}
-            {isFetching && !data ? <DashboardPageSkeleton /> : null}
+            {isLoading ? <DashboardPageSkeleton /> : null}
 
             {/* Hard error */}
             {isError && !data ? (
