@@ -17,6 +17,7 @@ import {
     DEFAULT_SORT,
     type RxSort,
 } from "../lib/rx.constants";
+import { RX_QUEUE_ORDER, type RxQueue } from "../lib/rx.queues";
 
 import {
     spGetInt,
@@ -25,13 +26,23 @@ import {
     spSetOrDelete,
 } from "@/shared/lib/url/searchParams";
 import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
-import { RX_QUEUE_ORDER, type RxQueue } from "../lib/rx.queues";
 
 function normalizeQueue(v: string | null): RxQueue | undefined {
     const s = (v ?? "").trim() as RxQueue;
-
     return RX_QUEUE_ORDER.includes(s) ? s : undefined;
 }
+
+type PatchValues = Partial<{
+    page: number;
+    per_page: number;
+    queue: string;
+    parse_status: string;
+    workflow_status: string;
+    payment_state: string;
+    provider: string;
+    search: string;
+    sort: string;
+}>;
 
 export function useRxListPage() {
     const [sp, setSp] = useSearchParams();
@@ -63,7 +74,7 @@ export function useRxListPage() {
         : undefined;
 
     const providerRaw = spGetString(sp, "provider") ?? "";
-    const provider = providerRaw ? providerRaw : undefined;
+    const provider = providerRaw || undefined;
 
     const searchRaw = spGetString(sp, "search") ?? "";
     const [searchInput, setSearchInput] = useState(searchRaw);
@@ -80,58 +91,33 @@ export function useRxListPage() {
         ? (sortRaw as RxSort)
         : DEFAULT_SORT;
 
-    function patch(
-        next: Partial<{
-            page: number;
-            per_page: number;
-            queue: string;
-            parse_status: string;
-            workflow_status: string;
-            payment_state: string;
-            provider: string;
-            search: string;
-            sort: string;
-        }>,
-    ) {
-        const n = new URLSearchParams(sp);
+    function patch(values: PatchValues) {
+        const next = new URLSearchParams(sp);
 
-        if (next.page !== undefined) spSetInt(n, "page", next.page);
-        if (next.per_page !== undefined) spSetInt(n, "per_page", next.per_page);
+        for (const [key, value] of Object.entries(values)) {
+            if (value === undefined) continue;
 
-        if (next.queue !== undefined) spSetOrDelete(n, "queue", next.queue);
-
-        if (next.parse_status !== undefined) {
-            spSetOrDelete(n, "parse_status", next.parse_status);
+            if (typeof value === "number") {
+                spSetInt(next, key, value);
+            } else {
+                spSetOrDelete(next, key, value);
+            }
         }
 
-        if (next.workflow_status !== undefined) {
-            spSetOrDelete(n, "workflow_status", next.workflow_status);
-        }
+        setSp(next, { replace: true });
+    }
 
-        if (next.payment_state !== undefined) {
-            spSetOrDelete(n, "payment_state", next.payment_state);
-        }
-
-        if (next.provider !== undefined) {
-            spSetOrDelete(n, "provider", next.provider);
-        }
-
-        if (next.search !== undefined) {
-            spSetOrDelete(n, "search", next.search);
-        }
-
-        if (next.sort !== undefined) {
-            spSetOrDelete(n, "sort", next.sort);
-        }
-
-        setSp(n, { replace: true });
+    function resetToAll() {
+        const next = new URLSearchParams();
+        spSetInt(next, "page", 1);
+        setSp(next, { replace: true });
     }
 
     useEffect(() => {
-        const n = new URLSearchParams(sp);
-        spSetInt(n, "page", 1);
-        spSetOrDelete(n, "search", debouncedSearch);
-        setSp(n, { replace: true });
+        const next = new URLSearchParams(sp);
+        spSetInt(next, "page", 1);
+        spSetOrDelete(next, "search", debouncedSearch);
+        setSp(next, { replace: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearch]);
 
@@ -139,14 +125,10 @@ export function useRxListPage() {
         () => ({
             page,
             per_page: perPage,
-
-            // "all" soll nicht an die API gesendet werden
             queue: queue && queue !== "all" ? queue : undefined,
-
             parse_status: parseStatus,
             workflow_status: workflowStatus,
             payment_state: paymentState,
-
             provider,
             search: debouncedSearchParam,
             sort,
@@ -175,50 +157,67 @@ export function useRxListPage() {
 
     const total = query.data?.total ?? 0;
     const totalPages =
-        query.data?.total_pages && query.data?.total_pages > 0
+        query.data?.total_pages && query.data.total_pages > 0
             ? query.data.total_pages
             : 1;
 
     const queueCounts: RxQueueCounts = query.data?.queue_counts ?? {};
 
     const actions = {
-        setQueue: (v: RxQueue) => {
-            // "Alle" = nur ?page=1
-            if (v === "all") {
-                const n = new URLSearchParams();
-                spSetInt(n, "page", 1);
-                setSp(n, { replace: true });
+        setQueue: (value: RxQueue) => {
+            if (value === "all") {
+                resetToAll();
                 return;
             }
 
             patch({
                 page: 1,
-                queue: v,
+                queue: value,
             });
         },
 
-        setParseStatus: (v: string) =>
-            patch({ page: 1, parse_status: v === "all" ? "" : v }),
+        setParseStatus: (value: string) =>
+            patch({
+                page: 1,
+                parse_status: value === "all" ? "" : value,
+            }),
 
-        setWorkflowStatus: (v: string) =>
-            patch({ page: 1, workflow_status: v }),
+        setWorkflowStatus: (value: string) =>
+            patch({
+                page: 1,
+                workflow_status: value,
+            }),
 
-        setPaymentState: (v: string) =>
-            patch({ page: 1, payment_state: v }),
+        setPaymentState: (value: string) =>
+            patch({
+                page: 1,
+                payment_state: value,
+            }),
 
-        setProvider: (v: string) =>
-            patch({ page: 1, provider: v }),
+        setProvider: (value: string) =>
+            patch({
+                page: 1,
+                provider: value,
+            }),
 
-        setSearch: (v: string) => setSearchInput(v),
+        setSearch: (value: string) => setSearchInput(value),
 
-        setSort: (v: string) =>
-            patch({ page: 1, sort: v }),
+        setSort: (value: string) =>
+            patch({
+                page: 1,
+                sort: value,
+            }),
 
-        setPerPage: (v: number) =>
-            patch({ page: 1, per_page: v }),
+        setPerPage: (value: number) =>
+            patch({
+                page: 1,
+                per_page: value,
+            }),
 
-        setPage: (v: number) =>
-            patch({ page: v }),
+        setPage: (value: number) =>
+            patch({
+                page: value,
+            }),
 
         refresh: () => query.refetch(),
 
@@ -231,14 +230,11 @@ export function useRxListPage() {
         filters: {
             page,
             perPage,
-
             queue,
             tabValue: (queue ?? "all") as RxQueue,
-
             parseStatus,
             workflowStatus,
             paymentState,
-
             providerRaw,
             searchRaw: searchInput,
             sort,
