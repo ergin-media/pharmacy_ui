@@ -25,16 +25,6 @@ function DashboardCardSkeleton(props: {
 export function DashboardPageSkeleton() {
     return (
         <div className="grid gap-4">
-            {/* Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="space-y-2">
-                    <Skeleton className="h-8 w-40" />
-                    <Skeleton className="h-3 w-56" />
-                </div>
-
-                <Skeleton className="h-8 w-32 rounded-full" />
-            </div>
-
             {/* Hero */}
             <div className="rounded-lg bg-white p-6">
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
