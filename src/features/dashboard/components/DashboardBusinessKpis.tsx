@@ -19,12 +19,12 @@ export function DashboardBusinessKpis(props: {
     return (
         <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-lg bg-white p-4">
-                <div className="mb-3 flex items-start justify-between gap-3">
-                    <div className="text-xs text-muted-foreground">
-                        Neue Patienten (30 Tage)
-                    </div>
+                <div className="mb-3 flex items-center gap-3">
                     <div className="rounded-md bg-muted p-2 text-foreground/80">
                         <Users className="size-4" />
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                        Neue Patienten (30 Tage)
                     </div>
                 </div>
 
@@ -38,12 +38,12 @@ export function DashboardBusinessKpis(props: {
             </div>
 
             <div className="rounded-lg bg-white p-4">
-                <div className="mb-3 flex items-start justify-between gap-3">
-                    <div className="text-xs text-muted-foreground">
-                        Ø Gramm pro Rezept
-                    </div>
+                <div className="mb-3 flex items-center gap-3">
                     <div className="rounded-md bg-muted p-2 text-foreground/80">
                         <Scale className="size-4" />
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                        Ø Gramm pro Rezept
                     </div>
                 </div>
 
