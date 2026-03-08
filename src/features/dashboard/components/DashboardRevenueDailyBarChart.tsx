@@ -8,7 +8,7 @@ import {
     ChartLegendContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
-import type { DashboardRevenueDailyDto } from "../types/dashboard.dto";
+import type { DashboardTimeSeriesPointDto } from "../types/dashboard.dto";
 
 type Row = {
     date: string;
@@ -17,7 +17,7 @@ type Row = {
 };
 
 export function DashboardRevenueDailyBarChart(props: {
-    data: DashboardRevenueDailyDto[];
+    data: DashboardTimeSeriesPointDto[];
     rangeLabel?: string;
     title?: string;
     withCard?: boolean;
@@ -65,8 +65,8 @@ export function DashboardRevenueDailyBarChart(props: {
                         dataKey="date"
                         tickLine={false}
                         axisLine={false}
-                        tickMargin={8}
-                        minTickGap={18}
+                        tickMargin={6}
+                        minTickGap={8}
                         tickFormatter={formatDateDayMonth}
                     />
 
@@ -99,12 +99,12 @@ export function DashboardRevenueDailyBarChart(props: {
                                     if (key === "revenue_total") {
                                         return [
                                             formatEUR(Number(value)),
-                                            "Umsatz",
+                                            " Umsatz",
                                         ];
                                     }
 
                                     if (key === "rx_count") {
-                                        return [String(value), "Rezepte"];
+                                        return [String(value), " Rezepte"];
                                     }
 
                                     return [String(value), key];

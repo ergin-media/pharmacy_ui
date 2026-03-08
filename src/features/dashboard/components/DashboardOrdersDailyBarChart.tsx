@@ -88,7 +88,7 @@ export function DashboardOrdersDailyBarChart(props: {
                                     if (key === "orders_count") {
                                         return [
                                             formatInt(Number(value)),
-                                            "Bestellungen",
+                                            " Bestellungen",
                                         ];
                                     }
 

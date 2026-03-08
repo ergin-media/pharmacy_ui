@@ -63,6 +63,7 @@ export type DashboardResponseDto = {
 
     economy: {
         revenue_today: number;
+        rx_count_today: number;
         revenue_month: number;
         revenue_prev_month: number;
         revenue_vs_prev_month_pct: number;
@@ -121,10 +122,4 @@ export type DashboardResponseDto = {
 
 export type DashboardQueryParams = {
     period?: DashboardPeriod;
-};
-
-export type DashboardRevenueDailyDto = {
-    date: string; // "2026-02-28"
-    revenue_total: number;
-    rx_count: number;
 };

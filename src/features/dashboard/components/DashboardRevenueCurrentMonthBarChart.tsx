@@ -7,18 +7,13 @@ import {
 } from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 import type { DashboardRevenueDailyDto } from "../types/dashboard.dto";
+import { formatDateDayMonth } from "@/shared/lib/format/date";
 
 type Row = {
     date: string;
     revenue_total: number;
     rx_count: number;
 };
-
-function formatDEDayMonth(isoDate: string) {
-    // "2026-02-28" -> "28.02"
-    const d = new Date(`${isoDate}T00:00:00`);
-    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
-}
 
 export function DashboardRevenueCurrentMonthBarChart(props: {
     data: DashboardRevenueDailyDto[];
@@ -57,9 +52,9 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         dataKey="date"
                         tickLine={false}
                         axisLine={false}
-                        tickMargin={8}
-                        minTickGap={18}
-                        tickFormatter={formatDEDayMonth}
+                        tickMargin={6}
+                        minTickGap={8}
+                        tickFormatter={formatDateDayMonth}
                     />
 
                     {/* Umsatz Achse */}
@@ -84,15 +79,15 @@ export function DashboardRevenueCurrentMonthBarChart(props: {
                         content={
                             <ChartTooltipContent
                                 labelKey="date"
-                                labelFormatter={(label) => `Datum: ${formatDEDayMonth(String(label))}`}
+                                labelFormatter={(label) => `Datum: ${formatDateDayMonth(String(label))}`}
                                 formatter={(value, name) => {
                                     const key = String(name);
 
                                     if (key === "revenue_total") {
-                                        return [`${Number(value).toFixed(2)} €`, "Umsatz"];
+                                        return [`${Number(value).toFixed(2)} €`, " Umsatz"];
                                     }
                                     if (key === "rx_count") {
-                                        return [String(value), "RX"];
+                                        return [String(value), " Rezepte"];
                                     }
                                     return [String(value), key];
                                 }}

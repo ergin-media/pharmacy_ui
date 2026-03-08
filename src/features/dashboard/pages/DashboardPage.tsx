@@ -7,22 +7,15 @@ import { DashboardPaymentPieChart } from "../components/DashboardPaymentPieChart
 import { DashboardTopProductsBarChart } from "../components/DashboardTopProductsBarChart";
 import { DashboardTopProvidersBarChart } from "../components/DashboardTopProvidersBarChart";
 import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
-import { DashboardRevenueDailyBarChart } from "../components/DashboardRevenueDailyBarChart";
-import { DashboardOrdersDailyBarChart } from "../components/DashboardOrdersDailyBarChart";
 
 import { useDashboardPage } from "../hooks/useDashboardPage";
 import { formatEUR } from "@/shared/lib/format/figures";
 import { TypographyH1 } from "@/components/ui/typography";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DashboardDailyActivityCard } from "../components/DashboardDailyActivityCard";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
     const { data, isFetching, isError, error } = vm.query;
-
-    const [dailyChartTab, setDailyChartTab] = useState<"revenue" | "orders">(
-        "revenue",
-    );
 
     if (isFetching && !data) {
         return <div>Lade Dashboard...</div>;

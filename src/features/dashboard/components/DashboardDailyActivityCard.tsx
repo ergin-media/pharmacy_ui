@@ -6,9 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardRevenueDailyBarChart } from "./DashboardRevenueDailyBarChart";
 import { DashboardOrdersDailyBarChart } from "./DashboardOrdersDailyBarChart";
 import type {
-    DashboardRevenueDailyDto,
 } from "./DashboardRevenueDailyBarChart";
-import type { DashboardOrdersDailyPointDto } from "../types/dashboard.dto";
+import type { DashboardOrdersDailyPointDto, DashboardRevenueDailyDto } from "../types/dashboard.dto";
 
 export function DashboardDailyActivityCard(props: {
     rangeLabel: string;
