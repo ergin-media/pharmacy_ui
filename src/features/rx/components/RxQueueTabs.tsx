@@ -23,8 +23,12 @@ export function RxQueueTabs(props: {
                 {Object.entries(RX_QUEUES).map(([key, config]) => {
                     const queue = key as RxQueue;
                     const Icon = config.icon;
+
                     const count = counts?.[queue] ?? 0;
-                    const badeBackgroundColor =
+
+                    const showBadge = queue !== "all";
+
+                    const badgeBackgroundColor =
                         queue === "clarify" ? "bg-red-500" : "bg-white";
 
                     return (
@@ -34,7 +38,8 @@ export function RxQueueTabs(props: {
                             className={[
                                 "w-full justify-between gap-2 rounded-lg",
                                 "data-active:bg-background hover:bg-background",
-                                "px-1.5 py-2 text-foreground font-normal group-data-[variant=default]/tabs-list:data-active:shadow-none",
+                                "px-1.5 py-2 text-foreground font-normal",
+                                "group-data-[variant=default]/tabs-list:data-active:shadow-none",
                             ].join(" ")}
                         >
                             <span className="flex items-center gap-2 min-w-0">
@@ -42,12 +47,14 @@ export function RxQueueTabs(props: {
                                 <span className="truncate">{config.label}</span>
                             </span>
 
-                            <Badge
-                                variant={config.variant}
-                                className={`h-5 rounded-full px-2 text-[11px] shrink-0 ${badeBackgroundColor}`}
-                            >
-                                {formatCount(count)}
-                            </Badge>
+                            {showBadge && (
+                                <Badge
+                                    variant={config.variant}
+                                    className={`h-5 rounded-full px-2 text-[11px] shrink-0 ${badgeBackgroundColor}`}
+                                >
+                                    {formatCount(count)}
+                                </Badge>
+                            )}
                         </TabsTrigger>
                     );
                 })}

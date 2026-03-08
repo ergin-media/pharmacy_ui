@@ -1,5 +1,5 @@
-// src/features/rx/lib/rx.queues.ts
 import {
+    Layers,
     Inbox,
     FileText,
     Clock,
@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 
 export const RX_QUEUES = {
+    all: {
+        label: "Alle",
+        icon: Layers,
+        variant: "neutral",
+    },
     inbox: {
         label: "Neu",
         icon: Inbox,
