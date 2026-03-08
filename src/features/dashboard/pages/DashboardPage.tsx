@@ -14,6 +14,7 @@ import { TypographyH1 } from "@/components/ui/typography";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { DashboardBusinessKpis } from "../components/DashboardBusinessKpis";
+import { DashboardRevenueComparisonCard } from "../components/DashboardRevenueComparisonCard";
 
 function getPeriodLabel(period: ReturnType<typeof useDashboardPage>["period"]) {
     if (period === "rolling_30d") return "Letzte 30 Tage";
@@ -82,6 +83,12 @@ export function DashboardPage() {
                         rangeLabel={rangeLabel}
                         revenueDaily={vm.series.revenueDailyClean ?? []}
                         ordersDaily={vm.series.ordersDailyClean ?? []}
+                    />
+
+                    <DashboardRevenueComparisonCard
+                        data={vm.series.revenueCompareAligned}
+                        title="Umsatzvergleich je Tag"
+                        subtitle="Aktueller Monat vs. Vormonat"
                     />
 
                     <DashboardCashCards
