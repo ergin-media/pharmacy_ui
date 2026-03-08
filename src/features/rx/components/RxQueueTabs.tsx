@@ -1,10 +1,13 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-
-import { RX_QUEUES, type RxQueue } from "../lib/rx.queues";
 import { formatCount } from "@/shared/lib/format/figures";
 
-export type RxQueueCounts = Partial<Record<RxQueue, number>>;
+import {
+    RX_QUEUE_ITEMS,
+    type RxQueue,
+    type RxQueueCounts,
+} from "../lib/rx.queues";
+import { getTotalQueueCount } from "../lib/rx.helpers";
 
 export function RxQueueTabs(props: {
     value: RxQueue;
@@ -19,42 +22,40 @@ export function RxQueueTabs(props: {
             onValueChange={(v) => onChange(v as RxQueue)}
             orientation="vertical"
         >
-            <TabsList className="h-auto w-full flex-col items-stretch bg-transparent gap-1.5 p-0 rounded-0">
-                {Object.entries(RX_QUEUES).map(([key, config]) => {
-                    const queue = key as RxQueue;
-                    const Icon = config.icon;
+            <TabsList className="h-auto w-full flex-col items-stretch gap-1.5 rounded-0 bg-transparent p-0">
+                {RX_QUEUE_ITEMS.map((item) => {
+                    const Icon = item.icon;
 
-                    const count = counts?.[queue] ?? 0;
-
-                    const showBadge = queue !== "all";
+                    const count =
+                        item.value === "all"
+                            ? getTotalQueueCount(counts)
+                            : counts?.[item.value] ?? 0;
 
                     const badgeBackgroundColor =
-                        queue === "clarify" ? "bg-red-500" : "bg-white";
+                        item.value === "clarify" ? "bg-red-500" : "bg-white";
 
                     return (
                         <TabsTrigger
-                            key={queue}
-                            value={queue}
+                            key={item.value}
+                            value={item.value}
                             className={[
                                 "w-full justify-between gap-2 rounded-lg",
                                 "data-active:bg-background hover:bg-background",
-                                "px-1.5 py-2 text-foreground font-normal",
+                                "px-1.5 py-2 font-normal text-foreground",
                                 "group-data-[variant=default]/tabs-list:data-active:shadow-none",
                             ].join(" ")}
                         >
-                            <span className="flex items-center gap-2 min-w-0">
+                            <span className="flex min-w-0 items-center gap-2">
                                 <Icon className="h-4 w-4 shrink-0" />
-                                <span className="truncate">{config.label}</span>
+                                <span className="truncate">{item.label}</span>
                             </span>
 
-                            {showBadge && (
-                                <Badge
-                                    variant={config.variant}
-                                    className={`h-5 rounded-full px-2 text-[11px] shrink-0 ${badgeBackgroundColor}`}
-                                >
-                                    {formatCount(count)}
-                                </Badge>
-                            )}
+                            <Badge
+                                variant={item.variant}
+                                className={`h-5 shrink-0 rounded-full px-2 text-[11px] ${badgeBackgroundColor}`}
+                            >
+                                {formatCount(count)}
+                            </Badge>
                         </TabsTrigger>
                     );
                 })}

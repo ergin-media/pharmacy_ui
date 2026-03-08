@@ -65,3 +65,23 @@ export const RX_QUEUES = {
 } as const;
 
 export type RxQueue = keyof typeof RX_QUEUES;
+
+export const RX_QUEUE_ORDER: RxQueue[] = [
+    "all",
+    "inbox",
+    "offer_create",
+    "await_payment",
+    "paid_not_started",
+    "packaging",
+    "shipping",
+    "pickup",
+    "completed",
+    "clarify",
+];
+
+export const RX_QUEUE_ITEMS = RX_QUEUE_ORDER.map((value) => ({
+    value,
+    ...RX_QUEUES[value],
+}));
+
+export type RxQueueCounts = Partial<Record<RxQueue, number>>;
