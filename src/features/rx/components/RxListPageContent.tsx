@@ -85,21 +85,8 @@ export function RxListPageContent(props: {
                         </div>
                     ) : null}
 
-                    <div className="flex flex-wrap items-center justify-between">
-                        <div className="flex flex-1 items-center gap-4">
-                            <div className="text-sm text-muted-foreground">
-                                Seite{" "}
-                                <span className="font-medium text-foreground">
-                                    {page}
-                                </span>{" "}
-                                von{" "}
-                                <span className="font-medium text-foreground">
-                                    {totalPages}
-                                </span>
-                            </div>
-
-                            <Separator orientation="vertical" className="h-4" />
-
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex flex-1 items-center">
                             <RxListToolbar {...toolbarProps} />
                         </div>
 

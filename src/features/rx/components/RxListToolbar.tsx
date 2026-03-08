@@ -12,7 +12,6 @@ import {
 } from "../lib/rx.constants";
 import { RX_PROVIDERS } from "../lib/rx.providers";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -24,12 +23,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export function RxListToolbar(props: {
+    page: number;
+    totalPages: number;
+
     parseStatus?: RxParseStatus;
+    workflowStatus?: RxWorkflowStatus;
+    paymentState?: RxPaymentState;
 
-    workflowStatus?: RxWorkflowStatus; // neu
-    paymentState?: RxPaymentState; // neu
-
-    providerRaw: string; // slug oder ""
+    providerRaw: string;
     searchRaw: string;
     sort: RxSort;
     perPage: number;
@@ -37,17 +38,17 @@ export function RxListToolbar(props: {
     isFetching: boolean;
 
     onParseStatusChange: (v: string) => void;
-
-    onWorkflowStatusChange: (v: string) => void; // neu: v oder ""
-    onPaymentStateChange: (v: string) => void; // neu: v oder ""
-
-    onProviderChange: (v: string) => void; // slug oder ""
+    onWorkflowStatusChange: (v: string) => void;
+    onPaymentStateChange: (v: string) => void;
+    onProviderChange: (v: string) => void;
     onSearchChange: (v: string) => void;
     onSortChange: (v: string) => void;
     onPerPageChange: (v: number) => void;
     onRefresh: () => void;
 }) {
     const {
+        page,
+        totalPages,
         parseStatus,
         workflowStatus,
         paymentState,
@@ -66,12 +67,18 @@ export function RxListToolbar(props: {
         onRefresh,
     } = props;
 
-    // Selects + Button deaktivieren, Inputs aktiv lassen
     const disableControls = isFetching;
 
     return (
         <div className="flex flex-1 flex-wrap items-center gap-4">
-            {/* Suche bleibt Input */}
+            <div className="text-sm text-muted-foreground whitespace-nowrap">
+                Seite{" "}
+                <span className="font-medium text-foreground">{page}</span> von{" "}
+                <span className="font-medium text-foreground">{totalPages}</span>
+            </div>
+
+            <Separator orientation="vertical" className="h-4" />
+
             <Input
                 value={searchRaw}
                 placeholder="Suche (Patient, Bestell-ID)"
@@ -81,7 +88,6 @@ export function RxListToolbar(props: {
 
             <Separator orientation="vertical" className="h-4" />
 
-            {/* Provider */}
             <Select
                 value={providerRaw || "all"}
                 onValueChange={(v) => onProviderChange(v === "all" ? "" : v)}
@@ -100,9 +106,9 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
+            {/*
             <Separator orientation="vertical" className="h-4" />
 
-            {/* Parse Status 
             <Select
                 value={parseStatus ?? "all"}
                 onValueChange={onParseStatusChange}
@@ -123,7 +129,7 @@ export function RxListToolbar(props: {
             </Select>
             */}
 
-            {/* Workflow Status 
+            {/*
             <Select
                 value={workflowStatus ?? "all"}
                 onValueChange={(v) =>
@@ -145,7 +151,7 @@ export function RxListToolbar(props: {
             </Select>
             */}
 
-            {/* Payment State 
+            {/*
             <Select
                 value={paymentState ?? "all"}
                 onValueChange={(v) =>
@@ -167,8 +173,8 @@ export function RxListToolbar(props: {
             </Select>
             */}
 
-            <div className="ml-auto flex gap-2 items-center">
-                {/* Sort 
+            <div className="ml-auto flex items-center gap-2">
+                {/*
                 <Select
                     value={sort}
                     onValueChange={onSortChange}
@@ -187,7 +193,6 @@ export function RxListToolbar(props: {
                 </Select>
                 */}
 
-                {/* Per Page */}
                 <Select
                     value={String(perPage)}
                     onValueChange={(v) => onPerPageChange(Number(v))}
@@ -205,7 +210,7 @@ export function RxListToolbar(props: {
                     </SelectContent>
                 </Select>
 
-                {/* Refresh
+                {/*
                 <Button
                     variant="outline"
                     onClick={onRefresh}
@@ -213,7 +218,7 @@ export function RxListToolbar(props: {
                 >
                     Aktualisieren
                 </Button>
-                 */}
+                */}
             </div>
         </div>
     );
