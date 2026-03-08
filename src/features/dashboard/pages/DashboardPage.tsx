@@ -12,6 +12,7 @@ import { useDashboardPage } from "../hooks/useDashboardPage";
 import { formatEUR } from "@/shared/lib/format/figures";
 import { TypographyH1 } from "@/components/ui/typography";
 import { DashboardDailyActivityCard } from "../components/DashboardDailyActivityCard";
+import { DashboardCashCards } from "../components/DashboardCashCards";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
@@ -90,43 +91,12 @@ export function DashboardPage() {
                 revenueDaily={revenueDailyClean}
                 ordersDaily={ordersDailyClean}
             />
-
-            <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-lg bg-white p-4">
-                    <div className="text-xs text-muted-foreground">
-                        Bezahlt (
-                        {vm.period === "rolling_30d"
-                            ? "letzte 30 Tage"
-                            : "Zeitraum"}
-                        )
-                    </div>
-                    <div className="text-2xl font-semibold">
-                        {formatEUR(d.economy.revenue_paid_month)}
-                    </div>
-                </div>
-
-                <div className="rounded-lg bg-white p-4">
-                    <div className="text-xs text-muted-foreground">
-                        Unbezahlt (
-                        {vm.period === "rolling_30d"
-                            ? "letzte 30 Tage"
-                            : "Zeitraum"}
-                        )
-                    </div>
-                    <div className="text-2xl font-semibold">
-                        {formatEUR(d.economy.revenue_unpaid_month)}
-                    </div>
-                </div>
-
-                <div className="rounded-lg bg-white p-4">
-                    <div className="text-xs text-muted-foreground">
-                        Offene Forderungen
-                    </div>
-                    <div className="text-2xl font-semibold">
-                        {formatEUR(d.economy.open_receivables)}
-                    </div>
-                </div>
-            </div>
+            <DashboardCashCards
+                period={vm.period}
+                revenuePaid={d.economy.revenue_paid_month}
+                revenueUnpaid={d.economy.revenue_unpaid_month}
+                openReceivables={d.economy.open_receivables}
+            />
 
             <div className="grid gap-4 lg:grid-cols-2">
                 <DashboardTopProductsBarChart
