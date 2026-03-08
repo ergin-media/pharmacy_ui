@@ -8,6 +8,11 @@ export type DashboardTimeSeriesPointDto = {
     rx_count: number;
 };
 
+export type DashboardOrdersDailyPointDto = {
+    date: string; // "YYYY-MM-DD"
+    orders_count: number;
+};
+
 export type DashboardRevenueCompareAlignedPointDto = {
     day: number;
     current: {
@@ -21,6 +26,16 @@ export type DashboardRevenueCompareAlignedPointDto = {
         revenue_paid: number;
         revenue_unpaid: number;
         rx_count: number;
+    };
+};
+
+export type DashboardOrdersCompareAlignedPointDto = {
+    day: number;
+    current: {
+        orders_count: number;
+    };
+    prev: {
+        orders_count: number;
     };
 };
 
@@ -48,7 +63,7 @@ export type DashboardResponseDto = {
 
     economy: {
         revenue_today: number;
-        revenue_month: number; // in rolling_30d = revenue_last_30d (du benennst es aktuell "month")
+        revenue_month: number;
         revenue_prev_month: number;
         revenue_vs_prev_month_pct: number;
         rx_count_month: number;
@@ -90,9 +105,12 @@ export type DashboardResponseDto = {
         revenue_daily_current_month?: DashboardTimeSeriesPointDto[];
         revenue_daily_prev_month?: DashboardTimeSeriesPointDto[];
         revenue_daily_compare_aligned?: DashboardRevenueCompareAlignedPointDto[];
-
-        /** ✅ rolling_30d */
         revenue_daily?: DashboardTimeSeriesPointDto[];
+
+        orders_daily_current_month?: DashboardOrdersDailyPointDto[];
+        orders_daily_prev_month?: DashboardOrdersDailyPointDto[];
+        orders_daily_compare_aligned?: DashboardOrdersCompareAlignedPointDto[];
+        orders_daily?: DashboardOrdersDailyPointDto[];
     };
 
     _meta?: {
