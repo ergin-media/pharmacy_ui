@@ -14,6 +14,7 @@ import { useDashboardPage } from "../hooks/useDashboardPage";
 import { formatEUR } from "@/shared/lib/format/figures";
 import { TypographyH1 } from "@/components/ui/typography";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { DashboardDailyActivityCard } from "../components/DashboardDailyActivityCard";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
@@ -90,62 +91,11 @@ export function DashboardPage() {
             />
 
             {/* 2️⃣ Daily Chart Tabs */}
-            <div className="rounded-lg bg-white p-4">
-                <Tabs
-                    value={dailyChartTab}
-                    onValueChange={(v) =>
-                        setDailyChartTab(v as "revenue" | "orders")
-                    }
-                >
-                    <div className="mb-4 flex items-center justify-between gap-3">
-                        <div>
-                            <div className="text-sm font-medium">
-                                Tagesentwicklung
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                                Zeitraum: {rangeLabel}
-                            </div>
-                        </div>
-
-                        <TabsList>
-                            <TabsTrigger value="revenue">Umsätze</TabsTrigger>
-                            <TabsTrigger value="orders">Bestellungen</TabsTrigger>
-                        </TabsList>
-                    </div>
-
-                    <TabsContent value="revenue" className="mt-0">
-                        {revenueDailyClean.length > 0 ? (
-                            <DashboardRevenueDailyBarChart
-                                data={revenueDailyClean}
-                                rangeLabel={rangeLabel}
-                                title="Umsatz pro Tag"
-                                withCard={false}
-                                withHeader={false}
-                            />
-                        ) : (
-                            <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
-                                Noch keine Umsatzdaten verfügbar.
-                            </div>
-                        )}
-                    </TabsContent>
-
-                    <TabsContent value="orders" className="mt-0">
-                        {ordersDailyClean.length > 0 ? (
-                            <DashboardOrdersDailyBarChart
-                                data={ordersDailyClean}
-                                rangeLabel={rangeLabel}
-                                title="Bestellungen pro Tag"
-                                withCard={false}
-                                withHeader={false}
-                            />
-                        ) : (
-                            <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
-                                Noch keine Bestelldaten verfügbar.
-                            </div>
-                        )}
-                    </TabsContent>
-                </Tabs>
-            </div>
+            <DashboardDailyActivityCard
+                rangeLabel={rangeLabel}
+                revenueDaily={revenueDailyClean}
+                ordersDaily={ordersDailyClean}
+            />
 
             <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-lg bg-white p-4">
