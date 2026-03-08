@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { DashboardRevenueHero } from "../components/DashboardRevenueHero";
 import { DashboardRiskCards } from "../components/DashboardRiskCards";
 import { DashboardWorkflowBarChart } from "../components/DashboardWorkflowBarChart";
@@ -5,22 +7,26 @@ import { DashboardPaymentPieChart } from "../components/DashboardPaymentPieChart
 import { DashboardTopProductsBarChart } from "../components/DashboardTopProductsBarChart";
 import { DashboardTopProvidersBarChart } from "../components/DashboardTopProvidersBarChart";
 import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
+import { DashboardRevenueDailyBarChart } from "../components/DashboardRevenueDailyBarChart";
+import { DashboardOrdersDailyBarChart } from "../components/DashboardOrdersDailyBarChart";
 
 import { useDashboardPage } from "../hooks/useDashboardPage";
-import { DashboardRevenueDailyBarChart } from "../components/DashboardRevenueDailyBarChart";
 import { formatEUR } from "@/shared/lib/format/figures";
 import { TypographyH1 } from "@/components/ui/typography";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
     const { data, isFetching, isError, error } = vm.query;
 
-    // ✅ Loading nur wenn wirklich gar keine Daten da sind
+    const [dailyChartTab, setDailyChartTab] = useState<"revenue" | "orders">(
+        "revenue",
+    );
+
     if (isFetching && !data) {
         return <div>Lade Dashboard...</div>;
     }
 
-    // ✅ Error nur "hard fail" wenn keine Daten vorhanden sind
     if (isError && !data) {
         return (
             <div className="text-sm text-destructive">
@@ -35,13 +41,12 @@ export function DashboardPage() {
 
     const d = data;
 
-    // ✅ kommt jetzt aus dem Hook (gefiltert + period-aware)
     const revenueDailyClean = vm.series.revenueDailyClean ?? [];
+    const ordersDailyClean = vm.series.ordersDailyClean ?? [];
     const rangeLabel = vm.meta.rangeLabel;
 
     return (
         <div className="grid gap-4">
-            {/* Soft Warning wenn Refetch failed aber stale data vorhanden */}
             {isError ? (
                 <div className="rounded-lg bg-white p-3 text-sm text-destructive">
                     Hinweis: Dashboard konnte nicht aktualisiert werden – es
@@ -49,7 +54,6 @@ export function DashboardPage() {
                 </div>
             ) : null}
 
-            {/* Header: Zeitraum */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <TypographyH1 className="mb-1">Dashboard</TypographyH1>
@@ -61,7 +65,6 @@ export function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Badge -> zeigt tatsächlich den gewählten Zeitraum */}
                 <div className="rounded-full border bg-white px-3 py-1 text-xs text-muted-foreground">
                     {vm.period === "rolling_30d"
                         ? "Letzte 30 Tage"
@@ -73,7 +76,6 @@ export function DashboardPage() {
                 </div>
             </div>
 
-            {/* 1️⃣ Revenue Hero */}
             <DashboardRevenueHero
                 revenueMonth={d.economy.revenue_month}
                 revenuePrevMonth={d.economy.revenue_prev_month}
@@ -87,20 +89,60 @@ export function DashboardPage() {
                 momPct={d.economy.revenue_vs_prev_month_pct}
             />
 
-            {/* 2️⃣ Revenue Chart */}
-            {revenueDailyClean.length > 0 ? (
-                <DashboardRevenueDailyBarChart
-                    data={vm.series.revenueDailyClean}
-                    rangeLabel={vm.meta.rangeLabel}
-                    title="Umsatz pro Tag (letzte 30 Tage)"
-                />
-            ) : (
-                <div className="rounded-lg bg-white p-4 text-sm text-muted-foreground">
-                    Noch keine Umsatzdaten verfügbar.
-                </div>
-            )}
+            {/* 2️⃣ Daily Chart Tabs */}
+            <div className="rounded-lg bg-white p-4">
+                <Tabs
+                    value={dailyChartTab}
+                    onValueChange={(v) =>
+                        setDailyChartTab(v as "revenue" | "orders")
+                    }
+                >
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                        <div>
+                            <div className="text-sm font-medium">
+                                Tagesentwicklung
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                                Zeitraum: {rangeLabel}
+                            </div>
+                        </div>
 
-            {/* 3️⃣ Cash Block */}
+                        <TabsList>
+                            <TabsTrigger value="revenue">Umsätze</TabsTrigger>
+                            <TabsTrigger value="orders">Bestellungen</TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="revenue" className="mt-0">
+                        {revenueDailyClean.length > 0 ? (
+                            <DashboardRevenueDailyBarChart
+                                data={revenueDailyClean}
+                                rangeLabel={rangeLabel}
+                                title="Umsatz pro Tag"
+                            />
+                        ) : (
+                            <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+                                Noch keine Umsatzdaten verfügbar.
+                            </div>
+                        )}
+                    </TabsContent>
+
+                    <TabsContent value="orders" className="mt-0">
+                        {ordersDailyClean.length > 0 ? (
+                            <DashboardOrdersDailyBarChart
+                                data={ordersDailyClean}
+                                rangeLabel={rangeLabel}
+                                title="Bestellungen pro Tag"
+                            />
+                        ) : (
+                            <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+                                Noch keine Bestelldaten verfügbar.
+                            </div>
+                        )}
+                    </TabsContent>
+                </Tabs>
+            </div>
+
             <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-lg bg-white p-4">
                     <div className="text-xs text-muted-foreground">
@@ -138,7 +180,6 @@ export function DashboardPage() {
                 </div>
             </div>
 
-            {/* 4️⃣ Wachstumstreiber */}
             <div className="grid gap-4 lg:grid-cols-2">
                 <DashboardTopProductsBarChart
                     products={d.analytics.top_products}
@@ -148,10 +189,8 @@ export function DashboardPage() {
                 />
             </div>
 
-            {/* 5️⃣ Risiko */}
             <DashboardRiskCards risk={d.risk} />
 
-            {/* 6️⃣ Operatives */}
             <div className="grid gap-4 lg:grid-cols-2">
                 <DashboardWorkflowBarChart workflow={d.operations.workflow} />
                 <DashboardPaymentPieChart payment={d.operations.payment} />
