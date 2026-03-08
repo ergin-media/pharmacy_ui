@@ -20,20 +20,23 @@ function isExactPath(pathname: string, to: string) {
     return pathname === to;
 }
 
-/**
- * Parent ist aktiv, wenn:
- * - selbst exakt aktiv
- * - oder ein Child exakt aktiv
- */
-function isParentActive(pathname: string, item: NavItem) {
-    if (isExactPath(pathname, item.to)) return true;
+function hasActiveChild(pathname: string, item: NavItem) {
     if (!item.items?.length) return false;
     return item.items.some((child) => isExactPath(pathname, child.to));
 }
 
 /**
- * Für "auto-open" reicht prefix match,
- * damit /products/mapping das Produkte-Menü standardmäßig aufklappt.
+ * Parent ist nur aktiv, wenn der Parent selbst exakt aktiv ist.
+ * Child-Aktivität färbt den Parent NICHT aktiv ein.
+ */
+function isParentActive(pathname: string, item: NavItem) {
+    return isExactPath(pathname, item.to);
+}
+
+/**
+ * Für normale Einträge ohne Kinder:
+ * - selbst exakt aktiv
+ * - oder prefix match bei Unterrouten
  */
 function isSectionPath(pathname: string, to: string) {
     if (pathname === to) return true;
@@ -47,7 +50,6 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    // Manual override für offene Menüs: undefined = noch nie getoggelt (auto)
     const [openIds, setOpenIds] = useState<Record<string, boolean | undefined>>(
         {},
     );
@@ -60,22 +62,20 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
         <SidebarGroup>
             <SidebarGroupLabel className="ps-5">{label}</SidebarGroupLabel>
 
-            <SidebarMenu className="p-2 gap-1">
+            <SidebarMenu className="gap-1 p-2">
                 {items.map((item) => {
                     const hasChildren =
                         Array.isArray(item.items) && item.items.length > 0;
 
                     const Icon = item.icon as IconLike | undefined;
 
-                    const active = isParentActive(pathname, item);
+                    const active = hasChildren ? false : isParentActive(pathname, item);
 
-                    // Auto-Open (Route-basiert)
-                    const autoOpen = isSectionPath(pathname, item.to);
+                    const autoOpen = hasChildren
+                        ? hasActiveChild(pathname, item) || isParentActive(pathname, item)
+                        : isSectionPath(pathname, item.to);
 
-                    // Manual override (User klickt)
                     const manualOpen = openIds[item.id];
-
-                    // Wenn manual gesetzt ist, hat das Vorrang, sonst autoOpen
                     const isOpen = manualOpen ?? autoOpen;
 
                     return (
@@ -95,9 +95,7 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                                     navigate(item.to);
                                 }}
                             >
-                                {Icon ? (
-                                    <Icon className="size-4 shrink-0" />
-                                ) : null}
+                                {Icon ? <Icon className="size-4 shrink-0" /> : null}
 
                                 <span className="flex-1">{item.title}</span>
 
@@ -114,13 +112,8 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                             {hasChildren && isOpen ? (
                                 <SidebarMenuSub>
                                     {item.items!.map((sub) => {
-                                        const subActive = isExactPath(
-                                            pathname,
-                                            sub.to,
-                                        );
-                                        const SubIcon = sub.icon as
-                                            | IconLike
-                                            | undefined;
+                                        const subActive = isExactPath(pathname, sub.to);
+                                        const SubIcon = sub.icon as IconLike | undefined;
 
                                         return (
                                             <SidebarMenuSubItem key={sub.id}>
@@ -128,8 +121,7 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                                                     isActive={subActive}
                                                     className="flex items-center gap-2"
                                                     onClick={() => {
-                                                        if (sub.disabled)
-                                                            return;
+                                                        if (sub.disabled) return;
                                                         navigate(sub.to);
                                                     }}
                                                 >
@@ -137,9 +129,7 @@ export function NavMain(props: { label?: string; items: NavItem[] }) {
                                                         <SubIcon className="size-4 shrink-0" />
                                                     ) : null}
 
-                                                    <span className="flex-1">
-                                                        {sub.title}
-                                                    </span>
+                                                    <span className="flex-1">{sub.title}</span>
 
                                                     {sub.badge != null ? (
                                                         <span className="text-xs text-muted-foreground">
