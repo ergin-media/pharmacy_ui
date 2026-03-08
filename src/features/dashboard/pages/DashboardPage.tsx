@@ -119,6 +119,8 @@ export function DashboardPage() {
                                 data={revenueDailyClean}
                                 rangeLabel={rangeLabel}
                                 title="Umsatz pro Tag"
+                                withCard={false}
+                                withHeader={false}
                             />
                         ) : (
                             <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
@@ -133,6 +135,8 @@ export function DashboardPage() {
                                 data={ordersDailyClean}
                                 rangeLabel={rangeLabel}
                                 title="Bestellungen pro Tag"
+                                withCard={false}
+                                withHeader={false}
                             />
                         ) : (
                             <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">

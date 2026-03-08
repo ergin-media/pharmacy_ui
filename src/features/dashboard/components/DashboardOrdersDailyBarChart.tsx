@@ -25,8 +25,16 @@ export function DashboardOrdersDailyBarChart(props: {
     data: DashboardOrdersDailyPointDto[];
     rangeLabel?: string;
     title?: string;
+    withCard?: boolean;
+    withHeader?: boolean;
 }) {
-    const { data, rangeLabel, title } = props;
+    const {
+        data,
+        rangeLabel,
+        title,
+        withCard = true,
+        withHeader = true,
+    } = props;
 
     const rows: Row[] = (data ?? []).map((d) => ({
         date: d.date,
@@ -37,18 +45,20 @@ export function DashboardOrdersDailyBarChart(props: {
         orders_count: { label: "Bestellungen", color: "var(--chart-2)" },
     } as const;
 
-    return (
-        <div className="rounded-lg bg-card p-4">
-            <div className="mb-3">
-                <div className="text-sm font-medium">
-                    {title ?? "Bestellungen pro Tag"}
+    const content = (
+        <>
+            {withHeader ? (
+                <div className="mb-3">
+                    <div className="text-sm font-medium">
+                        {title ?? "Bestellungen pro Tag"}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                        {rangeLabel
+                            ? `Zeitraum: ${rangeLabel} · Bestellungen pro Tag`
+                            : "Bestellungen pro Tag"}
+                    </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                    {rangeLabel
-                        ? `Zeitraum: ${rangeLabel} · Bestellungen pro Tag`
-                        : "Bestellungen pro Tag"}
-                </div>
-            </div>
+            ) : null}
 
             <ChartContainer config={chartConfig} className="h-72 w-full">
                 <BarChart data={rows} margin={{ left: 12, right: 12 }}>
@@ -100,6 +110,12 @@ export function DashboardOrdersDailyBarChart(props: {
                     />
                 </BarChart>
             </ChartContainer>
-        </div>
+        </>
     );
+
+    if (!withCard) {
+        return content;
+    }
+
+    return <div className="rounded-lg bg-card p-4">{content}</div>;
 }
