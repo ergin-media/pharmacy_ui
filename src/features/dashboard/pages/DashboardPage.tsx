@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 import { DashboardRevenueHero } from "../components/DashboardRevenueHero";
 import { DashboardRiskCards } from "../components/DashboardRiskCards";
@@ -9,17 +8,17 @@ import { DashboardTopProvidersBarChart } from "../components/DashboardTopProvide
 import { DashboardGrowthMessage } from "../components/DashboardGrowthMessage";
 
 import { useDashboardPage } from "../hooks/useDashboardPage";
-import { formatEUR } from "@/shared/lib/format/figures";
 import { TypographyH1 } from "@/components/ui/typography";
 import { DashboardDailyActivityCard } from "../components/DashboardDailyActivityCard";
 import { DashboardCashCards } from "../components/DashboardCashCards";
+import { DashboardPageSkeleton } from "../components/DashboardPageSkeleton";
 
 export function DashboardPage() {
     const vm = useDashboardPage();
     const { data, isFetching, isError, error } = vm.query;
 
     if (isFetching && !data) {
-        return <div>Lade Dashboard...</div>;
+        return <DashboardPageSkeleton />;
     }
 
     if (isError && !data) {
