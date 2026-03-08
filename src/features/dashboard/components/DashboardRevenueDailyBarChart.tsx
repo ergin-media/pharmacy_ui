@@ -5,6 +5,7 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
+import { formatEUR } from "@/shared/lib/format/figures";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
 
 export type DashboardRevenueDailyDto = {
@@ -109,7 +110,8 @@ export function DashboardRevenueDailyBarChart(props: {
 
                                     if (key === "revenue_total") {
                                         return [
-                                            `${Number(value).toFixed(2)} €`,
+                                            formatEUR(Number(value)),
+                                            " ",
                                             "Umsatz",
                                         ];
                                     }

@@ -6,20 +6,14 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
+import { formatInt } from "@/shared/lib/format/figures";
+import { formatDateDayMonth } from "@/shared/lib/format/date";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type Row = {
     date: string;
     orders_count: number;
 };
-
-function formatDEDayMonth(isoDate: string) {
-    const d = new Date(`${isoDate}T00:00:00`);
-    return d.toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-    });
-}
 
 export function DashboardOrdersDailyBarChart(props: {
     data: DashboardOrdersDailyPointDto[];
@@ -70,7 +64,7 @@ export function DashboardOrdersDailyBarChart(props: {
                         axisLine={false}
                         tickMargin={8}
                         minTickGap={18}
-                        tickFormatter={formatDEDayMonth}
+                        tickFormatter={formatDateDayMonth}
                     />
 
                     <YAxis
@@ -86,13 +80,16 @@ export function DashboardOrdersDailyBarChart(props: {
                             <ChartTooltipContent
                                 labelKey="date"
                                 labelFormatter={(label) =>
-                                    `Datum: ${formatDEDayMonth(String(label))}`
+                                    `Datum: ${formatDateDayMonth(String(label))}`
                                 }
                                 formatter={(value, name) => {
                                     const key = String(name);
 
                                     if (key === "orders_count") {
-                                        return [String(value), "Bestellungen"];
+                                        return [
+                                            formatInt(Number(value)),
+                                            "Bestellungen",
+                                        ];
                                     }
 
                                     return [String(value), key];

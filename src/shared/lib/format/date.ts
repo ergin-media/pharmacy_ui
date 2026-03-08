@@ -38,3 +38,18 @@ export function formatDate(value?: string | null): string {
 
     return datePart;
 }
+
+export function formatDateDayMonth(value?: string | null): string {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return String(value);
+    }
+
+    return new Intl.DateTimeFormat("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+    }).format(date);
+}
