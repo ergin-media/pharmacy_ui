@@ -5,6 +5,7 @@ export function DashboardRevenueHero(props: {
     revenueMonth: number;
     revenuePrevMonth: number;
     revenueToday: number;
+    rxCountToday: number;
     rxCountMonth: number;
     avgRxValue: number;
     momPct: number;
@@ -13,6 +14,7 @@ export function DashboardRevenueHero(props: {
         revenueMonth,
         revenuePrevMonth,
         revenueToday,
+        rxCountToday,
         rxCountMonth,
         avgRxValue,
         momPct,
@@ -26,7 +28,7 @@ export function DashboardRevenueHero(props: {
                 {/* Haupt KPI */}
                 <div>
                     <div className="text-sm text-muted-foreground">
-                        Umsatz (letzte 30 Tage)
+                        Umsatz (Zeitraum)
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -35,11 +37,10 @@ export function DashboardRevenueHero(props: {
                         </div>
 
                         <div
-                            className={`flex items-center gap-1 text-sm font-medium ${
-                                isPositive
+                            className={`flex items-center gap-1 text-sm font-medium ${isPositive
                                     ? "text-green-600"
                                     : "text-destructive"
-                            }`}
+                                }`}
                         >
                             {isPositive ? (
                                 <ArrowUp className="size-4" />
@@ -68,7 +69,16 @@ export function DashboardRevenueHero(props: {
 
                     <div>
                         <div className="text-muted-foreground">
-                            Rezepte (letzte 30 Tage)
+                            Rezepte heute
+                        </div>
+                        <div className="text-lg font-semibold">
+                            {formatInt(rxCountToday)}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="text-muted-foreground">
+                            Rezepte (Zeitraum)
                         </div>
                         <div className="text-lg font-semibold">
                             {formatInt(rxCountMonth)}

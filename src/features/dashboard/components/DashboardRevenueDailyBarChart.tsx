@@ -89,18 +89,11 @@ export function DashboardRevenueDailyBarChart(props: {
                         cursor={false}
                         content={
                             <ChartTooltipContent
-                                labelKey="date"
-                                labelFormatter={(label) =>
-                                    `Datum: ${formatDateDayMonth(String(label))}`
-                                }
                                 formatter={(value, name) => {
                                     const key = String(name);
 
                                     if (key === "revenue_total") {
-                                        return [
-                                            formatEUR(Number(value)),
-                                            " Umsatz",
-                                        ];
+                                        return [formatEUR(Number(value)), " Umsatz"];
                                     }
 
                                     if (key === "rx_count") {
@@ -108,6 +101,12 @@ export function DashboardRevenueDailyBarChart(props: {
                                     }
 
                                     return [String(value), key];
+                                }}
+                                labelFormatter={(_, payload) => {
+                                    const rawDate = payload?.[0]?.payload?.date;
+                                    return rawDate
+                                        ? `Datum: ${formatDateDayMonth(String(rawDate))}`
+                                        : "Datum: —";
                                 }}
                             />
                         }

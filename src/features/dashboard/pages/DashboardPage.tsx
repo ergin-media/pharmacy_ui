@@ -74,6 +74,7 @@ export function DashboardPage() {
                 revenueMonth={d.economy.revenue_month}
                 revenuePrevMonth={d.economy.revenue_prev_month}
                 revenueToday={d.economy.revenue_today}
+                rxCountToday={d.economy.rx_count_today}
                 rxCountMonth={d.economy.rx_count_month}
                 avgRxValue={d.economy.avg_rx_value_month}
                 momPct={d.economy.revenue_vs_prev_month_pct}

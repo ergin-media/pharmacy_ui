@@ -79,9 +79,6 @@ export function DashboardOrdersDailyBarChart(props: {
                         content={
                             <ChartTooltipContent
                                 labelKey="date"
-                                labelFormatter={(label) =>
-                                    `Datum: ${formatDateDayMonth(String(label))}`
-                                }
                                 formatter={(value, name) => {
                                     const key = String(name);
 
@@ -93,6 +90,12 @@ export function DashboardOrdersDailyBarChart(props: {
                                     }
 
                                     return [String(value), key];
+                                }}
+                                labelFormatter={(_, payload) => {
+                                    const rawDate = payload?.[0]?.payload?.date;
+                                    return rawDate
+                                        ? `Datum: ${formatDateDayMonth(String(rawDate))}`
+                                        : "Datum: —";
                                 }}
                             />
                         }
