@@ -13,6 +13,7 @@ import { useDashboardPage } from "../hooks/useDashboardPage";
 import { TypographyH1 } from "@/components/ui/typography";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardHeader } from "../components/DashboardHeader";
+import { DashboardBusinessKpis } from "../components/DashboardBusinessKpis";
 
 function getPeriodLabel(period: ReturnType<typeof useDashboardPage>["period"]) {
     if (period === "rolling_30d") return "Letzte 30 Tage";
@@ -70,6 +71,11 @@ export function DashboardPage() {
 
                     <DashboardGrowthMessage
                         momPct={data.economy.revenue_vs_prev_month_pct}
+                    />
+
+                    <DashboardBusinessKpis
+                        newPatients30d={data.analytics.new_patients_30d}
+                        avgGramsPerRxMonth={data.analytics.avg_grams_per_rx_month}
                     />
 
                     <DashboardDailyActivityCard
