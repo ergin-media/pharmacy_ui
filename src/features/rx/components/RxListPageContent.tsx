@@ -11,6 +11,7 @@ import { RxListTable } from "./RxListTable";
 import { RxQueueTabs } from "./RxQueueTabs";
 import type { RxQueue } from "../lib/rx.queues";
 import type { RxListItemDto } from "../types/rx.dto";
+import { RxListHeaderBar } from "./RxListHeaderBar";
 
 export function RxListPageContent(props: {
     tabValue: RxQueue;
@@ -85,23 +86,13 @@ export function RxListPageContent(props: {
                         </div>
                     ) : null}
 
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex flex-1 items-center">
-                            <RxListToolbar {...toolbarProps} />
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                            <Separator orientation="vertical" className="h-4" />
-
-                            <Pagination
-                                page={page}
-                                totalPages={totalPages}
-                                onPageChange={onSetPage}
-                                isLoading={isFetching}
-                                showStatus={false}
-                            />
-                        </div>
-                    </div>
+                    <RxListHeaderBar
+                        page={page}
+                        totalPages={totalPages}
+                        isFetching={isFetching}
+                        onPageChange={onSetPage}
+                        toolbarProps={toolbarProps}
+                    />
 
                     <RxListTable
                         items={items}

@@ -173,8 +173,8 @@ export function RxListToolbar(props: {
             </Select>
             */}
 
-            <div className="ml-auto flex items-center gap-2">
-                {/*
+
+            {/*
                 <Select
                     value={sort}
                     onValueChange={onSortChange}
@@ -193,24 +193,26 @@ export function RxListToolbar(props: {
                 </Select>
                 */}
 
-                <Select
-                    value={String(perPage)}
-                    onValueChange={(v) => onPerPageChange(Number(v))}
-                    disabled={disableControls}
-                >
-                    <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Pro Seite" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {PER_PAGE_OPTIONS.map((n) => (
-                            <SelectItem key={n} value={String(n)}>
-                                {n} / Seite
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+            <Separator orientation="vertical" className="h-4" />
 
-                {/*
+            <Select
+                value={String(perPage)}
+                onValueChange={(v) => onPerPageChange(Number(v))}
+                disabled={disableControls}
+            >
+                <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Pro Seite" />
+                </SelectTrigger>
+                <SelectContent>
+                    {PER_PAGE_OPTIONS.map((n) => (
+                        <SelectItem key={n} value={String(n)}>
+                            {n} / Seite
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            {/*
                 <Button
                     variant="outline"
                     onClick={onRefresh}
@@ -219,7 +221,7 @@ export function RxListToolbar(props: {
                     Aktualisieren
                 </Button>
                 */}
-            </div>
         </div>
+
     );
 }
