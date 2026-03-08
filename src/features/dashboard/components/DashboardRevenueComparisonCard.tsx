@@ -30,16 +30,18 @@ export function DashboardRevenueComparisonCard(props: {
     const {
         data,
         title = "Umsatzvergleich",
-        subtitle = "Aktueller Monat vs. Vormonat pro Tag",
+        subtitle = "Tag-für-Tag Vergleich (Monat vs. Vormonat)",
         withCard = true,
         withHeader = true,
     } = props;
 
-    const rows: Row[] = (data ?? []).map((d) => ({
-        day: String(d.day),
-        current_revenue_total: d.current?.revenue_total ?? 0,
-        prev_revenue_total: d.prev?.revenue_total ?? 0,
-    }));
+    const rows: Row[] = (data ?? [])
+        .map((d) => ({
+            day: String(d.day),
+            current_revenue_total: d.current?.revenue_total ?? 0,
+            prev_revenue_total: d.prev?.revenue_total ?? 0,
+        }))
+        .sort((a, b) => Number(a.day) - Number(b.day));
 
     const chartConfig = {
         current_revenue_total: {
@@ -48,7 +50,7 @@ export function DashboardRevenueComparisonCard(props: {
         },
         prev_revenue_total: {
             label: "Vormonat",
-            color: "var(--chart-2)",
+            color: "var(--muted-foreground)",
         },
     } as const;
 
@@ -76,19 +78,19 @@ export function DashboardRevenueComparisonCard(props: {
                         tickFormatter={formatDayLabel}
                     />
 
-                    <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        width={72}
-                    />
+                    <YAxis tickLine={false} axisLine={false} width={72} />
 
                     <ChartTooltip
                         cursor={false}
                         content={
                             <ChartTooltipContent
-                                labelFormatter={(label) =>
-                                    `Tag: ${formatDayLabel(String(label ?? ""))}`
-                                }
+                                labelFormatter={(label, payload) => {
+                                    const rawDay =
+                                        payload?.[0]?.payload?.day ?? label;
+                                    return `Tag: ${formatDayLabel(
+                                        String(rawDay ?? ""),
+                                    )}`;
+                                }}
                                 formatter={(value, name) => {
                                     const key = String(name);
 
@@ -115,18 +117,25 @@ export function DashboardRevenueComparisonCard(props: {
                     <ChartLegend content={<ChartLegendContent />} />
 
                     <Bar
+                        dataKey="prev_revenue_total"
+                        fill="var(--color-prev_revenue_total)"
+                        radius={4}
+                        opacity={0.35}
+                    />
+
+                    <Bar
                         dataKey="current_revenue_total"
                         fill="var(--color-current_revenue_total)"
                         radius={4}
                     />
-
-                    <Bar
-                        dataKey="prev_revenue_total"
-                        fill="var(--color-prev_revenue_total)"
-                        radius={4}
-                    />
                 </BarChart>
             </ChartContainer>
+
+            {rows.length > 0 ? (
+                <div className="mt-3 text-xs text-muted-foreground">
+                    Aktueller Monat vs. Vormonat auf Tagesbasis.
+                </div>
+            ) : null}
         </>
     );
 
