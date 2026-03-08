@@ -6,13 +6,7 @@ import {
     ChartLegendContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
-
-// ✅ passt zu timeseries.revenue_daily (rolling_30d) und auch mtd/prev_month Serien
-export type DashboardRevenueDailyDto = {
-    date: string; // "2026-02-28"
-    revenue_total: number;
-    rx_count: number;
-};
+import type { DashboardRevenueDailyDto } from "../types/dashboard.dto";
 
 type Row = {
     date: string;

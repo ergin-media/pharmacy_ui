@@ -1,3 +1,5 @@
+import { formatDateDayMonth } from "@/shared/lib/format/date";
+import { formatEUR } from "@/shared/lib/format/figures";
 import {
     ChartContainer,
     ChartTooltip,
@@ -5,28 +7,14 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import { formatEUR } from "@/shared/lib/format/figures";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
-
-export type DashboardRevenueDailyDto = {
-    date: string; // "2026-02-28"
-    revenue_total: number;
-    rx_count: number;
-};
+import type { DashboardRevenueDailyDto } from "../types/dashboard.dto";
 
 type Row = {
     date: string;
     revenue_total: number;
     rx_count: number;
 };
-
-function formatDEDayMonth(isoDate: string) {
-    const d = new Date(`${isoDate}T00:00:00`);
-    return d.toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-    });
-}
 
 export function DashboardRevenueDailyBarChart(props: {
     data: DashboardRevenueDailyDto[];
@@ -79,7 +67,7 @@ export function DashboardRevenueDailyBarChart(props: {
                         axisLine={false}
                         tickMargin={8}
                         minTickGap={18}
-                        tickFormatter={formatDEDayMonth}
+                        tickFormatter={formatDateDayMonth}
                     />
 
                     <YAxis
@@ -103,7 +91,7 @@ export function DashboardRevenueDailyBarChart(props: {
                             <ChartTooltipContent
                                 labelKey="date"
                                 labelFormatter={(label) =>
-                                    `Datum: ${formatDEDayMonth(String(label))}`
+                                    `Datum: ${formatDateDayMonth(String(label))}`
                                 }
                                 formatter={(value, name) => {
                                     const key = String(name);
@@ -111,7 +99,6 @@ export function DashboardRevenueDailyBarChart(props: {
                                     if (key === "revenue_total") {
                                         return [
                                             formatEUR(Number(value)),
-                                            " ",
                                             "Umsatz",
                                         ];
                                     }

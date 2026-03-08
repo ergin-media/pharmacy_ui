@@ -122,3 +122,9 @@ export type DashboardResponseDto = {
 export type DashboardQueryParams = {
     period?: DashboardPeriod;
 };
+
+export type DashboardRevenueDailyDto = {
+    date: string; // "2026-02-28"
+    revenue_total: number;
+    rx_count: number;
+};
