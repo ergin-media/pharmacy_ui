@@ -22,7 +22,7 @@ export const RX_QUEUES = {
         label: "Neu",
         icon: Inbox,
         variant: "neutral",
-        visible: false,
+        visible: true,
     },
     offer_create: {
         label: "Angebot erstellen",
