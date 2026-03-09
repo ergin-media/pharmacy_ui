@@ -1,5 +1,9 @@
 import { api } from "@/shared/api/axios";
-import type { RxListQueryParams, RxListResponseDto, RxListItemDto } from "../types/rx.dto";
+import type {
+    RxListQueryParams,
+    RxListResponseDto,
+    RxListItemDto,
+} from "../types/rx.dto";
 
 export async function fetchRxList(params: RxListQueryParams) {
     const res = await api.get<RxListResponseDto>("rx", { params });
@@ -14,7 +18,7 @@ export async function reparseRx(id: number) {
             parsed: number;
             failed: number;
         };
-    }>(`rx/reparse/${id}`);
+    }>(`rx/${id}/reparse`);
 
     return res.data;
 }
