@@ -15,6 +15,7 @@ export function RxListPage() {
     const panels = useRxPanels();
 
     const toolbarProps: React.ComponentProps<typeof RxListToolbar> = {
+        total: vm.meta.total,
         page: vm.filters.page,
         totalPages: vm.meta.totalPages,
         parseStatus: vm.filters.parseStatus,

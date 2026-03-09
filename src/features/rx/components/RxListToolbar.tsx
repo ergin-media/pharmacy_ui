@@ -12,6 +12,7 @@ import {
 } from "../lib/rx.constants";
 import { RX_PROVIDERS } from "../lib/rx.providers";
 
+import { formatInt } from "@/shared/lib/format/figures";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -23,6 +24,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 export function RxListToolbar(props: {
+    total: number;
     page: number;
     totalPages: number;
 
@@ -47,6 +49,7 @@ export function RxListToolbar(props: {
     onRefresh: () => void;
 }) {
     const {
+        total,
         page,
         totalPages,
         parseStatus,
@@ -71,10 +74,11 @@ export function RxListToolbar(props: {
 
     return (
         <div className="flex flex-1 flex-wrap items-center gap-4">
-            <div className="text-sm text-muted-foreground whitespace-nowrap">
-                Seite{" "}
-                <span className="font-medium text-foreground">{page}</span> von{" "}
-                <span className="font-medium text-foreground">{totalPages}</span>
+            <div className="whitespace-nowrap text-sm text-muted-foreground">
+                Gesamt:{" "}
+                <span className="font-medium text-foreground">
+                    {formatInt(total)}
+                </span>
             </div>
 
             <Separator orientation="vertical" className="h-4" />
@@ -173,46 +177,55 @@ export function RxListToolbar(props: {
             </Select>
             */}
 
-
             {/*
-                <Select
-                    value={sort}
-                    onValueChange={onSortChange}
-                    disabled={disableControls}
-                >
-                    <SelectTrigger className="w-56">
-                        <SelectValue placeholder="Sortierung" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {SORT_OPTIONS.map((s) => (
-                            <SelectItem key={s.value} value={s.value}>
-                                {s.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                */}
-
-            <Separator orientation="vertical" className="h-4" />
-
             <Select
-                value={String(perPage)}
-                onValueChange={(v) => onPerPageChange(Number(v))}
+                value={sort}
+                onValueChange={onSortChange}
                 disabled={disableControls}
             >
-                <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Pro Seite" />
+                <SelectTrigger className="w-56">
+                    <SelectValue placeholder="Sortierung" />
                 </SelectTrigger>
                 <SelectContent>
-                    {PER_PAGE_OPTIONS.map((n) => (
-                        <SelectItem key={n} value={String(n)}>
-                            {n} / Seite
+                    {SORT_OPTIONS.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>
+                            {s.label}
                         </SelectItem>
                     ))}
                 </SelectContent>
             </Select>
+            */}
 
-            {/*
+            <div className="ml-auto flex items-center gap-4">
+                <Separator orientation="vertical" className="h-4" />
+                <Select
+                    value={String(perPage)}
+                    onValueChange={(v) => onPerPageChange(Number(v))}
+                    disabled={disableControls}
+                >
+                    <SelectTrigger className="w-40">
+                        <SelectValue placeholder="Pro Seite" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {PER_PAGE_OPTIONS.map((n) => (
+                            <SelectItem key={n} value={String(n)}>
+                                {n} / Seite
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Separator orientation="vertical" className="h-4" />
+                <div className="whitespace-nowrap text-sm text-muted-foreground">
+                    Seite{" "}
+                    <span className="font-medium text-foreground">{page}</span>{" "}
+                    von{" "}
+                    <span className="font-medium text-foreground">
+                        {totalPages}
+                    </span>
+                </div>
+
+                {/*
                 <Button
                     variant="outline"
                     onClick={onRefresh}
@@ -221,7 +234,7 @@ export function RxListToolbar(props: {
                     Aktualisieren
                 </Button>
                 */}
+            </div>
         </div>
-
     );
 }
