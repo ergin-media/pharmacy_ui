@@ -151,7 +151,7 @@ export function useRxListPage() {
     const reparseMutation = useReparseRxMutation();
     const reparseBusyId =
         reparseMutation.isPending &&
-            typeof reparseMutation.variables === "number"
+        typeof reparseMutation.variables === "number"
             ? reparseMutation.variables
             : null;
 
@@ -161,6 +161,7 @@ export function useRxListPage() {
             ? query.data.total_pages
             : 1;
 
+    const items = query.data?.items ?? [];
     const queueCounts: RxQueueCounts = query.data?.queue_counts ?? {};
 
     const actions = {
@@ -226,27 +227,61 @@ export function useRxListPage() {
         },
     };
 
+    const queueVm = {
+        value: (queue ?? "all") as RxQueue,
+        counts: queueCounts,
+        setQueue: actions.setQueue,
+    };
+
+    const toolbarVm = {
+        total,
+        page,
+        totalPages,
+        parseStatus,
+        workflowStatus,
+        paymentState,
+        providerRaw,
+        searchRaw: searchInput,
+        sort,
+        perPage,
+        isFetching: query.isFetching,
+        onParseStatusChange: actions.setParseStatus,
+        onWorkflowStatusChange: actions.setWorkflowStatus,
+        onPaymentStateChange: actions.setPaymentState,
+        onProviderChange: actions.setProvider,
+        onSearchChange: actions.setSearch,
+        onSortChange: actions.setSort,
+        onPerPageChange: actions.setPerPage,
+        onRefresh: actions.refresh,
+    };
+
+    const listVm = {
+        page,
+        total,
+        totalPages,
+        isFetching: query.isFetching,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        error: query.isError ? query.error : null,
+        setPage: actions.setPage,
+        refresh: actions.refresh,
+    };
+
+    const tableVm = {
+        queue: (queue ?? "all") as RxQueue,
+        items,
+        page,
+        perPage,
+        isLoading: query.isFetching,
+        reparseBusyId,
+        onReparse: actions.reparse,
+    };
+
     return {
-        filters: {
-            page,
-            perPage,
-            queue,
-            tabValue: (queue ?? "all") as RxQueue,
-            parseStatus,
-            workflowStatus,
-            paymentState,
-            providerRaw,
-            searchRaw: searchInput,
-            sort,
-        },
         query,
-        meta: {
-            total,
-            totalPages,
-            queueCounts,
-            reparseBusyId,
-            isReparseBusy: reparseMutation.isPending,
-        },
-        actions,
+        queueVm,
+        toolbarVm,
+        listVm,
+        tableVm,
     };
 }

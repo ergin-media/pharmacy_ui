@@ -3,56 +3,27 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
-import { Separator } from "@/components/ui/separator";
 import { TypographyP } from "@/components/ui/typography";
 
-import { RxListToolbar } from "./RxListToolbar";
 import { RxListTable } from "./RxListTable";
 import { RxQueueTabs } from "./RxQueueTabs";
-import type { RxQueue } from "../lib/rx.queues";
-import type { RxListItemDto } from "../types/rx.dto";
 import { RxListHeaderBar } from "./RxListHeaderBar";
+import type {
+    RxListVm,
+    RxQueueVm,
+    RxRowActions,
+    RxTableVm,
+    RxToolbarVm,
+} from "../types/rx.list.vm";
 
 export function RxListPageContent(props: {
-    tabValue: RxQueue;
-    queueCounts?: Partial<Record<RxQueue, number>>;
-    page: number;
-    totalPages: number;
-    isFetching: boolean;
-    error: unknown;
-    toolbarProps: React.ComponentProps<typeof RxListToolbar>;
-    items: RxListItemDto[];
-    perPage: number;
-    onSetQueue: (v: RxQueue) => void;
-    onSetPage: (page: number) => void;
-    onRefresh: () => void;
-    onOpen: (id: number) => void;
-    onPdf: (id: number) => void;
-    onMore: (id: number) => void;
-    onCreateInvoice: (id: number) => void;
-    onReparse: (id: number) => void;
-    reparseBusyId: number | null;
+    queueVm: RxQueueVm;
+    listVm: RxListVm;
+    toolbarVm: RxToolbarVm;
+    tableVm: RxTableVm;
+    rowActions: RxRowActions;
 }) {
-    const {
-        tabValue,
-        queueCounts,
-        page,
-        totalPages,
-        isFetching,
-        error,
-        toolbarProps,
-        items,
-        perPage,
-        onSetQueue,
-        onSetPage,
-        onRefresh,
-        onOpen,
-        onPdf,
-        onMore,
-        onCreateInvoice,
-        onReparse,
-        reparseBusyId,
-    } = props;
+    const { queueVm, listVm, toolbarVm, tableVm, rowActions } = props;
 
     return (
         <div className="grid h-full gap-2 xl:grid-cols-[210px_1fr] 2xl:grid-cols-[225px_1fr]">
@@ -62,24 +33,25 @@ export function RxListPageContent(props: {
                 </TypographyP>
 
                 <RxQueueTabs
-                    value={tabValue}
-                    onChange={onSetQueue}
-                    counts={queueCounts}
+                    value={queueVm.value}
+                    onChange={queueVm.setQueue}
+                    counts={queueVm.counts}
                 />
             </Card>
 
             <Card>
                 <CardContent className="grid gap-4">
-                    {error ? (
+                    {listVm.isError ? (
                         <div className="flex items-center gap-2">
                             <div className="text-sm text-destructive">
-                                Fehler: {(error as Error)?.message ?? "unknown"}
+                                Fehler:{" "}
+                                {(listVm.error as Error)?.message ?? "unknown"}
                             </div>
 
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={onRefresh}
+                                onClick={listVm.refresh}
                             >
                                 Erneut versuchen
                             </Button>
@@ -87,31 +59,32 @@ export function RxListPageContent(props: {
                     ) : null}
 
                     <RxListHeaderBar
-                        page={page}
-                        totalPages={totalPages}
-                        isFetching={isFetching}
-                        onPageChange={onSetPage}
-                        toolbarProps={toolbarProps}
+                        page={listVm.page}
+                        totalPages={listVm.totalPages}
+                        isFetching={listVm.isFetching}
+                        onPageChange={listVm.setPage}
+                        toolbarProps={toolbarVm}
                     />
 
                     <RxListTable
-                        items={items}
-                        page={page}
-                        perPage={perPage}
-                        onOpen={onOpen}
-                        onPdf={onPdf}
-                        onMore={onMore}
-                        onCreateInvoice={onCreateInvoice}
-                        isLoading={isFetching}
-                        onReparse={onReparse}
-                        reparseBusyId={reparseBusyId}
+                        queue={tableVm.queue}
+                        items={tableVm.items}
+                        page={tableVm.page}
+                        perPage={tableVm.perPage}
+                        onOpen={rowActions.open}
+                        onPdf={rowActions.pdf}
+                        onMore={rowActions.more}
+                        onCreateInvoice={rowActions.createInvoice}
+                        isLoading={tableVm.isLoading}
+                        onReparse={tableVm.onReparse}
+                        reparseBusyId={tableVm.reparseBusyId}
                     />
 
                     <Pagination
-                        page={page}
-                        totalPages={totalPages}
-                        onPageChange={onSetPage}
-                        isLoading={isFetching}
+                        page={listVm.page}
+                        totalPages={listVm.totalPages}
+                        onPageChange={listVm.setPage}
+                        isLoading={listVm.isFetching}
                         showStatus
                     />
                 </CardContent>

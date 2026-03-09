@@ -7,9 +7,9 @@ import { RxQueueTabsSkeleton } from "./RxQueueTabsSkeleton";
 
 export function RxListPageLoading(props: {
     perPage: number;
-    toolbarProps: React.ComponentProps<typeof RxListToolbar>;
+    toolbarVm: React.ComponentProps<typeof RxListToolbar>;
 }) {
-    const { perPage, toolbarProps } = props;
+    const { perPage, toolbarVm } = props;
 
     return (
         <div className="grid h-full gap-2 xl:grid-cols-[210px_1fr] 2xl:grid-cols-[225px_1fr]">
@@ -19,11 +19,12 @@ export function RxListPageLoading(props: {
                 <CardContent className="grid gap-4">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex flex-1 items-center">
-                            <RxListToolbar {...toolbarProps} />
+                            <RxListToolbar {...toolbarVm} />
                         </div>
                     </div>
 
                     <RxListTable
+                        queue="all"
                         items={[]}
                         page={1}
                         perPage={perPage}
