@@ -48,7 +48,7 @@ export function RxQueueTabs(props: {
                             <TabsTrigger
                                 value={item.value}
                                 className={[
-                                    "w-full min-w-0 !justify-start gap-2 rounded-lg text-left",
+                                    "w-full min-w-0 gap-2 rounded-lg",
                                     "data-active:bg-background hover:bg-background",
                                     "px-1.5 py-2 font-normal text-foreground",
                                     "group-data-[variant=default]/tabs-list:data-active:shadow-none",
