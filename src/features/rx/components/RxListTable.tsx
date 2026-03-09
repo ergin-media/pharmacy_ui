@@ -1,5 +1,5 @@
-// RxListTable.tsx
 import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
+import type { RxQueue } from "../lib/rx.queues";
 import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
 import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
 import { getPriceMeta } from "../lib/rx.summary";
@@ -29,10 +29,11 @@ import { RxItemsTableCell } from "./RxItemsTableCell";
 import { rxShouldShowReparse, rxUnmappedCount } from "../lib/rx.reparse";
 
 export function RxListTable(props: {
+    queue: RxQueue;
     items: RxListItemDto[];
     isLoading?: boolean;
 
-    page: number; // ✅ NEW
+    page: number;
     perPage: number;
 
     onOpen?: (id: number) => void;
@@ -44,6 +45,7 @@ export function RxListTable(props: {
     reparseBusyId?: number | null;
 }) {
     const {
+        queue,
         items,
         isLoading,
         page,
@@ -63,9 +65,7 @@ export function RxListTable(props: {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        {/* ✅ NEW */}
                         <TableHead className="w-14 ps-3">#</TableHead>
-
                         <TableHead className="w-65">Patient</TableHead>
                         <TableHead className="w-55">Plattform</TableHead>
                         <TableHead>Artikel</TableHead>
@@ -135,7 +135,6 @@ export function RxListTable(props: {
                                         {`${rowNumber}.`}
                                     </TableCell>
 
-                                    {/* Patient */}
                                     <TableCell>
                                         <div className="font-medium">
                                             {patientTitle}
@@ -145,7 +144,6 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Plattform */}
                                     <TableCell>
                                         <div className="max-w-50 truncate font-medium">
                                             {r.provider?.name ??
@@ -157,7 +155,6 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Artikel */}
                                     <RxItemsTableCell
                                         rx={r}
                                         rxItems={r.items ?? []}
@@ -165,7 +162,6 @@ export function RxListTable(props: {
                                         priceMeta={priceMeta}
                                     />
 
-                                    {/* Gesamtmenge */}
                                     <TableCell className="text-right">
                                         <div className="font-medium">
                                             {formatQuantity(
@@ -175,7 +171,6 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Gesamtpreis */}
                                     <TableCell className="text-right">
                                         <div className="flex flex-col items-end">
                                             <div
@@ -194,12 +189,10 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Eingang */}
                                     <TableCell className="whitespace-nowrap">
                                         {formatDateTime(r.mail?.received_at)}
                                     </TableCell>
 
-                                    {/* Status + Reparse */}
                                     <TableCell>
                                         <div className="flex flex-col gap-2">
                                             <div className="flex flex-wrap gap-2">
@@ -259,7 +252,6 @@ export function RxListTable(props: {
                                         </div>
                                     </TableCell>
 
-                                    {/* Aktionen */}
                                     <TableCell className="text-right pe-3">
                                         <div className="flex justify-end">
                                             <RxRowActionsMenu
