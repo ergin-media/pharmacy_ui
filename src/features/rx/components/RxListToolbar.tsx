@@ -3,13 +3,7 @@ import type {
     RxWorkflowStatus,
     RxPaymentState,
 } from "../types/rx.dto";
-import {
-    PER_PAGE_OPTIONS,
-    SORT_OPTIONS,
-    WORKFLOW_OPTIONS,
-    PAYMENT_OPTIONS,
-    type RxSort,
-} from "../lib/rx.constants";
+import { PER_PAGE_OPTIONS, type RxSort } from "../lib/rx.constants";
 import { RX_PROVIDERS } from "../lib/rx.providers";
 
 import { formatInt } from "@/shared/lib/format/figures";
@@ -52,22 +46,13 @@ export function RxListToolbar(props: {
         total,
         page,
         totalPages,
-        parseStatus,
-        workflowStatus,
-        paymentState,
         providerRaw,
         searchRaw,
-        sort,
         perPage,
         isFetching,
-        onParseStatusChange,
-        onWorkflowStatusChange,
-        onPaymentStateChange,
         onProviderChange,
         onSearchChange,
-        onSortChange,
         onPerPageChange,
-        onRefresh,
     } = props;
 
     const disableControls = isFetching;
