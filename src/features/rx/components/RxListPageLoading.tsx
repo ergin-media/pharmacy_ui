@@ -1,8 +1,6 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-
 import { RxListToolbar } from "./RxListToolbar";
 import { RxListTable } from "./RxListTable";
 import { RxQueueTabsSkeleton } from "./RxQueueTabsSkeleton";
@@ -25,7 +23,12 @@ export function RxListPageLoading(props: {
                         </div>
                     </div>
 
-                    <RxListTable items={[]} page={1} perPage={perPage} isLoading />
+                    <RxListTable
+                        items={[]}
+                        page={1}
+                        perPage={perPage}
+                        isLoading
+                    />
                 </CardContent>
             </Card>
         </div>
