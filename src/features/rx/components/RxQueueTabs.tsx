@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCount } from "@/shared/lib/format/figures";
 
 import {
-    RX_QUEUE_ITEMS,
+    RX_QUEUE_ITEMS_VISIBLE,
     type RxQueue,
     type RxQueueCounts,
 } from "../lib/rx.queues";
@@ -23,13 +23,13 @@ export function RxQueueTabs(props: {
             orientation="vertical"
         >
             <TabsList className="h-auto w-full flex-col items-stretch gap-1.5 rounded-0 bg-transparent p-0">
-                {RX_QUEUE_ITEMS.map((item) => {
+                {RX_QUEUE_ITEMS_VISIBLE.map((item) => {
                     const Icon = item.icon;
 
                     const count =
                         item.value === "all"
                             ? getTotalQueueCount(counts)
-                            : counts?.[item.value] ?? 0;
+                            : (counts?.[item.value] ?? 0);
 
                     const badgeBackgroundColor =
                         item.value === "clarify" ? "bg-red-500" : "bg-white";
