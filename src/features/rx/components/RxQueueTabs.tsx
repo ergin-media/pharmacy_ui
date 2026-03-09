@@ -70,27 +70,30 @@ export function RxQueueTabs(props: {
                             </TabsTrigger>
                         );
 
+                        const trigger =
+                            count > 99 ? (
+                                <Tooltip>
+                                    <TooltipTrigger className="block w-full text-left">
+                                        {tabTrigger}
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right">
+                                        {formatInt(count)} Rezepte
+                                    </TooltipContent>
+                                </Tooltip>
+                            ) : (
+                                tabTrigger
+                            );
+
                         return (
-                            <div key={item.value} className="w-full">
-                                {count > 99 ? (
-                                    <Tooltip>
-                                        <TooltipTrigger className="block w-full text-left">
-                                            {tabTrigger}
-                                        </TooltipTrigger>
-
-                                        <TooltipContent side="right">
-                                            {formatInt(count)} Rezepte
-                                        </TooltipContent>
-                                    </Tooltip>
-                                ) : (
-                                    tabTrigger
+                            <>
+                                <div key={item.value} className="w-full">
+                                    {trigger}
+                                </div>
+                                {(item.value === "all" ||
+                                    item.value === "completed") && (
+                                    <Separator className="my-1 opacity-60" />
                                 )}
-
-                                {item.value === "all" ||
-                                    (item.value === "completed" && (
-                                        <Separator className="my-1 opacity-60" />
-                                    ))}
-                            </div>
+                            </>
                         );
                     })}
                 </TabsList>
