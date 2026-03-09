@@ -14,7 +14,7 @@ function formatOptionalDate(value?: string | null) {
 }
 
 function getFulfillmentTypeLabel(rx: RxListItemDto) {
-    const type = rx.fulfillment_type ?? rx.summary?.fulfillment_type ?? null;
+    const type = rx.fulfillment_type ?? null;
 
     if (type === "shipping") return "Versand";
     if (type === "pickup") return "Abholung";
@@ -57,6 +57,7 @@ export type RxTableRowVm = {
 
     rx: RxListItemDto;
     unmappedCount: number;
+    priceMeta: ReturnType<typeof getPriceMeta>;
 
     totalQtyLabel: string;
     totalPriceLabel: string;
@@ -128,6 +129,7 @@ export function mapRxListItemToRowVm(input: {
 
         rx,
         unmappedCount,
+        priceMeta,
 
         totalQtyLabel: formatQuantity(totalQty, totalUnit),
         totalPriceLabel: formatMoney(priceCents, currency),
