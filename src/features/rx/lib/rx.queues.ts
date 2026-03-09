@@ -95,7 +95,7 @@ export const RX_QUEUE_ITEMS = RX_QUEUE_ORDER.map((value) => ({
 }));
 
 export const RX_QUEUE_ITEMS_VISIBLE = RX_QUEUE_ITEMS.filter(
-    (item) => item.visible !== false,
+    (item) => item.visible,
 );
 
 export type RxQueueCounts = Partial<Record<RxQueue, number>>;
