@@ -9,9 +9,17 @@ export type RxTableColumnKey =
     | "totalPrice"
     | "receivedAt"
     | "status"
-    | "actions";
+    | "offerCreatedAt"
+    | "paidAt"
+    | "fulfillmentType"
+    | "preparedAt"
+    | "pickupReadyAt"
+    | "completedAt"
+    | "issue"
+    | "primaryAction"
+    | "moreActions";
 
-const RX_TABLE_BASE_COLUMNS: RxTableColumnKey[] = [
+export const RX_TABLE_BASE_COLUMNS: RxTableColumnKey[] = [
     "index",
     "patient",
     "provider",
@@ -21,22 +29,31 @@ const RX_TABLE_BASE_COLUMNS: RxTableColumnKey[] = [
 ];
 
 const RX_TABLE_QUEUE_EXTRA_COLUMNS: Record<RxQueue, RxTableColumnKey[]> = {
-    all: ["receivedAt", "status", "actions"],
-    inbox: ["receivedAt", "actions"],
-    offer_create: ["receivedAt", "actions"],
-    await_payment: ["receivedAt", "actions"],
-    paid_not_started: ["actions"],
-    packaging: ["actions"],
-    shipping: ["actions"],
-    pickup: ["actions"],
-    completed: ["receivedAt", "actions"],
-    clarify: ["receivedAt", "status", "actions"],
+    all: ["receivedAt", "status", "moreActions"],
+
+    inbox: ["receivedAt", "primaryAction", "moreActions"],
+
+    offer_create: ["receivedAt", "primaryAction", "moreActions"],
+
+    await_payment: ["offerCreatedAt", "primaryAction", "moreActions"],
+
+    paid_not_started: ["paidAt", "primaryAction", "moreActions"],
+
+    packaging: ["fulfillmentType", "primaryAction", "moreActions"],
+
+    shipping: ["preparedAt", "primaryAction", "moreActions"],
+
+    pickup: ["pickupReadyAt", "primaryAction", "moreActions"],
+
+    completed: ["completedAt", "moreActions"],
+
+    clarify: ["issue", "status", "moreActions"],
 };
 
 export function getRxTableColumns(queue: RxQueue): RxTableColumnKey[] {
     return [
         ...RX_TABLE_BASE_COLUMNS,
-        ...(RX_TABLE_QUEUE_EXTRA_COLUMNS[queue] ?? ["actions"]),
+        ...(RX_TABLE_QUEUE_EXTRA_COLUMNS[queue] ?? ["moreActions"]),
     ];
 }
 

@@ -29,6 +29,41 @@ import { RxItemsTableCell } from "./RxItemsTableCell";
 
 import { rxShouldShowReparse, rxUnmappedCount } from "../lib/rx.reparse";
 
+function formatOptionalDate(value?: string | null) {
+    return value ? formatDateTime(value) : "—";
+}
+
+function getFulfillmentTypeLabel(rx: RxListItemDto) {
+    const type = rx.fulfillment_type ?? rx.summary?.fulfillment_type ?? null;
+
+    if (type === "shipping") return "Versand";
+    if (type === "pickup") return "Abholung";
+
+    return "—";
+}
+
+function getIssueLabel(rx: RxListItemDto, unmappedCount: number) {
+    if (unmappedCount > 0) return `${unmappedCount} Artikel unmapped`;
+
+    if (rx.parse?.flags?.pricing_base_price_missing) {
+        return "Grundpreis fehlt";
+    }
+
+    if (rx.parse?.actions?.can_reparse) {
+        return "Prüfung erforderlich";
+    }
+
+    if (rx.parse_status === "failed") {
+        return "Parsing fehlgeschlagen";
+    }
+
+    if (rx.parse_status === "parsed_with_warnings") {
+        return "Warnungen vorhanden";
+    }
+
+    return "Klärung erforderlich";
+}
+
 export function RxListTable(props: {
     queue: RxQueue;
     items: RxListItemDto[];
@@ -100,12 +135,54 @@ export function RxListTable(props: {
                         )}
 
                         {hasRxTableColumn(columns, "status") && (
-                            <TableHead className="w-35">Status</TableHead>
+                            <TableHead className="w-42">Status</TableHead>
                         )}
 
-                        {hasRxTableColumn(columns, "actions") && (
-                            <TableHead className="w-45 text-right pe-3">
-                                Aktionen
+                        {hasRxTableColumn(columns, "offerCreatedAt") && (
+                            <TableHead className="w-42.5">
+                                Angebot erstellt
+                            </TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "paidAt") && (
+                            <TableHead className="w-42.5">Bezahlt am</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "fulfillmentType") && (
+                            <TableHead className="w-30">Fulfillment</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "preparedAt") && (
+                            <TableHead className="w-42.5">
+                                Vorbereitet am
+                            </TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "pickupReadyAt") && (
+                            <TableHead className="w-42.5">
+                                Abholbereit seit
+                            </TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "completedAt") && (
+                            <TableHead className="w-42.5">
+                                Abgeschlossen am
+                            </TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "issue") && (
+                            <TableHead className="w-48">Problem</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "primaryAction") && (
+                            <TableHead className="w-44 text-right">
+                                Nächster Schritt
+                            </TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "moreActions") && (
+                            <TableHead className="w-24 text-right pe-3">
+                                Mehr
                             </TableHead>
                         )}
                     </TableRow>
@@ -239,7 +316,7 @@ export function RxListTable(props: {
                                         "receivedAt",
                                     ) && (
                                         <TableCell className="whitespace-nowrap">
-                                            {formatDateTime(
+                                            {formatOptionalDate(
                                                 r.mail?.received_at,
                                             )}
                                         </TableCell>
@@ -309,7 +386,95 @@ export function RxListTable(props: {
                                         </TableCell>
                                     )}
 
-                                    {hasRxTableColumn(columns, "actions") && (
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "offerCreatedAt",
+                                    ) && (
+                                        <TableCell className="whitespace-nowrap">
+                                            {formatOptionalDate(
+                                                r.offer_created_at,
+                                            )}
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(columns, "paidAt") && (
+                                        <TableCell className="whitespace-nowrap">
+                                            {formatOptionalDate(r.paid_at)}
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "fulfillmentType",
+                                    ) && (
+                                        <TableCell>
+                                            {getFulfillmentTypeLabel(r)}
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "preparedAt",
+                                    ) && (
+                                        <TableCell className="whitespace-nowrap">
+                                            {formatOptionalDate(r.prepared_at)}
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "pickupReadyAt",
+                                    ) && (
+                                        <TableCell className="whitespace-nowrap">
+                                            {formatOptionalDate(
+                                                r.pickup_ready_at,
+                                            )}
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "completedAt",
+                                    ) && (
+                                        <TableCell className="whitespace-nowrap">
+                                            {formatOptionalDate(r.completed_at)}
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(columns, "issue") && (
+                                        <TableCell>
+                                            <div className="text-sm">
+                                                {getIssueLabel(
+                                                    r,
+                                                    unmappedCount,
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "primaryAction",
+                                    ) && (
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end">
+                                                <Button
+                                                    size="sm"
+                                                    disabled={
+                                                        Boolean(isLoading) ||
+                                                        isReparseBusy
+                                                    }
+                                                >
+                                                    TODO
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "moreActions",
+                                    ) && (
                                         <TableCell className="text-right pe-3">
                                             <div className="flex justify-end">
                                                 <RxRowActionsMenu
