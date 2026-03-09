@@ -17,6 +17,8 @@ import { RxListTableHeader } from "./RxListTableHeader";
 import { RxStatusCell } from "./RxStatusCell";
 import { RxPrimaryActionCell } from "./RxPrimaryActionCell";
 import { RxMoreActionsCell } from "./RxMoreActionsCell";
+import { RxPatientCell } from "./RxPatientCell";
+import { RxProviderCell } from "./RxProviderCell";
 
 export function RxListTable(props: {
     queue: RxQueue;
@@ -99,25 +101,11 @@ export function RxListTable(props: {
                                     )}
 
                                     {hasRxTableColumn(columns, "patient") && (
-                                        <TableCell>
-                                            <div className="font-medium">
-                                                {row.patientTitle}
-                                            </div>
-                                            <div className="max-w-60 truncate text-xs text-muted-foreground">
-                                                {row.patientSub}
-                                            </div>
-                                        </TableCell>
+                                        <RxPatientCell row={row} />
                                     )}
 
                                     {hasRxTableColumn(columns, "provider") && (
-                                        <TableCell>
-                                            <div className="max-w-50 truncate font-medium">
-                                                {row.providerTitle}
-                                            </div>
-                                            <div className="max-w-50 truncate text-xs text-muted-foreground">
-                                                {row.providerSub}
-                                            </div>
-                                        </TableCell>
+                                        <RxProviderCell row={row} />
                                     )}
 
                                     {hasRxTableColumn(columns, "items") && (
