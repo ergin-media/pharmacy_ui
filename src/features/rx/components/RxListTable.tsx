@@ -28,6 +28,7 @@ import { Loader2, RotateCcw } from "lucide-react";
 import { RxItemsTableCell } from "./RxItemsTableCell";
 
 import { rxShouldShowReparse, rxUnmappedCount } from "../lib/rx.reparse";
+import { getRxQueuePrimaryAction } from "../lib/rx.queue-actions";
 
 function formatOptionalDate(value?: string | null) {
     return value ? formatDateTime(value) : "—";
@@ -230,6 +231,9 @@ export function RxListTable(props: {
                             );
                             const patientSub =
                                 r.patient?.email ?? r.patient?.phone ?? "—";
+
+                            const primaryAction =
+                                getRxQueuePrimaryAction(queue);
 
                             return (
                                 <TableRow
@@ -457,17 +461,20 @@ export function RxListTable(props: {
                                         "primaryAction",
                                     ) && (
                                         <TableCell className="text-right">
-                                            <div className="flex justify-end">
-                                                <Button
-                                                    size="sm"
-                                                    disabled={
-                                                        Boolean(isLoading) ||
-                                                        isReparseBusy
-                                                    }
-                                                >
-                                                    TODO
-                                                </Button>
-                                            </div>
+                                            {primaryAction ? (
+                                                <div className="flex justify-end">
+                                                    <Button
+                                                        size="sm"
+                                                        disabled={
+                                                            Boolean(
+                                                                isLoading,
+                                                            ) || isReparseBusy
+                                                        }
+                                                    >
+                                                        {primaryAction.label}
+                                                    </Button>
+                                                </div>
+                                            ) : null}
                                         </TableCell>
                                     )}
 
