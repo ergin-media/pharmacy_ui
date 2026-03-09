@@ -3,6 +3,7 @@ import type { RxQueue } from "../lib/rx.queues";
 import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
 import { workflowLabel, paymentLabel, orderLabel } from "../lib/rx.labels";
 import { getPriceMeta } from "../lib/rx.summary";
+import { getRxTableColumns, hasRxTableColumn } from "../lib/rx.table-columns";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -58,6 +59,7 @@ export function RxListTable(props: {
         reparseBusyId,
     } = props;
 
+    const columns = getRxTableColumns(queue);
     const baseIndex = Math.max(0, (page - 1) * perPage);
 
     return (
@@ -65,21 +67,47 @@ export function RxListTable(props: {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-14 ps-3">#</TableHead>
-                        <TableHead className="w-65">Patient</TableHead>
-                        <TableHead className="w-55">Plattform</TableHead>
-                        <TableHead>Artikel</TableHead>
-                        <TableHead className="w-35 text-right">
-                            Gesamtmenge
-                        </TableHead>
-                        <TableHead className="w-40 text-right">
-                            Gesamtpreis
-                        </TableHead>
-                        <TableHead className="w-42.5">Eingang</TableHead>
-                        <TableHead className="w-35">Status</TableHead>
-                        <TableHead className="w-45 text-right pe-3">
-                            Aktionen
-                        </TableHead>
+                        {hasRxTableColumn(columns, "index") && (
+                            <TableHead className="w-14 ps-3">#</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "patient") && (
+                            <TableHead className="w-65">Patient</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "provider") && (
+                            <TableHead className="w-55">Plattform</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "items") && (
+                            <TableHead>Artikel</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "totalQty") && (
+                            <TableHead className="w-35 text-right">
+                                Gesamtmenge
+                            </TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "totalPrice") && (
+                            <TableHead className="w-40 text-right">
+                                Gesamtpreis
+                            </TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "receivedAt") && (
+                            <TableHead className="w-42.5">Eingang</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "status") && (
+                            <TableHead className="w-35">Status</TableHead>
+                        )}
+
+                        {hasRxTableColumn(columns, "actions") && (
+                            <TableHead className="w-45 text-right pe-3">
+                                Aktionen
+                            </TableHead>
+                        )}
                     </TableRow>
                 </TableHeader>
 
@@ -89,7 +117,7 @@ export function RxListTable(props: {
                     ) : items.length === 0 ? (
                         <TableRow>
                             <TableCell
-                                colSpan={9}
+                                colSpan={columns.length}
                                 className="text-muted-foreground"
                             >
                                 Keine Ergebnisse.
@@ -131,143 +159,178 @@ export function RxListTable(props: {
                                     key={r.id}
                                     className="hover:bg-muted/50"
                                 >
-                                    <TableCell className="ps-3 text-muted-foreground">
-                                        {`${rowNumber}.`}
-                                    </TableCell>
+                                    {hasRxTableColumn(columns, "index") && (
+                                        <TableCell className="ps-3 text-muted-foreground">
+                                            {`${rowNumber}.`}
+                                        </TableCell>
+                                    )}
 
-                                    <TableCell>
-                                        <div className="font-medium">
-                                            {patientTitle}
-                                        </div>
-                                        <div className="max-w-60 truncate text-xs text-muted-foreground">
-                                            {`ID: ${r.id} | ${patientSub}`}
-                                        </div>
-                                    </TableCell>
+                                    {hasRxTableColumn(columns, "patient") && (
+                                        <TableCell>
+                                            <div className="font-medium">
+                                                {patientTitle}
+                                            </div>
+                                            <div className="max-w-60 truncate text-xs text-muted-foreground">
+                                                {`ID: ${r.id} | ${patientSub}`}
+                                            </div>
+                                        </TableCell>
+                                    )}
 
-                                    <TableCell>
-                                        <div className="max-w-50 truncate font-medium">
-                                            {r.provider?.name ??
-                                                r.provider?.slug ??
-                                                "—"}
-                                        </div>
-                                        <div className="max-w-50 truncate text-xs text-muted-foreground">
-                                            {orderLabel(r.external_order_id)}
-                                        </div>
-                                    </TableCell>
-
-                                    <RxItemsTableCell
-                                        rx={r}
-                                        rxItems={r.items ?? []}
-                                        unmappedCount={unmappedCount}
-                                        priceMeta={priceMeta}
-                                    />
-
-                                    <TableCell className="text-right">
-                                        <div className="font-medium">
-                                            {formatQuantity(
-                                                totalQty,
-                                                totalUnit,
-                                            )}
-                                        </div>
-                                    </TableCell>
-
-                                    <TableCell className="text-right">
-                                        <div className="flex flex-col items-end">
-                                            <div
-                                                className={[
-                                                    "font-medium",
-                                                    priceMeta.isComplete
-                                                        ? ""
-                                                        : "text-muted-foreground opacity-50",
-                                                ].join(" ")}
-                                            >
-                                                {formatMoney(
-                                                    priceCents,
-                                                    currency,
+                                    {hasRxTableColumn(columns, "provider") && (
+                                        <TableCell>
+                                            <div className="max-w-50 truncate font-medium">
+                                                {r.provider?.name ??
+                                                    r.provider?.slug ??
+                                                    "—"}
+                                            </div>
+                                            <div className="max-w-50 truncate text-xs text-muted-foreground">
+                                                {orderLabel(
+                                                    r.external_order_id,
                                                 )}
                                             </div>
-                                        </div>
-                                    </TableCell>
+                                        </TableCell>
+                                    )}
 
-                                    <TableCell className="whitespace-nowrap">
-                                        {formatDateTime(r.mail?.received_at)}
-                                    </TableCell>
+                                    {hasRxTableColumn(columns, "items") && (
+                                        <RxItemsTableCell
+                                            rx={r}
+                                            rxItems={r.items ?? []}
+                                            unmappedCount={unmappedCount}
+                                            priceMeta={priceMeta}
+                                        />
+                                    )}
 
-                                    <TableCell>
-                                        <div className="flex flex-col gap-2">
-                                            <div className="flex flex-wrap gap-2">
-                                                <Badge
-                                                    variant={workflowBadgeVariant(
-                                                        r.workflow_status,
-                                                    )}
-                                                >
-                                                    {workflowLabel(
-                                                        r.workflow_status,
-                                                    )}
-                                                </Badge>
-
-                                                <Badge
-                                                    variant={paymentBadgeVariant(
-                                                        r.payment_state,
-                                                    )}
-                                                >
-                                                    {paymentLabel(
-                                                        r.payment_state,
-                                                    )}
-                                                </Badge>
+                                    {hasRxTableColumn(columns, "totalQty") && (
+                                        <TableCell className="text-right">
+                                            <div className="font-medium">
+                                                {formatQuantity(
+                                                    totalQty,
+                                                    totalUnit,
+                                                )}
                                             </div>
+                                        </TableCell>
+                                    )}
 
-                                            <div className="text-xs text-muted-foreground">
-                                                <span className="font-medium text-foreground">
-                                                    {
-                                                        r.parse_status as RxParseStatus
-                                                    }
-                                                </span>
-                                            </div>
-
-                                            {showReparse ? (
-                                                <div>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="h-7 px-2"
-                                                        onClick={() =>
-                                                            onReparse?.(rowId)
-                                                        }
-                                                        disabled={
-                                                            Boolean(
-                                                                isLoading,
-                                                            ) || isReparseBusy
-                                                        }
-                                                    >
-                                                        {isReparseBusy ? (
-                                                            <Loader2 className="mr-2 size-4 animate-spin" />
-                                                        ) : (
-                                                            <RotateCcw className="mr-2 size-4" />
-                                                        )}
-                                                        Reparse
-                                                    </Button>
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "totalPrice",
+                                    ) && (
+                                        <TableCell className="text-right">
+                                            <div className="flex flex-col items-end">
+                                                <div
+                                                    className={[
+                                                        "font-medium",
+                                                        priceMeta.isComplete
+                                                            ? ""
+                                                            : "text-muted-foreground opacity-50",
+                                                    ].join(" ")}
+                                                >
+                                                    {formatMoney(
+                                                        priceCents,
+                                                        currency,
+                                                    )}
                                                 </div>
-                                            ) : null}
-                                        </div>
-                                    </TableCell>
+                                            </div>
+                                        </TableCell>
+                                    )}
 
-                                    <TableCell className="text-right pe-3">
-                                        <div className="flex justify-end">
-                                            <RxRowActionsMenu
-                                                disabled={
-                                                    Boolean(isLoading) ||
-                                                    isReparseBusy
-                                                }
-                                                onOpen={() => onOpen?.(rowId)}
-                                                onPdf={() => onPdf?.(rowId)}
-                                                onMore={() => onMore?.(rowId)}
-                                                onCreateInvoice={() =>
-                                                    onCreateInvoice?.(rowId)
-                                                }
-                                            />
-                                        </div>
-                                    </TableCell>
+                                    {hasRxTableColumn(
+                                        columns,
+                                        "receivedAt",
+                                    ) && (
+                                        <TableCell className="whitespace-nowrap">
+                                            {formatDateTime(
+                                                r.mail?.received_at,
+                                            )}
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(columns, "status") && (
+                                        <TableCell>
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex flex-wrap gap-2">
+                                                    <Badge
+                                                        variant={workflowBadgeVariant(
+                                                            r.workflow_status,
+                                                        )}
+                                                    >
+                                                        {workflowLabel(
+                                                            r.workflow_status,
+                                                        )}
+                                                    </Badge>
+
+                                                    <Badge
+                                                        variant={paymentBadgeVariant(
+                                                            r.payment_state,
+                                                        )}
+                                                    >
+                                                        {paymentLabel(
+                                                            r.payment_state,
+                                                        )}
+                                                    </Badge>
+                                                </div>
+
+                                                <div className="text-xs text-muted-foreground">
+                                                    <span className="font-medium text-foreground">
+                                                        {
+                                                            r.parse_status as RxParseStatus
+                                                        }
+                                                    </span>
+                                                </div>
+
+                                                {showReparse ? (
+                                                    <div>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="h-7 px-2"
+                                                            onClick={() =>
+                                                                onReparse?.(
+                                                                    rowId,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                Boolean(
+                                                                    isLoading,
+                                                                ) ||
+                                                                isReparseBusy
+                                                            }
+                                                        >
+                                                            {isReparseBusy ? (
+                                                                <Loader2 className="mr-2 size-4 animate-spin" />
+                                                            ) : (
+                                                                <RotateCcw className="mr-2 size-4" />
+                                                            )}
+                                                            Reparse
+                                                        </Button>
+                                                    </div>
+                                                ) : null}
+                                            </div>
+                                        </TableCell>
+                                    )}
+
+                                    {hasRxTableColumn(columns, "actions") && (
+                                        <TableCell className="text-right pe-3">
+                                            <div className="flex justify-end">
+                                                <RxRowActionsMenu
+                                                    disabled={
+                                                        Boolean(isLoading) ||
+                                                        isReparseBusy
+                                                    }
+                                                    onOpen={() =>
+                                                        onOpen?.(rowId)
+                                                    }
+                                                    onPdf={() => onPdf?.(rowId)}
+                                                    onMore={() =>
+                                                        onMore?.(rowId)
+                                                    }
+                                                    onCreateInvoice={() =>
+                                                        onCreateInvoice?.(rowId)
+                                                    }
+                                                />
+                                            </div>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             );
                         })
