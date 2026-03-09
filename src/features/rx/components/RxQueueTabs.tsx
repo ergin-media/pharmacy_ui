@@ -15,6 +15,7 @@ import {
     type RxQueueCounts,
 } from "../lib/rx.queues";
 import { getTotalQueueCount } from "../lib/rx.helpers";
+import { Separator } from "@/components/ui/separator";
 
 export function RxQueueTabs(props: {
     value: RxQueue;
@@ -74,13 +75,18 @@ export function RxQueueTabs(props: {
                         if (count <= 99) return trigger;
 
                         return (
-                            <Tooltip key={item.value}>
-                                <TooltipTrigger>{trigger}</TooltipTrigger>
+                            <>
+                                <Tooltip key={item.value}>
+                                    <TooltipTrigger>{trigger}</TooltipTrigger>
 
-                                <TooltipContent side="right">
-                                    {formatInt(count)} Rezepte
-                                </TooltipContent>
-                            </Tooltip>
+                                    <TooltipContent side="right">
+                                        {formatInt(count)} Rezepte
+                                    </TooltipContent>
+                                </Tooltip>
+                                {item.value === "all" && (
+                                    <Separator className="my-1 opacity-60" />
+                                )}
+                            </>
                         );
                     })}
                 </TabsList>
