@@ -1,4 +1,6 @@
 import type { PatientDto } from "@/features/patients/types/patients.dto";
+import type { ProviderProductsProviderDto } from "@/features/provider-products/types/providers.dto";
+
 import type {
     Id,
     ISODateTime,
@@ -7,6 +9,7 @@ import type {
     FulfillmentType as DbFulfillmentType,
     RxUnit as DbRxUnit,
 } from "@/shared/types/db";
+
 import type { RxQueue } from "../lib/rx.queues";
 
 export type RxParseStatus = DbRxParseStatus;
@@ -19,6 +22,30 @@ export type RxWorkflowStatus =
     | "rejected";
 
 export type RxPaymentState = "unpaid" | "paid" | "refunded";
+
+/**
+ * Timeline der Rezeptbearbeitung
+ */
+export type RxTimelineDto = {
+    offer_created_at?: ISODateTime | null;
+    offer_sent_at?: ISODateTime | null;
+
+    paid_at?: ISODateTime | null;
+
+    prepared_at?: ISODateTime | null;
+    pickup_ready_at?: ISODateTime | null;
+
+    completed_at?: ISODateTime | null;
+    fulfilled_at?: ISODateTime | null;
+};
+
+/**
+ * Erweiterter Provider-Typ für Rx-Kontext
+ */
+export type RxProviderDto = ProviderProductsProviderDto & {
+    price_source?: string | null;
+    mapping_required?: boolean | null;
+};
 
 export type RxItem = {
     id: Id;
@@ -44,11 +71,7 @@ export type RxItem = {
 export interface RxListItemDto {
     id: Id;
 
-    provider: {
-        slug: string | null;
-        name: string | null;
-        price_source?: string | null;
-    };
+    provider: RxProviderDto | null;
 
     parse_status: RxParseStatus;
 
@@ -61,7 +84,9 @@ export interface RxListItemDto {
     rx_hash: Sha256;
 
     external_order_id?: string | null;
+
     fulfillment_type?: RxFulfillmentType | string | null;
+    fulfillment_status?: string | null;
 
     mail: {
         subject: string | null;
@@ -69,13 +94,13 @@ export interface RxListItemDto {
         received_at: ISODateTime | null;
     };
 
-    /**
-     * ✅ jetzt korrekt typisiert
-     */
     patient: PatientDto;
+
+    timeline?: RxTimelineDto | null;
 
     summary?: {
         items_count?: number | null;
+
         total_quantity?: number | null;
         total_unit?: string | null;
 
@@ -90,12 +115,15 @@ export interface RxListItemDto {
 
     parse?: {
         error?: string | null;
+
         warnings?: Array<{
             code: string;
             field?: string | null;
             message?: string | null;
         }> | null;
+
         flags?: Record<string, boolean> | null;
+
         actions?: {
             can_reparse?: boolean | null;
         } | null;
@@ -117,7 +145,9 @@ export interface RxListQueryParams {
     page?: number;
     per_page?: number;
 
-    // ✅ Backend-Queue
+    /**
+     * Backend Queue Filter
+     */
     queue?: RxQueue;
 
     parse_status?: RxParseStatus;
