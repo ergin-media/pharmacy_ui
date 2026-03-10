@@ -16,6 +16,7 @@ import {
     ALLOWED_STATUSES,
     DEFAULT_SORT,
     type RxSort,
+    DEFAULT_PER_PAGE,
 } from "../lib/rx.constants";
 import { RX_QUEUE_ORDER, type RxQueue } from "../lib/rx.queues";
 
@@ -48,7 +49,10 @@ export function useRxListPage() {
     const [sp, setSp] = useSearchParams();
 
     const page = Math.max(1, spGetInt(sp, "page", 1));
-    const perPage = Math.max(1, Math.min(100, spGetInt(sp, "per_page", 10)));
+    const perPage = Math.max(
+        1,
+        Math.min(100, spGetInt(sp, "per_page", DEFAULT_PER_PAGE)),
+    );
 
     const queue = normalizeQueue(spGetString(sp, "queue"));
 
@@ -110,6 +114,11 @@ export function useRxListPage() {
     function resetToAll() {
         const next = new URLSearchParams();
         spSetInt(next, "page", 1);
+
+        if (perPage !== DEFAULT_PER_PAGE) {
+            spSetInt(next, "per_page", perPage);
+        }
+
         setSp(next, { replace: true });
     }
 
