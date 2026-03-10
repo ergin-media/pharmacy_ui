@@ -109,12 +109,16 @@ export function mapRxListItemToRowVm(input: {
         rx.patient?.first_name,
         rx.patient?.last_name,
     );
+
     const patientSub = rx.patient?.email ?? rx.patient?.phone ?? "—";
 
     const providerTitle = rx.provider?.name ?? rx.provider?.slug ?? "—";
+
     const providerSub = rx.external_order_id
         ? String(rx.external_order_id)
         : "—";
+
+    const timeline = rx.timeline ?? undefined;
 
     return {
         id: rowId,
@@ -136,11 +140,16 @@ export function mapRxListItemToRowVm(input: {
         totalPriceDimmed: !priceMeta.isComplete,
 
         receivedAtLabel: formatOptionalDate(rx.mail?.received_at),
-        offerCreatedAtLabel: formatOptionalDate(rx.offer_created_at),
-        paidAtLabel: formatOptionalDate(rx.paid_at),
-        preparedAtLabel: formatOptionalDate(rx.prepared_at),
-        pickupReadyAtLabel: formatOptionalDate(rx.pickup_ready_at),
-        completedAtLabel: formatOptionalDate(rx.completed_at),
+
+        offerCreatedAtLabel: formatOptionalDate(timeline?.offer_created_at),
+
+        paidAtLabel: formatOptionalDate(timeline?.paid_at),
+
+        preparedAtLabel: formatOptionalDate(timeline?.prepared_at),
+
+        pickupReadyAtLabel: formatOptionalDate(timeline?.pickup_ready_at),
+
+        completedAtLabel: formatOptionalDate(timeline?.completed_at),
 
         fulfillmentTypeLabel: getFulfillmentTypeLabel(rx),
         issueLabel: getIssueLabel(rx, unmappedCount),
