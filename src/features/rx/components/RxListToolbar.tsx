@@ -16,6 +16,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Pagination } from "@/components/ui/pagination";
 
 export function RxListToolbar(props: {
     total: number;
@@ -33,6 +34,7 @@ export function RxListToolbar(props: {
 
     isFetching: boolean;
 
+    onPageChange: (page: number) => void;
     onParseStatusChange: (v: string) => void;
     onWorkflowStatusChange: (v: string) => void;
     onPaymentStateChange: (v: string) => void;
@@ -50,6 +52,7 @@ export function RxListToolbar(props: {
         searchRaw,
         perPage,
         isFetching,
+        onPageChange,
         onProviderChange,
         onSearchChange,
         onPerPageChange,
@@ -73,6 +76,7 @@ export function RxListToolbar(props: {
                 placeholder="Suche (Patient, Bestell-ID)"
                 className="w-80 flex-1"
                 onChange={(e) => onSearchChange(e.target.value)}
+                disabled={disableControls}
             />
 
             <Separator orientation="vertical" className="h-4" />
@@ -95,92 +99,6 @@ export function RxListToolbar(props: {
                 </SelectContent>
             </Select>
 
-            {/*
-            <Separator orientation="vertical" className="h-4" />
-
-            <Select
-                value={parseStatus ?? "all"}
-                onValueChange={onParseStatusChange}
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-55">
-                    <SelectValue placeholder="Parse-Status" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Alle Parse-Status</SelectItem>
-                    <SelectItem value="pending">pending</SelectItem>
-                    <SelectItem value="parsed">parsed</SelectItem>
-                    <SelectItem value="failed">failed</SelectItem>
-                    <SelectItem value="parsed_with_warnings">
-                        parsed_with_warnings
-                    </SelectItem>
-                </SelectContent>
-            </Select>
-            */}
-
-            {/*
-            <Select
-                value={workflowStatus ?? "all"}
-                onValueChange={(v) =>
-                    onWorkflowStatusChange(v === "all" ? "" : v)
-                }
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-55">
-                    <SelectValue placeholder="Workflow" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Alle Workflows</SelectItem>
-                    {WORKFLOW_OPTIONS.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                            {o.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            */}
-
-            {/*
-            <Select
-                value={paymentState ?? "all"}
-                onValueChange={(v) =>
-                    onPaymentStateChange(v === "all" ? "" : v)
-                }
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-55">
-                    <SelectValue placeholder="Payment" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Alle Payments</SelectItem>
-                    {PAYMENT_OPTIONS.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                            {o.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            */}
-
-            {/*
-            <Select
-                value={sort}
-                onValueChange={onSortChange}
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-56">
-                    <SelectValue placeholder="Sortierung" />
-                </SelectTrigger>
-                <SelectContent>
-                    {SORT_OPTIONS.map((s) => (
-                        <SelectItem key={s.value} value={s.value}>
-                            {s.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            */}
-
             <div className="ml-auto flex items-center gap-4">
                 <Separator orientation="vertical" className="h-4" />
                 <Select
@@ -201,24 +119,14 @@ export function RxListToolbar(props: {
                 </Select>
 
                 <Separator orientation="vertical" className="h-4" />
-                <div className="whitespace-nowrap text-sm text-muted-foreground">
-                    Seite{" "}
-                    <span className="font-medium text-foreground">{page}</span>{" "}
-                    von{" "}
-                    <span className="font-medium text-foreground">
-                        {totalPages}
-                    </span>
-                </div>
 
-                {/*
-                <Button
-                    variant="outline"
-                    onClick={onRefresh}
-                    disabled={disableControls}
-                >
-                    Aktualisieren
-                </Button>
-                */}
+                <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                    isLoading={isFetching}
+                    showStatus={true}
+                />
             </div>
         </div>
     );

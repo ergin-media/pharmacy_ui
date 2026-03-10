@@ -160,7 +160,7 @@ export function useRxListPage() {
     const reparseMutation = useReparseRxMutation();
     const reparseBusyId =
         reparseMutation.isPending &&
-        typeof reparseMutation.variables === "number"
+            typeof reparseMutation.variables === "number"
             ? reparseMutation.variables
             : null;
 
@@ -261,6 +261,7 @@ export function useRxListPage() {
         onSearchChange: actions.setSearch,
         onSortChange: actions.setSort,
         onPerPageChange: actions.setPerPage,
+        onPageChange: actions.setPage,
         onRefresh: actions.refresh,
     };
 

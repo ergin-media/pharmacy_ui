@@ -7,7 +7,6 @@ import { TypographyP } from "@/components/ui/typography";
 
 import { RxListTable } from "./RxListTable";
 import { RxQueueTabs } from "./RxQueueTabs";
-import { RxListHeaderBar } from "./RxListHeaderBar";
 import type {
     RxListVm,
     RxQueueVm,
@@ -15,6 +14,7 @@ import type {
     RxTableVm,
     RxToolbarVm,
 } from "../types/rx.list.vm";
+import { RxListToolbar } from "./RxListToolbar";
 
 export function RxListPageContent(props: {
     queueVm: RxQueueVm;
@@ -58,12 +58,11 @@ export function RxListPageContent(props: {
                         </div>
                     ) : null}
 
-                    <RxListHeaderBar
+                    <RxListToolbar
+                        {...toolbarVm}
                         page={listVm.page}
                         totalPages={listVm.totalPages}
-                        isFetching={listVm.isFetching}
                         onPageChange={listVm.setPage}
-                        toolbarProps={toolbarVm}
                     />
 
                     <RxListTable

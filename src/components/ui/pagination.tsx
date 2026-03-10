@@ -32,12 +32,9 @@ export function Pagination(props: {
             ].join(" ")}
         >
             {showStatus ? (
-                <div className="text-sm text-muted-foreground">
-                    Seite{" "}
-                    <span className="font-medium text-foreground">
-                        {safePage}
-                    </span>{" "}
-                    / {safeTotalPages}
+                <div className="flex gap-1 font-medium text-foreground text-sm">
+                    <span className="text-muted-foreground">Seite</span>
+                    <span>{safePage}</span><span>/</span><span>{safeTotalPages}</span>
                 </div>
             ) : null}
 
