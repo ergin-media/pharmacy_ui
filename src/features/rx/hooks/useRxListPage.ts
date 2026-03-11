@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 
-import { useReparseRxMutation, useRxListQuery } from "../queries/rx.queries";
+import {
+    useReparseRxMutation,
+    useRxListQuery,
+    useTakeOverRxMutation,
+} from "../queries/rx.queries";
 import type {
     RxParseStatus,
     RxWorkflowStatus,
@@ -27,6 +31,7 @@ import {
     spSetOrDelete,
 } from "@/shared/lib/url/searchParams";
 import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
+import { getRxQueuePrimaryAction } from "../lib/rx.queue-actions";
 
 function normalizeQueue(v: string | null): RxQueue | undefined {
     const s = (v ?? "").trim() as RxQueue;
@@ -160,7 +165,7 @@ export function useRxListPage() {
     const reparseMutation = useReparseRxMutation();
     const reparseBusyId =
         reparseMutation.isPending &&
-            typeof reparseMutation.variables === "number"
+        typeof reparseMutation.variables === "number"
             ? reparseMutation.variables
             : null;
 
@@ -172,6 +177,8 @@ export function useRxListPage() {
 
     const items = query.data?.items ?? [];
     const queueCounts: RxQueueCounts = query.data?.queue_counts ?? {};
+
+    const takeOverMutation = useTakeOverRxMutation();
 
     const actions = {
         setQueue: (value: RxQueue) => {
@@ -234,6 +241,19 @@ export function useRxListPage() {
         reparse: async (id: number) => {
             await reparseMutation.mutateAsync(id);
         },
+
+        handlePrimaryAction: async (id: number) => {
+            const action = getRxQueuePrimaryAction((queue ?? "all") as RxQueue);
+
+            if (!action) return;
+
+            if (action.key === "take_over") {
+                await takeOverMutation.mutateAsync(id);
+                return;
+            }
+
+            console.warn("Unhandled primary action:", action.key);
+        },
     };
 
     const queueVm = {
@@ -285,6 +305,7 @@ export function useRxListPage() {
         isLoading: query.isFetching,
         reparseBusyId,
         onReparse: actions.reparse,
+        onPrimaryAction: actions.handlePrimaryAction,
     };
 
     return {

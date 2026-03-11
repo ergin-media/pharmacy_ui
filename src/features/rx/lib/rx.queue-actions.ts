@@ -1,6 +1,16 @@
 import type { RxQueue } from "./rx.queues";
 
+export type RxQueuePrimaryActionKey =
+    | "take_over"
+    | "create_offer"
+    | "confirm_payment"
+    | "start_packaging"
+    | "finish_packaging"
+    | "mark_shipped"
+    | "mark_picked_up";
+
 export type RxQueuePrimaryActionConfig = {
+    key: RxQueuePrimaryActionKey;
     label: string;
 };
 
@@ -8,24 +18,31 @@ export const RX_QUEUE_PRIMARY_ACTIONS: Partial<
     Record<RxQueue, RxQueuePrimaryActionConfig>
 > = {
     inbox: {
+        key: "take_over",
         label: "Übernehmen",
     },
     offer_create: {
+        key: "create_offer",
         label: "Angebot erstellen",
     },
     await_payment: {
+        key: "confirm_payment",
         label: "Zahlung bestätigen",
     },
     paid_not_started: {
+        key: "start_packaging",
         label: "In Vorbereitung",
     },
     packaging: {
+        key: "finish_packaging",
         label: "Fertig vorbereitet",
     },
     shipping: {
+        key: "mark_shipped",
         label: "Als versendet markieren",
     },
     pickup: {
+        key: "mark_picked_up",
         label: "Als abgeholt markieren",
     },
 };

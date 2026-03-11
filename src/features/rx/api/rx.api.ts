@@ -22,3 +22,18 @@ export async function reparseRx(id: number) {
 
     return res.data;
 }
+
+export async function takeOverRx(id: number) {
+    const res = await fetch(`/api/rx/${id}/take-over`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error("Rezept konnte nicht übernommen werden.");
+    }
+
+    return res.json();
+}

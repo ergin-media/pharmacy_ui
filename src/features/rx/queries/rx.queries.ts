@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { RxListQueryParams } from "../types/rx.dto";
-import { fetchRxList, reparseRx } from "../api/rx.api";
+import type { RxItem, RxListItemDto, RxListQueryParams } from "../types/rx.dto";
+import { fetchRxList, reparseRx, takeOverRx } from "../api/rx.api";
 
 export const rxKeys = {
     all: ["rx"] as const,
@@ -48,17 +48,28 @@ export function useReparseRxMutation() {
             // 🔥 Alle Rx-Listen patchen
             qc.setQueriesData(
                 { queryKey: rxKeys.all },
-                (old: any) => {
+                (old: RxListItemDto) => {
                     if (!old?.items) return old;
 
                     return {
                         ...old,
-                        items: old.items.map((i: any) =>
-                            i.id === updatedItem.id ? updatedItem : i
+                        items: old.items.map((i: RxItem) =>
+                            i.id === updatedItem.id ? updatedItem : i,
                         ),
                     };
-                }
+                },
             );
+        },
+    });
+}
+
+export function useTakeOverRxMutation() {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) => takeOverRx(id),
+        onSuccess: async () => {
+            await qc.invalidateQueries({ queryKey: rxKeys.lists() });
         },
     });
 }

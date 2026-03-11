@@ -77,6 +77,7 @@ export function RxListPageContent(props: {
                         isLoading={tableVm.isLoading}
                         onReparse={tableVm.onReparse}
                         reparseBusyId={tableVm.reparseBusyId}
+                        onPrimaryAction={tableVm.onPrimaryAction}
                     />
 
                     <Pagination
