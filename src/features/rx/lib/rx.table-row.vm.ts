@@ -4,7 +4,7 @@ import { getPriceMeta } from "./rx.summary";
 import { rxShouldShowReparse, rxUnmappedCount } from "./rx.reparse";
 import { getRxQueuePrimaryAction } from "./rx.queue-actions";
 
-import { formatDateTime } from "@/shared/lib/format/date";
+import { formatDateTime, formatDate } from "@/shared/lib/format/date";
 import { formatMoney } from "@/shared/lib/format/money";
 import { formatPersonName } from "@/shared/lib/format/person";
 import { formatQuantity } from "@/shared/lib/format/quantity";
@@ -44,13 +44,41 @@ function getIssueLabel(rx: RxListItemDto, unmappedCount: number) {
     return "Klärung erforderlich";
 }
 
+function getPatientStreet(rx: RxListItemDto) {
+    return rx.patient?.street ?? null;
+}
+
+function getPatientCityLine(rx: RxListItemDto) {
+    const p = rx.patient;
+
+    const cityLine = [p?.zip, p?.city].filter(Boolean).join(" ");
+
+    return cityLine || null;
+}
+
+function getPatientEmail(rx: RxListItemDto) {
+    return rx.patient?.email ? `E-Mail: ${rx.patient?.email}` : null;
+}
+
+function getPatientMetaItems(rx: RxListItemDto) {
+    const p = rx.patient;
+
+    return [
+        p?.birthdate ? `Geb.: ${formatDate(p.birthdate)}` : null,
+        `ID: ${rx.id}`,
+    ].filter(Boolean) as string[];
+}
+
 export type RxTableRowVm = {
     id: number;
     queue: RxQueue;
     rowNumber: number;
 
     patientTitle: string;
-    patientSub: string;
+    patientStreet: string | null;
+    patientCityLine: string | null;
+    patientEmail: string | null;
+    patientMetaItems: string[];
 
     providerTitle: string;
     providerSub: string;
@@ -110,8 +138,6 @@ export function mapRxListItemToRowVm(input: {
         rx.patient?.last_name,
     );
 
-    const patientSub = rx.patient?.email ?? rx.patient?.phone ?? "—";
-
     const providerTitle = rx.provider?.name ?? rx.provider?.slug ?? "—";
 
     const providerSub = rx.external_order_id
@@ -126,7 +152,10 @@ export function mapRxListItemToRowVm(input: {
         rowNumber,
 
         patientTitle,
-        patientSub: `ID: ${rx.id} | ${patientSub}`,
+        patientStreet: getPatientStreet(rx),
+        patientCityLine: getPatientCityLine(rx),
+        patientEmail: getPatientEmail(rx),
+        patientMetaItems: getPatientMetaItems(rx),
 
         providerTitle,
         providerSub,
@@ -140,15 +169,10 @@ export function mapRxListItemToRowVm(input: {
         totalPriceDimmed: !priceMeta.isComplete,
 
         receivedAtLabel: formatOptionalDate(rx.mail?.received_at),
-
         offerCreatedAtLabel: formatOptionalDate(timeline?.offer_created_at),
-
         paidAtLabel: formatOptionalDate(timeline?.paid_at),
-
         preparedAtLabel: formatOptionalDate(timeline?.prepared_at),
-
         pickupReadyAtLabel: formatOptionalDate(timeline?.pickup_ready_at),
-
         completedAtLabel: formatOptionalDate(timeline?.completed_at),
 
         fulfillmentTypeLabel: getFulfillmentTypeLabel(rx),
