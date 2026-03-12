@@ -7,6 +7,7 @@ import {
 import { AppBreadcrumb } from "./AppBreadcrumb";
 import { Outlet } from "react-router";
 import { AppSidebar } from "./AppSidebar";
+import { Toaster } from "sonner";
 
 export function AppShell() {
     return (
@@ -30,6 +31,13 @@ export function AppShell() {
                     <Outlet />
                 </main>
             </SidebarInset>
+
+            <Toaster
+                position="top-right"
+                richColors
+                expand
+                closeButton
+            />
         </SidebarProvider>
     );
 }
