@@ -55,7 +55,9 @@ export function useRxListPage() {
         onSortChange: filtersVm.actions.setSort,
         onPerPageChange: filtersVm.actions.setPerPage,
         onPageChange: filtersVm.actions.setPage,
-        onRefresh: () => dataVm.query.refetch(),
+        onRefresh: () => {
+            void dataVm.query.refetch();
+        },
     };
 
     const listVm = {
@@ -67,7 +69,9 @@ export function useRxListPage() {
         isError: dataVm.query.isError,
         error: dataVm.query.isError ? dataVm.query.error : null,
         setPage: filtersVm.actions.setPage,
-        refresh: () => dataVm.query.refetch(),
+        refresh: () => {
+            void dataVm.query.refetch();
+        },
     };
 
     const tableVm = {
@@ -79,7 +83,8 @@ export function useRxListPage() {
         onReparse: mutationsVm.reparse.run,
         isReparseBusy: mutationsVm.reparse.isBusy,
         onPrimaryAction: primaryActionVm.handlePrimaryAction,
-        isPrimaryActionBusy: primaryActionVm.isPrimaryActionBusy,
+        isPrimaryActionPending: mutationsVm.primaryActionState.isPending,
+        activePrimaryActionId: mutationsVm.primaryActionState.activeId,
     };
 
     return {

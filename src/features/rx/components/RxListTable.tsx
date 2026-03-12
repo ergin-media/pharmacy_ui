@@ -37,7 +37,8 @@ export function RxListTable(props: {
     isReparseBusy?: (id: number) => boolean;
 
     onPrimaryAction?: (id: number) => void;
-    isPrimaryActionBusy?: (id: number) => boolean;
+    isPrimaryActionPending?: boolean;
+    activePrimaryActionId?: number | null;
 }) {
     const {
         queue,
@@ -52,13 +53,19 @@ export function RxListTable(props: {
         onReparse,
         isReparseBusy,
         onPrimaryAction,
-        isPrimaryActionBusy,
+        isPrimaryActionPending,
+        activePrimaryActionId,
     } = props;
 
     const columns = getRxTableColumns(queue);
 
     return (
-        <div className="overflow-x-auto rounded-md border">
+        <div
+            className={[
+                "overflow-x-auto rounded-md border transition-opacity",
+                isPrimaryActionPending ? "pointer-events-none opacity-80" : "",
+            ].join(" ")}
+        >
             <Table>
                 <TableHeader>
                     <RxListTableHeader columns={columns} />
@@ -90,12 +97,13 @@ export function RxListTable(props: {
                                 isReparseBusy?.(row.id) ?? false;
 
                             const rowIsPrimaryActionBusy =
-                                isPrimaryActionBusy?.(row.id) ?? false;
+                                activePrimaryActionId != null &&
+                                activePrimaryActionId === row.id;
 
                             const isBusy =
                                 Boolean(isLoading) ||
                                 rowIsReparseBusy ||
-                                rowIsPrimaryActionBusy;
+                                Boolean(isPrimaryActionPending);
 
                             return (
                                 <TableRow

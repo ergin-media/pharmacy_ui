@@ -78,7 +78,8 @@ export function RxListPageContent(props: {
                         onReparse={tableVm.onReparse}
                         isReparseBusy={tableVm.isReparseBusy}
                         onPrimaryAction={tableVm.onPrimaryAction}
-                        isPrimaryActionBusy={tableVm.isPrimaryActionBusy}
+                        isPrimaryActionPending={tableVm.isPrimaryActionPending}
+                        activePrimaryActionId={tableVm.activePrimaryActionId}
                     />
 
                     <Pagination

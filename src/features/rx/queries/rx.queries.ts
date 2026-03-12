@@ -1,21 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { RxItem, RxListItemDto, RxListQueryParams } from "../types/rx.dto";
+import type {
+    RxListItemDto,
+    RxListQueryParams,
+    RxListResponseDto,
+} from "../types/rx.dto";
 import { fetchRxList, reparseRx, takeOverRx } from "../api/rx.api";
 
 export const rxKeys = {
     all: ["rx"] as const,
     lists: () => [...rxKeys.all, "list"] as const,
-
-    // stabiler Key: nur primitive Werte (als Objekt ist ok, solange nur primitive Werte drin sind)
     list: (p: RxListQueryParams) =>
         [
             ...rxKeys.lists(),
             {
                 page: p.page ?? 1,
                 per_page: p.per_page ?? 25,
-
                 queue: p.queue ?? "",
-
                 parse_status: p.parse_status ?? "",
                 provider: p.provider ?? "",
                 workflow_status: p.workflow_status ?? "",
@@ -24,14 +24,17 @@ export const rxKeys = {
                 sort: p.sort ?? "created_at_desc",
             },
         ] as const,
+
+    mutations: {
+        reparse: () => [...rxKeys.all, "mutation", "reparse"] as const,
+        takeOver: () => [...rxKeys.all, "mutation", "take-over"] as const,
+    },
 };
 
 export function useRxListQuery(params: RxListQueryParams) {
     return useQuery({
         queryKey: rxKeys.list(params),
         queryFn: () => fetchRxList(params),
-
-        // React Query v5: damit bleibt die vorherige Seite sichtbar beim Page-Wechsel
         placeholderData: (previousData) => previousData,
     });
 }
@@ -40,20 +43,19 @@ export function useReparseRxMutation() {
     const qc = useQueryClient();
 
     return useMutation({
+        mutationKey: rxKeys.mutations.reparse(),
         mutationFn: reparseRx,
-
         onSuccess: (data) => {
             const updatedItem = data.item;
 
-            // 🔥 Alle Rx-Listen patchen
             qc.setQueriesData(
-                { queryKey: rxKeys.all },
-                (old: RxListItemDto) => {
+                { queryKey: rxKeys.lists() },
+                (old: RxListResponseDto | undefined) => {
                     if (!old?.items) return old;
 
                     return {
                         ...old,
-                        items: old.items.map((i: RxItem) =>
+                        items: old.items.map((i: RxListItemDto) =>
                             i.id === updatedItem.id ? updatedItem : i,
                         ),
                     };
@@ -67,7 +69,8 @@ export function useTakeOverRxMutation() {
     const qc = useQueryClient();
 
     return useMutation({
-        mutationFn: (id: number) => takeOverRx(id),
+        mutationKey: rxKeys.mutations.takeOver(),
+        mutationFn: takeOverRx,
         onSuccess: async () => {
             await qc.invalidateQueries({ queryKey: rxKeys.lists() });
         },

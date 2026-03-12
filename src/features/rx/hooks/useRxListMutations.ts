@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
     useReparseRxMutation,
     useTakeOverRxMutation,
@@ -7,25 +9,11 @@ import type {
     RxPrimaryActionControllers,
 } from "../lib/rx.queue-actions";
 
-function createMutationController(mutation: {
-    mutateAsync: (id: number) => Promise<unknown>;
-    isPending: boolean;
-    variables?: unknown;
-}): RxActionController {
-    return {
-        run: async (id: number) => {
-            await mutation.mutateAsync(id);
-        },
-        isBusy: (id: number) => mutation.isPending && mutation.variables === id,
-    };
-}
-
 function createNoopController(label: string): RxActionController {
     return {
         run: async (id: number) => {
             console.warn(`${label} not implemented yet`, id);
         },
-        isBusy: () => false,
     };
 }
 
@@ -37,18 +25,46 @@ export function useRxListMutations(input?: {
     const reparseMutation = useReparseRxMutation();
     const takeOverMutation = useTakeOverRxMutation();
 
-    const reparse = createMutationController(reparseMutation);
-    const inbox = createMutationController(takeOverMutation);
+    const [activePrimaryActionId, setActivePrimaryActionId] = useState<
+        number | null
+    >(null);
+
+    const reparse = {
+        run: async (id: number) => {
+            await reparseMutation.mutateAsync(id);
+        },
+        isBusy: (id: number) =>
+            reparseMutation.isPending &&
+            typeof reparseMutation.variables === "number" &&
+            reparseMutation.variables === id,
+    };
+
+    const takeOver: RxActionController = {
+        run: async (id: number) => {
+            setActivePrimaryActionId(id);
+
+            try {
+                await takeOverMutation.mutateAsync(id);
+            } finally {
+                setActivePrimaryActionId(null);
+            }
+        },
+    };
 
     const offerCreate: RxActionController = {
-        run: (id: number) => {
-            openOfferCreate?.(id);
+        run: async (id: number) => {
+            setActivePrimaryActionId(id);
+
+            try {
+                openOfferCreate?.(id);
+            } finally {
+                setActivePrimaryActionId(null);
+            }
         },
-        isBusy: () => false,
     };
 
     const primary: RxPrimaryActionControllers = {
-        inbox,
+        inbox: takeOver,
         offer_create: offerCreate,
         await_payment: createNoopController("confirmPayment"),
         paid_not_started: createNoopController("startPackaging"),
@@ -60,5 +76,9 @@ export function useRxListMutations(input?: {
     return {
         reparse,
         primary,
+        primaryActionState: {
+            isPending: activePrimaryActionId !== null,
+            activeId: activePrimaryActionId,
+        },
     };
 }

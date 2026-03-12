@@ -6,7 +6,6 @@ export type RxQueuePrimaryActionConfig = {
 
 export type RxActionController = {
     run: (id: number) => Promise<void> | void;
-    isBusy: (id: number) => boolean;
 };
 
 export type RxPrimaryActionControllers = Partial<
