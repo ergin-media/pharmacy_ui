@@ -50,14 +50,12 @@ function getPatientStreet(rx: RxListItemDto) {
 
 function getPatientCityLine(rx: RxListItemDto) {
     const p = rx.patient;
-
     const cityLine = [p?.zip, p?.city].filter(Boolean).join(" ");
-
     return cityLine || null;
 }
 
 function getPatientEmail(rx: RxListItemDto) {
-    return rx.patient?.email ? `E-Mail: ${rx.patient?.email}` : null;
+    return rx.patient?.email ? `E-Mail: ${rx.patient.email}` : null;
 }
 
 function getPatientMetaItems(rx: RxListItemDto) {
@@ -139,12 +137,12 @@ export function mapRxListItemToRowVm(input: {
     );
 
     const providerTitle = rx.provider?.name ?? rx.provider?.slug ?? "—";
-
     const providerSub = rx.external_order_id
         ? String(rx.external_order_id)
         : "—";
 
     const timeline = rx.timeline ?? undefined;
+    const primaryAction = getRxQueuePrimaryAction(queue);
 
     return {
         id: rowId,
@@ -183,6 +181,6 @@ export function mapRxListItemToRowVm(input: {
         parseStatus: rx.parse_status as RxParseStatus,
 
         showReparse,
-        primaryActionLabel: getRxQueuePrimaryAction(queue)?.label ?? null,
+        primaryActionLabel: primaryAction?.label ?? null,
     };
 }

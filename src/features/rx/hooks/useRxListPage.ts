@@ -6,6 +6,7 @@ import { useRxPanels } from "./useRxPanels";
 
 export function useRxListPage() {
     const filtersVm = useRxListFilters();
+    const panels = useRxPanels();
 
     const dataVm = useRxListData({
         page: filtersVm.filters.page,
@@ -19,35 +20,13 @@ export function useRxListPage() {
         sort: filtersVm.filters.sort,
     });
 
-    const mutationsVm = useRxListMutations();
-    const panels = useRxPanels();
+    const mutationsVm = useRxListMutations({
+        openOfferCreate: panels.offerCreate.open,
+    });
 
     const primaryActionVm = useRxPrimaryAction({
         queue: filtersVm.filters.queue,
-        actions: {
-            takeOver: mutationsVm.actions.takeOver,
-            openOfferCreate: panels.offerCreate.open,
-
-            confirmPayment: async (id: number) => {
-                console.warn("confirmPayment not implemented yet", id);
-            },
-
-            startPackaging: async (id: number) => {
-                console.warn("startPackaging not implemented yet", id);
-            },
-
-            finishPackaging: async (id: number) => {
-                console.warn("finishPackaging not implemented yet", id);
-            },
-
-            markShipped: async (id: number) => {
-                console.warn("markShipped not implemented yet", id);
-            },
-
-            markPickedUp: async (id: number) => {
-                console.warn("markPickedUp not implemented yet", id);
-            },
-        },
+        controllers: mutationsVm.primary,
     });
 
     const queueVm = {
@@ -97,10 +76,10 @@ export function useRxListPage() {
         page: filtersVm.filters.page,
         perPage: filtersVm.filters.perPage,
         isLoading: dataVm.query.isFetching,
-        reparseBusyId: mutationsVm.busy.reparseBusyId,
-        takeOverBusyId: mutationsVm.busy.takeOverBusyId,
-        onReparse: mutationsVm.actions.reparse,
+        onReparse: mutationsVm.reparse.run,
+        isReparseBusy: mutationsVm.reparse.isBusy,
         onPrimaryAction: primaryActionVm.handlePrimaryAction,
+        isPrimaryActionBusy: primaryActionVm.isPrimaryActionBusy,
     };
 
     return {

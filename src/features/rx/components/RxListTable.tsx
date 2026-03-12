@@ -34,8 +34,10 @@ export function RxListTable(props: {
     onCreateInvoice?: (id: number) => void;
 
     onReparse?: (id: number) => void;
-    reparseBusyId?: number | null;
+    isReparseBusy?: (id: number) => boolean;
+
     onPrimaryAction?: (id: number) => void;
+    isPrimaryActionBusy?: (id: number) => boolean;
 }) {
     const {
         queue,
@@ -48,8 +50,9 @@ export function RxListTable(props: {
         onMore,
         onCreateInvoice,
         onReparse,
-        reparseBusyId,
+        isReparseBusy,
         onPrimaryAction,
+        isPrimaryActionBusy,
     } = props;
 
     const columns = getRxTableColumns(queue);
@@ -83,11 +86,16 @@ export function RxListTable(props: {
                                 perPage,
                             });
 
-                            const isReparseBusy =
-                                reparseBusyId != null &&
-                                Number(reparseBusyId) === row.id;
+                            const rowIsReparseBusy =
+                                isReparseBusy?.(row.id) ?? false;
 
-                            const isBusy = Boolean(isLoading) || isReparseBusy;
+                            const rowIsPrimaryActionBusy =
+                                isPrimaryActionBusy?.(row.id) ?? false;
+
+                            const isBusy =
+                                Boolean(isLoading) ||
+                                rowIsReparseBusy ||
+                                rowIsPrimaryActionBusy;
 
                             return (
                                 <TableRow
@@ -158,7 +166,7 @@ export function RxListTable(props: {
                                         <RxStatusCell
                                             row={row}
                                             disabled={isBusy}
-                                            isReparseBusy={isReparseBusy}
+                                            isReparseBusy={rowIsReparseBusy}
                                             onReparse={onReparse}
                                         />
                                     )}
@@ -229,6 +237,7 @@ export function RxListTable(props: {
                                         <RxPrimaryActionCell
                                             row={row}
                                             disabled={isBusy}
+                                            isLoading={rowIsPrimaryActionBusy}
                                             onClick={onPrimaryAction}
                                         />
                                     )}

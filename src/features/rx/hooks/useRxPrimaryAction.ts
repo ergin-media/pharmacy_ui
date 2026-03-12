@@ -1,55 +1,35 @@
 import type { RxQueue } from "../lib/rx.queues";
-import {
-    getRxQueuePrimaryAction,
-    type RxPrimaryActionHandlers,
+import type {
+    RxActionController,
+    RxPrimaryActionControllers,
 } from "../lib/rx.queue-actions";
+
+function getPrimaryActionController(
+    queue: RxQueue,
+    controllers: RxPrimaryActionControllers,
+): RxActionController | null {
+    return controllers[queue] ?? null;
+}
 
 export function useRxPrimaryAction(input: {
     queue: RxQueue;
-    actions: RxPrimaryActionHandlers;
+    controllers: RxPrimaryActionControllers;
 }) {
-    const { queue, actions } = input;
+    const { queue, controllers } = input;
+
+    const controller = getPrimaryActionController(queue, controllers);
 
     const handlePrimaryAction = async (id: number) => {
-        const action = getRxQueuePrimaryAction(queue);
+        if (!controller) return;
+        await controller.run(id);
+    };
 
-        if (!action) return;
-
-        switch (action.key) {
-            case "take_over":
-                await actions.takeOver(id);
-                return;
-
-            case "create_offer":
-                actions.openOfferCreate(id);
-                return;
-
-            case "confirm_payment":
-                await actions.confirmPayment?.(id);
-                return;
-
-            case "start_packaging":
-                await actions.startPackaging?.(id);
-                return;
-
-            case "finish_packaging":
-                await actions.finishPackaging?.(id);
-                return;
-
-            case "mark_shipped":
-                await actions.markShipped?.(id);
-                return;
-
-            case "mark_picked_up":
-                await actions.markPickedUp?.(id);
-                return;
-
-            default:
-                console.warn("Unhandled primary action:", action.key);
-        }
+    const isPrimaryActionBusy = (id: number) => {
+        return controller?.isBusy(id) ?? false;
     };
 
     return {
         handlePrimaryAction,
+        isPrimaryActionBusy,
     };
 }

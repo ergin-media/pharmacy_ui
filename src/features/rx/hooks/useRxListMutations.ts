@@ -2,42 +2,66 @@ import {
     useReparseRxMutation,
     useTakeOverRxMutation,
 } from "../queries/rx.queries";
+import type {
+    RxActionController,
+    RxPrimaryActionControllers,
+} from "../lib/rx.queue-actions";
 
-export function useRxListMutations() {
+function createMutationController(mutation: {
+    mutateAsync: (id: number) => Promise<unknown>;
+    isPending: boolean;
+    variables?: unknown;
+}): RxActionController {
+    return {
+        run: async (id: number) => {
+            await mutation.mutateAsync(id);
+        },
+        isBusy: (id: number) =>
+            mutation.isPending &&
+            typeof mutation.variables === "number" &&
+            mutation.variables === id,
+    };
+}
+
+function createNoopController(label: string): RxActionController {
+    return {
+        run: async (id: number) => {
+            console.warn(`${label} not implemented yet`, id);
+        },
+        isBusy: () => false,
+    };
+}
+
+export function useRxListMutations(input?: {
+    openOfferCreate?: (id: number) => void;
+}) {
+    const openOfferCreate = input?.openOfferCreate;
+
     const reparseMutation = useReparseRxMutation();
     const takeOverMutation = useTakeOverRxMutation();
 
-    const reparseBusyId =
-        reparseMutation.isPending &&
-        typeof reparseMutation.variables === "number"
-            ? reparseMutation.variables
-            : null;
+    const reparse = createMutationController(reparseMutation);
+    const inbox = createMutationController(takeOverMutation);
 
-    const takeOverBusyId =
-        takeOverMutation.isPending &&
-        typeof takeOverMutation.variables === "number"
-            ? takeOverMutation.variables
-            : null;
-
-    const actions = {
-        reparse: async (id: number) => {
-            await reparseMutation.mutateAsync(id);
+    const offerCreate: RxActionController = {
+        run: (id: number) => {
+            openOfferCreate?.(id);
         },
+        isBusy: () => false,
+    };
 
-        takeOver: async (id: number) => {
-            await takeOverMutation.mutateAsync(id);
-        },
+    const primary: RxPrimaryActionControllers = {
+        inbox,
+        offer_create: offerCreate,
+        await_payment: createNoopController("confirmPayment"),
+        paid_not_started: createNoopController("startPackaging"),
+        packaging: createNoopController("finishPackaging"),
+        shipping: createNoopController("markShipped"),
+        pickup: createNoopController("markPickedUp"),
     };
 
     return {
-        actions,
-        busy: {
-            reparseBusyId,
-            takeOverBusyId,
-        },
-        state: {
-            isReparsePending: reparseMutation.isPending,
-            isTakeOverPending: takeOverMutation.isPending,
-        },
+        reparse,
+        primary,
     };
 }
