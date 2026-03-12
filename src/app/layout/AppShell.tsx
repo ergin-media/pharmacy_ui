@@ -33,10 +33,11 @@ export function AppShell() {
             </SidebarInset>
 
             <Toaster
-                position="top-right"
+                position="top-center"
                 richColors
                 expand
                 closeButton
+                duration={1000}
             />
         </SidebarProvider>
     );

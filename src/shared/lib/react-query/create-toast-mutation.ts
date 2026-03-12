@@ -4,7 +4,7 @@ import {
     type MutationFunctionContext,
     type UseMutationOptions,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { appToast } from "@/shared/lib/toast/toast";
 
 type ToastMessages<TData, TVariables, TError> = {
     loading?: string | ((variables: TVariables) => string);
@@ -61,9 +61,7 @@ export function useToastMutation<
                         ? toastMessages.loading(variables)
                         : toastMessages.loading;
 
-                toast.loading(message, {
-                    id: toastId,
-                });
+                appToast.loading(message, toastId);
             }
 
             return await onMutate?.(variables, context);
@@ -83,12 +81,10 @@ export function useToastMutation<
                         ? toastMessages.success(data, variables)
                         : toastMessages.success;
 
-                toast.success(message, {
-                    id: toastId,
-                });
-            } else {
-                toast.dismiss(toastId);
+                appToast.success(message);
             }
+
+            appToast.dismiss(toastId);
 
             await onSuccess?.(data, variables, onMutateResult, context);
         },
@@ -107,12 +103,10 @@ export function useToastMutation<
                         ? toastMessages.error(error, variables)
                         : toastMessages.error;
 
-                toast.error(message, {
-                    id: toastId,
-                });
-            } else {
-                toast.dismiss(toastId);
+                appToast.error(message);
             }
+
+            appToast.dismiss(toastId);
 
             await onError?.(error, variables, onMutateResult, context);
         },
