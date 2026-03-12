@@ -83,14 +83,15 @@ export function RxQueueTabs(props: {
                             );
 
                         return (
-                            <div key={item.value} className="w-full">
-                                {trigger}
-
+                            <>
+                                <div key={item.value} className="w-full">
+                                    {trigger}
+                                </div>
                                 {(item.value === "all" ||
                                     item.value === "completed") && (
                                     <Separator className="my-1 opacity-60" />
                                 )}
-                            </div>
+                            </>
                         );
                     })}
                 </TabsList>
