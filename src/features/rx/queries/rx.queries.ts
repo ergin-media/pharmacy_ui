@@ -1,10 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-    RxListItemDto,
-    RxListQueryParams,
-    RxListResponseDto,
-} from "../types/rx.dto";
+import type { RxListQueryParams } from "../types/rx.dto";
 import { fetchRxList, reparseRx, takeOverRx } from "../api/rx.api";
+import { removeRxFromListCache, replaceRxInListCache } from "../lib/rx.cache";
 
 export const rxKeys = {
     all: ["rx"] as const,
@@ -46,21 +43,7 @@ export function useReparseRxMutation() {
         mutationKey: rxKeys.mutations.reparse(),
         mutationFn: reparseRx,
         onSuccess: (data) => {
-            const updatedItem = data.item;
-
-            qc.setQueriesData(
-                { queryKey: rxKeys.lists() },
-                (old: RxListResponseDto | undefined) => {
-                    if (!old?.items) return old;
-
-                    return {
-                        ...old,
-                        items: old.items.map((i: RxListItemDto) =>
-                            i.id === updatedItem.id ? updatedItem : i,
-                        ),
-                    };
-                },
-            );
+            replaceRxInListCache(qc, data.item);
         },
     });
 }
@@ -71,8 +54,11 @@ export function useTakeOverRxMutation() {
     return useMutation({
         mutationKey: rxKeys.mutations.takeOver(),
         mutationFn: takeOverRx,
-        onSuccess: async () => {
-            await qc.invalidateQueries({ queryKey: rxKeys.lists() });
+        onSuccess: (_data, rxId) => {
+            removeRxFromListCache(qc, rxId, {
+                fromQueue: "inbox",
+                toQueue: "offer_create",
+            });
         },
     });
 }
