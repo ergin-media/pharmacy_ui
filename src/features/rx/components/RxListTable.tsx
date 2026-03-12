@@ -60,12 +60,7 @@ export function RxListTable(props: {
     const columns = getRxTableColumns(queue);
 
     return (
-        <div
-            className={[
-                "overflow-x-auto rounded-md border transition-opacity",
-                isPrimaryActionPending ? "pointer-events-none opacity-80" : "",
-            ].join(" ")}
-        >
+        <div className="overflow-x-auto rounded-md border transition-opacity">
             <Table>
                 <TableHeader>
                     <RxListTableHeader columns={columns} />
