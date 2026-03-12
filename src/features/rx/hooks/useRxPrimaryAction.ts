@@ -1,16 +1,8 @@
 import type { RxQueue } from "../lib/rx.queues";
-import { getRxQueuePrimaryAction } from "../lib/rx.queue-actions";
-
-export type RxPrimaryActionHandlers = {
-    takeOver: (id: number) => Promise<void>;
-    openOfferCreate: (id: number) => void;
-
-    confirmPayment?: (id: number) => Promise<void>;
-    startPackaging?: (id: number) => Promise<void>;
-    finishPackaging?: (id: number) => Promise<void>;
-    markShipped?: (id: number) => Promise<void>;
-    markPickedUp?: (id: number) => Promise<void>;
-};
+import {
+    getRxQueuePrimaryAction,
+    type RxPrimaryActionHandlers,
+} from "../lib/rx.queue-actions";
 
 export function useRxPrimaryAction(input: {
     queue: RxQueue;

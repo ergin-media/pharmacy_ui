@@ -14,6 +14,17 @@ export type RxQueuePrimaryActionConfig = {
     label: string;
 };
 
+export type RxPrimaryActionHandlers = {
+    takeOver: (id: number) => Promise<void>;
+    openOfferCreate: (id: number) => void;
+
+    confirmPayment?: (id: number) => Promise<void>;
+    startPackaging?: (id: number) => Promise<void>;
+    finishPackaging?: (id: number) => Promise<void>;
+    markShipped?: (id: number) => Promise<void>;
+    markPickedUp?: (id: number) => Promise<void>;
+};
+
 export const RX_QUEUE_PRIMARY_ACTIONS: Partial<
     Record<RxQueue, RxQueuePrimaryActionConfig>
 > = {
