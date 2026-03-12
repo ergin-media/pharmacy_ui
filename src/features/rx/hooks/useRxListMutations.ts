@@ -16,10 +16,7 @@ function createMutationController(mutation: {
         run: async (id: number) => {
             await mutation.mutateAsync(id);
         },
-        isBusy: (id: number) =>
-            mutation.isPending &&
-            typeof mutation.variables === "number" &&
-            mutation.variables === id,
+        isBusy: (id: number) => mutation.isPending && mutation.variables === id,
     };
 }
 
