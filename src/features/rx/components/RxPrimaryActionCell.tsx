@@ -1,7 +1,6 @@
-import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { TableCell } from "@/components/ui/table";
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 export function RxPrimaryActionCell(props: {
     row: RxTableRowVm;
@@ -15,16 +14,14 @@ export function RxPrimaryActionCell(props: {
         <TableCell className="text-right">
             {row.primaryActionLabel ? (
                 <div className="flex justify-end">
-                    <Button
+                    <LoadingButton
                         size="sm"
+                        loading={isLoading}
                         disabled={disabled}
                         onClick={() => onClick?.(row.id)}
                     >
-                        {isLoading ? (
-                            <Loader2 className="mr-2 size-4 animate-spin" />
-                        ) : null}
                         {row.primaryActionLabel}
-                    </Button>
+                    </LoadingButton>
                 </div>
             ) : null}
         </TableCell>
