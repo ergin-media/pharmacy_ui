@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSlideInPanel } from "@/shared/ui/slide-in-panel/slideInPanel.store";
 import { rxKeys } from "../queries/rx.queries";
 import { RxInvoicePanel } from "../components/RxInvoicePanel";
+import { RxOfferCreatePanel } from "../components/RxOfferCreatePanel";
 
 export function useRxPanels() {
     const { openPanel } = useSlideInPanel();
@@ -21,7 +22,30 @@ export function useRxPanels() {
                         onCancel={close}
                         onCreated={async () => {
                             await queryClient.invalidateQueries({
-                                queryKey: rxKeys.all,
+                                queryKey: rxKeys.lists(),
+                            });
+                            close();
+                        }}
+                    />
+                ),
+            });
+        },
+        [openPanel, queryClient],
+    );
+
+    const openOfferCreate = useCallback(
+        (rxId: number) => {
+            openPanel({
+                title: "Angebot erstellen",
+                description: `RX #${rxId}`,
+                variant: "lg",
+                render: ({ close }) => (
+                    <RxOfferCreatePanel
+                        rxId={rxId}
+                        onCancel={close}
+                        onCreated={async () => {
+                            await queryClient.invalidateQueries({
+                                queryKey: rxKeys.lists(),
                             });
                             close();
                         }}
@@ -35,6 +59,9 @@ export function useRxPanels() {
     return {
         invoice: {
             open: openInvoice,
+        },
+        offerCreate: {
+            open: openOfferCreate,
         },
     };
 }

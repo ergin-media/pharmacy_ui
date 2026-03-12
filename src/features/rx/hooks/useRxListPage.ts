@@ -2,6 +2,7 @@ import { useRxListFilters } from "./useRxListFilters";
 import { useRxListData } from "./useRxListData";
 import { useRxListMutations } from "./useRxListMutations";
 import { useRxPrimaryAction } from "./useRxPrimaryAction";
+import { useRxPanels } from "./useRxPanels";
 
 export function useRxListPage() {
     const filtersVm = useRxListFilters();
@@ -19,10 +20,34 @@ export function useRxListPage() {
     });
 
     const mutationsVm = useRxListMutations();
+    const panels = useRxPanels();
 
     const primaryActionVm = useRxPrimaryAction({
         queue: filtersVm.filters.queue,
-        takeOver: mutationsVm.actions.takeOver,
+        actions: {
+            takeOver: mutationsVm.actions.takeOver,
+            openOfferCreate: panels.offerCreate.open,
+
+            confirmPayment: async (id: number) => {
+                console.warn("confirmPayment not implemented yet", id);
+            },
+
+            startPackaging: async (id: number) => {
+                console.warn("startPackaging not implemented yet", id);
+            },
+
+            finishPackaging: async (id: number) => {
+                console.warn("finishPackaging not implemented yet", id);
+            },
+
+            markShipped: async (id: number) => {
+                console.warn("markShipped not implemented yet", id);
+            },
+
+            markPickedUp: async (id: number) => {
+                console.warn("markPickedUp not implemented yet", id);
+            },
+        },
     });
 
     const queueVm = {
