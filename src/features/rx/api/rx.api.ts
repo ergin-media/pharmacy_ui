@@ -24,16 +24,10 @@ export async function reparseRx(id: number) {
 }
 
 export async function takeOverRx(id: number) {
-    const res = await fetch(`/api/rx/${id}/take-over`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
+    const res = await api.post<{
+        ok: true;
+        item: RxListItemDto;
+    }>(`rx/${id}/take-over`);
 
-    if (!res.ok) {
-        throw new Error("Rezept konnte nicht übernommen werden.");
-    }
-
-    return res.json();
+    return res.data;
 }
