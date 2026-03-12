@@ -73,9 +73,7 @@ export function RxQueueTabs(props: {
                         const trigger =
                             count > 99 ? (
                                 <Tooltip>
-                                    <TooltipTrigger className="block w-full text-left">
-                                        {tabTrigger}
-                                    </TooltipTrigger>
+                                    <TooltipTrigger render={tabTrigger} />
                                     <TooltipContent side="right">
                                         {formatInt(count)} Rezepte
                                     </TooltipContent>
@@ -85,15 +83,14 @@ export function RxQueueTabs(props: {
                             );
 
                         return (
-                            <>
-                                <div key={item.value} className="w-full">
-                                    {trigger}
-                                </div>
+                            <div key={item.value} className="w-full">
+                                {trigger}
+
                                 {(item.value === "all" ||
                                     item.value === "completed") && (
                                     <Separator className="my-1 opacity-60" />
                                 )}
-                            </>
+                            </div>
                         );
                     })}
                 </TabsList>
