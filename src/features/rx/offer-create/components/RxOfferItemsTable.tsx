@@ -6,21 +6,9 @@ import {
     InputGroupText,
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
+
 import type { RxOfferFormItem } from "../types/rx.offer.types";
 import { MoneyInput } from "./RxMoneyInput";
-
-function formatMoneyInput(cents: number) {
-    return (cents / 100).toFixed(2);
-}
-
-function parseMoneyInput(value: string) {
-    const normalized = value.replace(",", ".");
-    const amount = Number(normalized);
-
-    if (!Number.isFinite(amount) || amount < 0) return 0;
-
-    return Math.round(amount * 100);
-}
 
 export function RxOfferItemsTable(props: {
     items: RxOfferFormItem[];
@@ -94,26 +82,6 @@ export function RxOfferItemsTable(props: {
                                     })
                                 }
                             />
-
-                            <InputGroup>
-                                <InputGroupInput
-                                    id={`offer-item-unit-price-${item.id}`}
-                                    value={formatMoneyInput(
-                                        item.unitPriceCents,
-                                    )}
-                                    className="text-right"
-                                    onChange={(e) =>
-                                        onItemChange(item.id, {
-                                            unitPriceCents: parseMoneyInput(
-                                                e.target.value,
-                                            ),
-                                        })
-                                    }
-                                />
-                                <InputGroupAddon align="inline-end">
-                                    <InputGroupText>{currency}</InputGroupText>
-                                </InputGroupAddon>
-                            </InputGroup>
                         </div>
 
                         <div className="grid gap-2">
@@ -121,19 +89,12 @@ export function RxOfferItemsTable(props: {
                                 Gesamt
                             </Label>
 
-                            <InputGroup>
-                                <InputGroupInput
-                                    id={`offer-item-total-${item.id}`}
-                                    value={formatMoneyInput(
-                                        item.totalPriceCents,
-                                    )}
-                                    className="text-right font-medium"
-                                    disabled
-                                />
-                                <InputGroupAddon align="inline-end">
-                                    <InputGroupText>{currency}</InputGroupText>
-                                </InputGroupAddon>
-                            </InputGroup>
+                            <MoneyInput
+                                cents={item.totalPriceCents}
+                                currency={currency}
+                                disabled
+                                onChange={() => {}}
+                            />
                         </div>
                     </div>
                 ))}
