@@ -12,14 +12,11 @@ export type RxOfferFormValues = {
     offerNumber: string;
     currency: string;
     issueDate: string;
-    validUntil: string;
     patientFirstName: string;
     patientLastName: string;
     patientStreet: string;
     patientZip: string;
     patientCity: string;
-    patientEmail: string;
-    patientBirthdate: string;
     items: RxOfferFormItem[];
     subtotalCents: number;
     shippingCents: number;

@@ -21,6 +21,8 @@ export function RxOfferCreatePanel(props: {
                     values={form.values}
                     onChange={form.actions.patch}
                     onItemChange={form.actions.updateItem}
+                    onAddItem={form.actions.addItem}
+                    onRemoveItem={form.actions.removeItem}
                 />
             </div>
 

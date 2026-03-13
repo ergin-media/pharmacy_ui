@@ -18,8 +18,10 @@ export function RxOfferForm(props: {
         itemId: number,
         patch: Partial<RxOfferFormValues["items"][number]>,
     ) => void;
+    onAddItem: () => void;
+    onRemoveItem: (itemId: number) => void;
 }) {
-    const { values, onChange, onItemChange } = props;
+    const { values, onChange, onItemChange, onAddItem, onRemoveItem } = props;
 
     return (
         <div className="grid gap-4">
@@ -128,6 +130,8 @@ export function RxOfferForm(props: {
                         items={values.items}
                         currency={values.currency}
                         onItemChange={onItemChange}
+                        onAddItem={onAddItem}
+                        onRemoveItem={onRemoveItem}
                     />
 
                     <RxOfferSummary

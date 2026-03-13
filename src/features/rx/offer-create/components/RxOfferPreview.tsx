@@ -51,7 +51,6 @@ export function RxOfferPreview(props: { values: RxOfferFormValues }) {
                                     .filter(Boolean)
                                     .join(" ") || "—"}
                             </div>
-                            <div>{values.patientEmail || "—"}</div>
                         </div>
 
                         <div className="space-y-1 text-right">
@@ -60,18 +59,6 @@ export function RxOfferPreview(props: { values: RxOfferFormValues }) {
                                     Ausgestellt:
                                 </span>{" "}
                                 {values.issueDate || "—"}
-                            </div>
-                            <div>
-                                <span className="text-muted-foreground">
-                                    Gültig bis:
-                                </span>{" "}
-                                {values.validUntil || "—"}
-                            </div>
-                            <div>
-                                <span className="text-muted-foreground">
-                                    Geburtsdatum:
-                                </span>{" "}
-                                {values.patientBirthdate || "—"}
                             </div>
                         </div>
                     </div>

@@ -37,6 +37,17 @@ function sum(items: RxOfferFormItem[]) {
     return items.reduce((acc, item) => acc + item.totalPriceCents, 0);
 }
 
+function createEmptyItem(nextId: number): RxOfferFormItem {
+    return {
+        id: nextId,
+        label: "",
+        quantity: 1,
+        unit: "g",
+        unitPriceCents: 0,
+        totalPriceCents: 0,
+    };
+}
+
 export function useRxOfferForm(rx: RxListItemDto) {
     const initialItems = useMemo(() => mapItems(rx), [rx]);
     const initialSubtotal = useMemo(() => sum(initialItems), [initialItems]);
@@ -46,40 +57,34 @@ export function useRxOfferForm(rx: RxListItemDto) {
         offerNumber: createOfferNumberFromRxId(Number(rx.id)),
         currency: rx.summary?.currency ?? "EUR",
         issueDate: toDateInputValue(new Date().toISOString()),
-        validUntil: "",
         patientFirstName: rx.patient?.first_name ?? "",
         patientLastName: rx.patient?.last_name ?? "",
         patientStreet: rx.patient?.street ?? "",
         patientZip: rx.patient?.zip ?? "",
         patientCity: rx.patient?.city ?? "",
-        patientEmail: rx.patient?.email ?? "",
-        patientBirthdate: toDateInputValue(rx.patient?.birthdate),
-        items: initialItems,
+        items: initialItems.length > 0 ? initialItems : [createEmptyItem(1)],
         subtotalCents: initialSubtotal,
         shippingCents: 0,
         totalCents: initialSubtotal,
         notes: "",
     });
 
+    function recalculate(next: RxOfferFormValues): RxOfferFormValues {
+        const subtotalCents = sum(next.items);
+        const totalCents = subtotalCents + next.shippingCents;
+
+        return {
+            ...next,
+            subtotalCents,
+            totalCents: Math.max(0, totalCents),
+        };
+    }
+
     function patch<K extends keyof RxOfferFormValues>(
         key: K,
         value: RxOfferFormValues[K],
     ) {
-        setValues((prev) => {
-            const next = {
-                ...prev,
-                [key]: value,
-            };
-
-            const subtotalCents = sum(next.items);
-            const totalCents = subtotalCents + next.shippingCents;
-
-            return {
-                ...next,
-                subtotalCents,
-                totalCents: Math.max(0, totalCents),
-            };
-        });
+        setValues((prev) => recalculate({ ...prev, [key]: value }));
     }
 
     function updateItem(itemId: number, patchData: Partial<RxOfferFormItem>) {
@@ -99,15 +104,35 @@ export function useRxOfferForm(rx: RxListItemDto) {
                 };
             });
 
-            const subtotalCents = sum(items);
-            const totalCents = subtotalCents + prev.shippingCents;
-
-            return {
+            return recalculate({
                 ...prev,
                 items,
-                subtotalCents,
-                totalCents: Math.max(0, totalCents),
-            };
+            });
+        });
+    }
+
+    function addItem() {
+        setValues((prev) => {
+            const maxId = prev.items.reduce(
+                (acc, item) => Math.max(acc, item.id),
+                0,
+            );
+
+            return recalculate({
+                ...prev,
+                items: [...prev.items, createEmptyItem(maxId + 1)],
+            });
+        });
+    }
+
+    function removeItem(itemId: number) {
+        setValues((prev) => {
+            if (prev.items.length <= 1) return prev;
+
+            return recalculate({
+                ...prev,
+                items: prev.items.filter((item) => item.id !== itemId),
+            });
         });
     }
 
@@ -116,6 +141,8 @@ export function useRxOfferForm(rx: RxListItemDto) {
         actions: {
             patch,
             updateItem,
+            addItem,
+            removeItem,
         },
     };
 }

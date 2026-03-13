@@ -1,21 +1,25 @@
 import { Input } from "@/components/ui/input";
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-    InputGroupText,
-} from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
-
+import { Button } from "@/components/ui/button";
+import { NumberInput } from "@/components/ui/number-input";
 import type { RxOfferFormItem } from "../types/rx.offer.types";
-import { MoneyInput } from "./RxMoneyInput";
+import { Plus, Trash2 } from "lucide-react";
+import { MoneyInput } from "@/components/ui/money-input";
 
 export function RxOfferItemsTable(props: {
     items: RxOfferFormItem[];
     currency?: string;
     onItemChange: (itemId: number, patch: Partial<RxOfferFormItem>) => void;
+    onAddItem: () => void;
+    onRemoveItem: (itemId: number) => void;
 }) {
-    const { items, currency = "EUR", onItemChange } = props;
+    const {
+        items,
+        currency = "EUR",
+        onItemChange,
+        onAddItem,
+        onRemoveItem,
+    } = props;
 
     return (
         <div className="overflow-hidden rounded-xl border">
@@ -23,7 +27,7 @@ export function RxOfferItemsTable(props: {
                 {items.map((item, index) => (
                     <div
                         key={item.id}
-                        className="grid grid-cols-[minmax(0,1.8fr)_110px_180px_180px] gap-3 px-4 py-4"
+                        className="grid grid-cols-[minmax(0,1.8fr)_120px_180px_180px_48px] gap-3 px-4 py-4"
                     >
                         <div className="grid min-w-0 gap-2">
                             <Label htmlFor={`offer-item-label-${item.id}`}>
@@ -46,26 +50,15 @@ export function RxOfferItemsTable(props: {
                                 Menge
                             </Label>
 
-                            <InputGroup>
-                                <InputGroupInput
-                                    id={`offer-item-qty-${item.id}`}
-                                    type="number"
-                                    min={0}
-                                    step="1"
-                                    value={item.quantity}
-                                    className="text-right"
-                                    onChange={(e) =>
-                                        onItemChange(item.id, {
-                                            quantity: Number(
-                                                e.target.value || 0,
-                                            ),
-                                        })
-                                    }
-                                />
-                                <InputGroupAddon align="inline-end">
-                                    <InputGroupText>{item.unit}</InputGroupText>
-                                </InputGroupAddon>
-                            </InputGroup>
+                            <NumberInput
+                                value={item.quantity}
+                                unit={item.unit}
+                                onChange={(value) =>
+                                    onItemChange(item.id, {
+                                        quantity: value,
+                                    })
+                                }
+                            />
                         </div>
 
                         <div className="grid gap-2">
@@ -96,8 +89,35 @@ export function RxOfferItemsTable(props: {
                                 onChange={() => {}}
                             />
                         </div>
+
+                        <div className="grid gap-2">
+                            <Label className="opacity-0">Aktion</Label>
+
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                disabled={items.length <= 1}
+                                onClick={() => onRemoveItem(item.id)}
+                                aria-label={`Artikel ${index + 1} entfernen`}
+                            >
+                                <Trash2 className="size-4" />
+                            </Button>
+                        </div>
                     </div>
                 ))}
+            </div>
+
+            <div className="border-t bg-muted/20 px-4 py-3">
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onAddItem}
+                >
+                    <Plus className="mr-2 size-4" />
+                    Artikel hinzufügen
+                </Button>
             </div>
         </div>
     );
