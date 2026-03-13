@@ -1,3 +1,4 @@
+import type { RxListItemDto } from "../types/rx.dto";
 import type { RxQueue } from "./rx.queues";
 
 export type RxQueuePrimaryActionConfig = {
@@ -5,7 +6,7 @@ export type RxQueuePrimaryActionConfig = {
 };
 
 export type RxActionController = {
-    run: (id: number) => Promise<void> | void;
+    run: (rx: RxListItemDto) => Promise<void> | void;
 };
 
 export type RxPrimaryActionControllers = Partial<

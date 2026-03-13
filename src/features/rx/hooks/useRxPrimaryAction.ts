@@ -1,3 +1,4 @@
+import type { RxListItemDto } from "../types/rx.dto";
 import type { RxQueue } from "../lib/rx.queues";
 import type {
     RxActionController,
@@ -19,17 +20,12 @@ export function useRxPrimaryAction(input: {
 
     const controller = getPrimaryActionController(queue, controllers);
 
-    const handlePrimaryAction = async (id: number) => {
+    const handlePrimaryAction = async (rx: RxListItemDto) => {
         if (!controller) return;
-        await controller.run(id);
-    };
-
-    const isPrimaryActionBusy = (id: number) => {
-        return controller?.isBusy(id) ?? false;
+        await controller.run(rx);
     };
 
     return {
         handlePrimaryAction,
-        isPrimaryActionBusy,
     };
 }

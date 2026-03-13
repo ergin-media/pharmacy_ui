@@ -4,6 +4,9 @@ import {
     useReparseRxMutation,
     useTakeOverRxMutation,
 } from "../queries/rx.queries";
+
+import type { RxListItemDto } from "../types/rx.dto";
+
 import type {
     RxActionController,
     RxPrimaryActionControllers,
@@ -11,14 +14,14 @@ import type {
 
 function createNoopController(label: string): RxActionController {
     return {
-        run: async (id: number) => {
-            console.warn(`${label} not implemented yet`, id);
+        run: async (rx: RxListItemDto) => {
+            console.warn(`${label} not implemented yet`, rx.id);
         },
     };
 }
 
 export function useRxListMutations(input?: {
-    openOfferCreate?: (id: number) => void;
+    openOfferCreate?: (rx: RxListItemDto) => void;
 }) {
     const openOfferCreate = input?.openOfferCreate;
 
@@ -33,6 +36,7 @@ export function useRxListMutations(input?: {
         run: async (id: number) => {
             await reparseMutation.mutateAsync(id);
         },
+
         isBusy: (id: number) =>
             reparseMutation.isPending &&
             typeof reparseMutation.variables === "number" &&
@@ -40,7 +44,9 @@ export function useRxListMutations(input?: {
     };
 
     const takeOver: RxActionController = {
-        run: async (id: number) => {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+
             setActivePrimaryActionId(id);
 
             try {
@@ -52,11 +58,13 @@ export function useRxListMutations(input?: {
     };
 
     const offerCreate: RxActionController = {
-        run: async (id: number) => {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+
             setActivePrimaryActionId(id);
 
             try {
-                openOfferCreate?.(id);
+                openOfferCreate?.(rx);
             } finally {
                 setActivePrimaryActionId(null);
             }
