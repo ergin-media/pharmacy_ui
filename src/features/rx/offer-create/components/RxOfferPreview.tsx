@@ -6,13 +6,13 @@ export function RxOfferPreview(props: { values: RxOfferFormValues }) {
     const { values } = props;
 
     return (
-        <Card className="h-full min-h-[780px]">
+        <Card className="h-full min-h-195">
             <CardHeader>
                 <CardTitle>Angebotsvorschau</CardTitle>
             </CardHeader>
 
             <CardContent>
-                <div className="mx-auto min-h-[680px] w-full max-w-[760px] rounded-2xl border bg-white p-8 shadow-sm">
+                <div className="mx-auto min-h-170 w-full max-w-190 rounded-2xl border bg-white p-8 shadow-sm">
                     <div className="mb-8 flex items-start justify-between">
                         <div>
                             <h2 className="text-4xl font-semibold tracking-tight">

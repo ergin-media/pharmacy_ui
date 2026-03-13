@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+
 import type { RxOfferFormValues } from "../types/rx.offer.types";
 import { RxOfferItemsTable } from "./RxOfferItemsTable";
 import { RxOfferSummary } from "./RxOfferSummary";
+import { Label } from "@/components/ui/label";
 
 export function RxOfferForm(props: {
     values: RxOfferFormValues;
@@ -21,111 +23,156 @@ export function RxOfferForm(props: {
     return (
         <div className="grid gap-4">
             <Card>
-                <CardHeader>
+                <CardHeader className="px-0">
                     <CardTitle>Patientendaten</CardTitle>
                 </CardHeader>
 
-                <CardContent className="grid gap-4">
+                <CardContent className="grid gap-4 px-0">
                     <div className="grid gap-4 md:grid-cols-2">
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-patient-name">
+                                Name des Patienten
+                            </Label>
+                            <Input
+                                id="offer-patient-name"
+                                value={values.patientName}
+                                onChange={(e) =>
+                                    onChange("patientName", e.target.value)
+                                }
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-patient-birthdate">
+                                Geburtsdatum
+                            </Label>
+                            <Input
+                                id="offer-patient-birthdate"
+                                value={values.patientBirthdate}
+                                type="date"
+                                onChange={(e) =>
+                                    onChange("patientBirthdate", e.target.value)
+                                }
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="offer-patient-street">Straße</Label>
                         <Input
-                            value={values.patientName}
-                            placeholder="Name"
+                            id="offer-patient-street"
+                            value={values.patientStreet}
                             onChange={(e) =>
-                                onChange("patientName", e.target.value)
-                            }
-                        />
-                        <Input
-                            value={values.patientBirthdate}
-                            type="date"
-                            onChange={(e) =>
-                                onChange("patientBirthdate", e.target.value)
+                                onChange("patientStreet", e.target.value)
                             }
                         />
                     </div>
-
-                    <Input
-                        value={values.patientStreet}
-                        placeholder="Straße"
-                        onChange={(e) =>
-                            onChange("patientStreet", e.target.value)
-                        }
-                    />
 
                     <div className="grid gap-4 md:grid-cols-[160px_1fr]">
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-patient-zip">PLZ</Label>
+                            <Input
+                                id="offer-patient-zip"
+                                value={values.patientZip}
+                                onChange={(e) =>
+                                    onChange("patientZip", e.target.value)
+                                }
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-patient-city">Ort</Label>
+                            <Input
+                                id="offer-patient-city"
+                                value={values.patientCity}
+                                onChange={(e) =>
+                                    onChange("patientCity", e.target.value)
+                                }
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="offer-patient-email">E-Mail</Label>
                         <Input
-                            value={values.patientZip}
-                            placeholder="PLZ"
+                            id="offer-patient-email"
+                            value={values.patientEmail}
                             onChange={(e) =>
-                                onChange("patientZip", e.target.value)
-                            }
-                        />
-                        <Input
-                            value={values.patientCity}
-                            placeholder="Ort"
-                            onChange={(e) =>
-                                onChange("patientCity", e.target.value)
+                                onChange("patientEmail", e.target.value)
                             }
                         />
                     </div>
-
-                    <Input
-                        value={values.patientEmail}
-                        placeholder="E-Mail"
-                        onChange={(e) =>
-                            onChange("patientEmail", e.target.value)
-                        }
-                    />
                 </CardContent>
             </Card>
 
             <Card>
-                <CardHeader>
+                <CardHeader className="px-0">
                     <CardTitle>Angebotsdetails</CardTitle>
                 </CardHeader>
 
-                <CardContent className="grid gap-4">
+                <CardContent className="grid gap-4 px-0">
                     <div className="grid gap-4 md:grid-cols-2">
-                        <Input
-                            value={values.offerNumber}
-                            placeholder="Angebotsnummer"
-                            onChange={(e) =>
-                                onChange("offerNumber", e.target.value)
-                            }
-                        />
-                        <Input
-                            value={values.currency}
-                            placeholder="Währung"
-                            onChange={(e) =>
-                                onChange("currency", e.target.value)
-                            }
-                        />
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-number">Angebotsnummer</Label>
+                            <Input
+                                id="offer-number"
+                                value={values.offerNumber}
+                                onChange={(e) =>
+                                    onChange("offerNumber", e.target.value)
+                                }
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-currency">Währung</Label>
+                            <Input
+                                id="offer-currency"
+                                value={values.currency}
+                                onChange={(e) =>
+                                    onChange("currency", e.target.value)
+                                }
+                            />
+                        </div>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
-                        <Input
-                            value={values.issueDate}
-                            type="date"
-                            onChange={(e) =>
-                                onChange("issueDate", e.target.value)
-                            }
-                        />
-                        <Input
-                            value={values.validUntil}
-                            type="date"
-                            onChange={(e) =>
-                                onChange("validUntil", e.target.value)
-                            }
-                        />
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-issue-date">
+                                Ausstellungsdatum
+                            </Label>
+                            <Input
+                                id="offer-issue-date"
+                                value={values.issueDate}
+                                type="date"
+                                onChange={(e) =>
+                                    onChange("issueDate", e.target.value)
+                                }
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-valid-until">
+                                Gültig bis
+                            </Label>
+                            <Input
+                                id="offer-valid-until"
+                                value={values.validUntil}
+                                type="date"
+                                onChange={(e) =>
+                                    onChange("validUntil", e.target.value)
+                                }
+                            />
+                        </div>
                     </div>
                 </CardContent>
             </Card>
 
             <Card>
-                <CardHeader>
+                <CardHeader className="px-0">
                     <CardTitle>Artikel</CardTitle>
                 </CardHeader>
 
-                <CardContent className="grid gap-4">
+                <CardContent className="grid gap-4 px-0">
                     <RxOfferItemsTable
                         items={values.items}
                         onItemChange={onItemChange}
@@ -148,16 +195,20 @@ export function RxOfferForm(props: {
             </Card>
 
             <Card>
-                <CardHeader>
+                <CardHeader className="px-0">
                     <CardTitle>Hinweise</CardTitle>
                 </CardHeader>
 
-                <CardContent>
-                    <Textarea
-                        value={values.notes}
-                        placeholder="Optionale Hinweise zum Angebot"
-                        onChange={(e) => onChange("notes", e.target.value)}
-                    />
+                <CardContent className="px-0">
+                    <div className="grid gap-2">
+                        <Label htmlFor="offer-notes">Interne Hinweise</Label>
+                        <Textarea
+                            id="offer-notes"
+                            value={values.notes}
+                            placeholder="Optionale Hinweise zum Angebot"
+                            onChange={(e) => onChange("notes", e.target.value)}
+                        />
+                    </div>
                 </CardContent>
             </Card>
         </div>
