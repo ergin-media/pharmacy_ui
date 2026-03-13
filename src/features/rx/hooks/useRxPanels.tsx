@@ -39,7 +39,8 @@ export function useRxPanels() {
             openPanel({
                 title: "Angebot erstellen",
                 description: `RX #${rx.id}`,
-                variant: "lg",
+                variant: "custom",
+                widthClassName: "w-[95vw] max-w-[1500px]",
                 render: ({ close }) => (
                     <RxOfferCreatePanel
                         rx={rx}

@@ -11,10 +11,14 @@ import {
 } from "@/components/ui/sheet";
 
 function widthByVariant(p: SlideInPanelState) {
-    if (p.variant === "custom") return p.widthClassName ?? "w-96";
-    if (p.variant === "sm") return "sm:max-w-sm";
-    if (p.variant === "lg") return "sm:max-w-3xl";
-    return "sm:max-w-xl"; // md
+    if (p.variant === "custom") {
+        return p.widthClassName ?? "w-[95vw] max-w-[1400px]";
+    }
+
+    if (p.variant === "sm") return "w-full max-w-sm";
+    if (p.variant === "lg") return "w-full max-w-3xl";
+
+    return "w-full max-w-xl"; // md
 }
 
 export function SlideInPanelHost() {
