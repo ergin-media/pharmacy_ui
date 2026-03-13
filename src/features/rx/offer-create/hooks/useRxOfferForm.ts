@@ -57,7 +57,6 @@ export function useRxOfferForm(rx: RxListItemDto) {
         items: initialItems,
         subtotalCents: initialSubtotal,
         shippingCents: 0,
-        discountCents: 0,
         totalCents: initialSubtotal,
         notes: "",
     });
@@ -73,8 +72,7 @@ export function useRxOfferForm(rx: RxListItemDto) {
             };
 
             const subtotalCents = sum(next.items);
-            const totalCents =
-                subtotalCents + next.shippingCents - next.discountCents;
+            const totalCents = subtotalCents + next.shippingCents;
 
             return {
                 ...next,
@@ -102,8 +100,7 @@ export function useRxOfferForm(rx: RxListItemDto) {
             });
 
             const subtotalCents = sum(items);
-            const totalCents =
-                subtotalCents + prev.shippingCents - prev.discountCents;
+            const totalCents = subtotalCents + prev.shippingCents;
 
             return {
                 ...prev,

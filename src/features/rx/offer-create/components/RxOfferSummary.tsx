@@ -1,35 +1,42 @@
-import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    InputGroup,
+    InputGroupInput,
+    InputGroupAddon,
+    InputGroupText,
+} from "@/components/ui/input-group";
 import { formatMoney } from "@/shared/lib/format/money";
+
+function formatMoneyInput(cents: number) {
+    return (cents / 100).toFixed(2);
+}
+
+function parseMoneyInput(value: string) {
+    const normalized = value.replace(",", ".");
+    const amount = Number(normalized);
+
+    if (!Number.isFinite(amount) || amount < 0) return 0;
+
+    return Math.round(amount * 100);
+}
 
 export function RxOfferSummary(props: {
     currency: string;
     subtotalCents: number;
     shippingCents: number;
-    discountCents: number;
     totalCents: number;
     onShippingChange: (value: number) => void;
-    onDiscountChange: (value: number) => void;
 }) {
     const {
         currency,
         subtotalCents,
         shippingCents,
-        discountCents,
         totalCents,
         onShippingChange,
-        onDiscountChange,
     } = props;
 
-    function parseMoneyInput(value: string) {
-        const normalized = value.replace(",", ".");
-        const amount = Number(normalized);
-
-        if (!Number.isFinite(amount) || amount < 0) return 0;
-        return Math.round(amount * 100);
-    }
-
     return (
-        <div className="grid gap-3 rounded-xl border p-4">
+        <div className="grid gap-4 rounded-xl border p-4">
             <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Zwischensumme</span>
                 <span className="font-medium">
@@ -37,24 +44,22 @@ export function RxOfferSummary(props: {
                 </span>
             </div>
 
-            <div className="grid grid-cols-[120px_1fr] items-center gap-3">
-                <span className="text-sm text-muted-foreground">Versand</span>
-                <Input
-                    value={(shippingCents / 100).toFixed(2)}
-                    onChange={(e) =>
-                        onShippingChange(parseMoneyInput(e.target.value))
-                    }
-                />
-            </div>
+            <div className="grid gap-2">
+                <Label htmlFor="offer-shipping">Versand</Label>
 
-            <div className="grid grid-cols-[120px_1fr] items-center gap-3">
-                <span className="text-sm text-muted-foreground">Rabatt</span>
-                <Input
-                    value={(discountCents / 100).toFixed(2)}
-                    onChange={(e) =>
-                        onDiscountChange(parseMoneyInput(e.target.value))
-                    }
-                />
+                <InputGroup>
+                    <InputGroupInput
+                        id="offer-shipping"
+                        value={formatMoneyInput(shippingCents)}
+                        className="text-right"
+                        onChange={(e) =>
+                            onShippingChange(parseMoneyInput(e.target.value))
+                        }
+                    />
+                    <InputGroupAddon align="inline-end">
+                        <InputGroupText>{currency}</InputGroupText>
+                    </InputGroupAddon>
+                </InputGroup>
             </div>
 
             <div className="flex items-center justify-between border-t pt-3 text-sm">

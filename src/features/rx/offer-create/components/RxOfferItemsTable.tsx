@@ -30,13 +30,6 @@ export function RxOfferItemsTable(props: {
 
     return (
         <div className="overflow-hidden rounded-xl border">
-            <div className="grid grid-cols-[minmax(0,1.8fr)_110px_180px_180px] gap-3 border-b bg-muted/40 px-4 py-3 text-sm font-medium">
-                <div>Artikel</div>
-                <div className="text-right">Menge</div>
-                <div className="text-right">Preis</div>
-                <div className="text-right">Gesamt</div>
-            </div>
-
             <div className="divide-y">
                 {items.map((item, index) => (
                     <div

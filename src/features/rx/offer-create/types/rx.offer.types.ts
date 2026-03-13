@@ -23,7 +23,6 @@ export type RxOfferFormValues = {
     items: RxOfferFormItem[];
     subtotalCents: number;
     shippingCents: number;
-    discountCents: number;
     totalCents: number;
     notes: string;
 };

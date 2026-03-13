@@ -61,40 +61,47 @@ export function DatePicker(props: DatePickerProps) {
         setOpen(false);
     }
 
-    function handleClear(e: React.MouseEvent) {
-        e.stopPropagation();
+    function handleClear() {
         onChange("");
+        setOpen(false);
     }
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger>
-                <Button
-                    type="button"
-                    variant="outline"
-                    disabled={disabled}
-                    className={cn(
-                        "w-full justify-start text-left font-normal bg-transparent hover:bg-transparent",
-                        !selectedDate && "text-muted-foreground",
-                        className,
-                    )}
-                >
-                    <CalendarIcon className="mr-2 size-4" />
+            <div className="relative w-full">
+                <PopoverTrigger className={"w-full"}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        disabled={disabled}
+                        className={cn(
+                            "w-full justify-start text-left font-normal bg-transparent hover:bg-transparent",
+                            !selectedDate && "text-muted-foreground",
+                            className,
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 size-4 shrink-0" />
 
-                    <span className="flex-1">
-                        {selectedDate
-                            ? format(selectedDate, "dd.MM.yyyy", { locale: de })
-                            : placeholder}
-                    </span>
+                        <span className="flex-1 truncate">
+                            {selectedDate
+                                ? format(selectedDate, "dd.MM.yyyy", {
+                                      locale: de,
+                                  })
+                                : placeholder}
+                        </span>
+                    </Button>
+                </PopoverTrigger>
 
-                    {clearable && selectedDate && (
-                        <XIcon
-                            className="size-4 opacity-60 hover:opacity-100"
-                            onClick={handleClear}
-                        />
-                    )}
-                </Button>
-            </PopoverTrigger>
+                {clearable && selectedDate && (
+                    <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100 cursor-pointer"
+                        onClick={handleClear}
+                    >
+                        <XIcon className="size-4" />
+                    </button>
+                )}
+            </div>
 
             <PopoverContent className="w-auto p-0" align="start">
                 <Calendar

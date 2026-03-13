@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
 
 import type { RxOfferFormValues } from "../types/rx.offer.types";
 import { RxOfferItemsTable } from "./RxOfferItemsTable";
 import { RxOfferSummary } from "./RxOfferSummary";
-import { Label } from "@/components/ui/label";
-import { DatePicker } from "@/components/ui/date-picker";
 
 export function RxOfferForm(props: {
     values: RxOfferFormValues;
@@ -47,7 +47,7 @@ export function RxOfferForm(props: {
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card className="gap-3">
                 <CardHeader className="px-0">
                     <CardTitle>Patientendaten</CardTitle>
                 </CardHeader>
@@ -76,32 +76,6 @@ export function RxOfferForm(props: {
                                 value={values.patientLastName}
                                 onChange={(e) =>
                                     onChange("patientLastName", e.target.value)
-                                }
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label>Geburtsdatum</Label>
-                            <DatePicker
-                                value={values.patientBirthdate}
-                                onChange={(value) =>
-                                    onChange("patientBirthdate", value)
-                                }
-                                placeholder="Geburtsdatum wählen"
-                                maxDate={new Date()}
-                                clearable
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="offer-patient-email">E-Mail</Label>
-                            <Input
-                                id="offer-patient-email"
-                                value={values.patientEmail}
-                                onChange={(e) =>
-                                    onChange("patientEmail", e.target.value)
                                 }
                             />
                         </div>
@@ -144,7 +118,7 @@ export function RxOfferForm(props: {
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card className="gap-3">
                 <CardHeader className="px-0">
                     <CardTitle>Artikel</CardTitle>
                 </CardHeader>
@@ -152,6 +126,7 @@ export function RxOfferForm(props: {
                 <CardContent className="grid gap-4 px-0">
                     <RxOfferItemsTable
                         items={values.items}
+                        currency={values.currency}
                         onItemChange={onItemChange}
                     />
 
@@ -159,26 +134,20 @@ export function RxOfferForm(props: {
                         currency={values.currency}
                         subtotalCents={values.subtotalCents}
                         shippingCents={values.shippingCents}
-                        discountCents={values.discountCents}
                         totalCents={values.totalCents}
                         onShippingChange={(value) =>
                             onChange("shippingCents", value)
-                        }
-                        onDiscountChange={(value) =>
-                            onChange("discountCents", value)
                         }
                     />
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader className="px-0">
-                    <CardTitle>Hinweise</CardTitle>
-                </CardHeader>
-
+            <Card className="gap-3">
                 <CardContent className="px-0">
                     <div className="grid gap-2">
-                        <Label htmlFor="offer-notes">Interne Hinweise</Label>
+                        <Label htmlFor="offer-notes">
+                            Hinweise - Nur für interne Zwecke
+                        </Label>
                         <Textarea
                             id="offer-notes"
                             value={values.notes}

@@ -134,18 +134,6 @@ export function RxOfferPreview(props: { values: RxOfferFormValues }) {
                             </span>
                         </div>
 
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">
-                                Rabatt
-                            </span>
-                            <span>
-                                {formatMoney(
-                                    values.discountCents,
-                                    values.currency,
-                                )}
-                            </span>
-                        </div>
-
                         <div className="flex items-center justify-between border-t pt-3 font-semibold">
                             <span>Gesamt</span>
                             <span>
