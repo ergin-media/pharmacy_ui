@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import type { RxOfferFormItem } from "../types/rx.offer.types";
+import { MoneyInput } from "./RxMoneyInput";
 
 function formatMoneyInput(cents: number) {
     return (cents / 100).toFixed(2);
@@ -83,6 +84,16 @@ export function RxOfferItemsTable(props: {
                             <Label htmlFor={`offer-item-unit-price-${item.id}`}>
                                 Preis
                             </Label>
+
+                            <MoneyInput
+                                cents={item.unitPriceCents}
+                                currency={currency}
+                                onChange={(value) =>
+                                    onItemChange(item.id, {
+                                        unitPriceCents: value,
+                                    })
+                                }
+                            />
 
                             <InputGroup>
                                 <InputGroupInput
