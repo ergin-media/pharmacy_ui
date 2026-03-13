@@ -6,7 +6,6 @@ import {
     InputGroupText,
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
-import { formatMoney } from "@/shared/lib/format/money";
 import type { RxOfferFormItem } from "../types/rx.offer.types";
 
 function formatMoneyInput(cents: number) {

@@ -4,14 +4,11 @@ import type {
     RxOfferFormItem,
     RxOfferFormValues,
 } from "../types/rx.offer.types";
+import { createOfferNumberFromRxId } from "../lib/rx-offer-number";
 
 function toDateInputValue(value?: string | null) {
     if (!value) return "";
     return String(value).slice(0, 10);
-}
-
-function createOfferNumber(rxId: number) {
-    return `ANG-${String(rxId).padStart(6, "0")}`;
 }
 
 function mapItems(rx: RxListItemDto): RxOfferFormItem[] {
@@ -46,7 +43,7 @@ export function useRxOfferForm(rx: RxListItemDto) {
 
     const [values, setValues] = useState<RxOfferFormValues>({
         rxId: Number(rx.id),
-        offerNumber: createOfferNumber(Number(rx.id)),
+        offerNumber: createOfferNumberFromRxId(Number(rx.id)),
         currency: rx.summary?.currency ?? "EUR",
         issueDate: toDateInputValue(new Date().toISOString()),
         validUntil: "",

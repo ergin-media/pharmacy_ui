@@ -6,6 +6,7 @@ import type { RxOfferFormValues } from "../types/rx.offer.types";
 import { RxOfferItemsTable } from "./RxOfferItemsTable";
 import { RxOfferSummary } from "./RxOfferSummary";
 import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export function RxOfferForm(props: {
     values: RxOfferFormValues;
@@ -22,6 +23,30 @@ export function RxOfferForm(props: {
 
     return (
         <div className="grid gap-4">
+            <Card>
+                <CardContent className="grid gap-4 px-0 md:grid-cols-2">
+                    <div className="grid gap-2">
+                        <Label htmlFor="offer-number">Angebotsnummer</Label>
+                        <Input
+                            id="offer-number"
+                            value={values.offerNumber}
+                            onChange={(e) =>
+                                onChange("offerNumber", e.target.value)
+                            }
+                        />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label>Angebotsdatum</Label>
+                        <DatePicker
+                            value={values.issueDate}
+                            onChange={(value) => onChange("issueDate", value)}
+                            placeholder="Angebotsdatum wählen"
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
             <Card>
                 <CardHeader className="px-0">
                     <CardTitle>Patientendaten</CardTitle>
@@ -101,68 +126,6 @@ export function RxOfferForm(props: {
                                 onChange("patientEmail", e.target.value)
                             }
                         />
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader className="px-0">
-                    <CardTitle>Angebotsdetails</CardTitle>
-                </CardHeader>
-
-                <CardContent className="grid gap-4 px-0">
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="offer-number">Angebotsnummer</Label>
-                            <Input
-                                id="offer-number"
-                                value={values.offerNumber}
-                                onChange={(e) =>
-                                    onChange("offerNumber", e.target.value)
-                                }
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="offer-currency">Währung</Label>
-                            <Input
-                                id="offer-currency"
-                                value={values.currency}
-                                onChange={(e) =>
-                                    onChange("currency", e.target.value)
-                                }
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="offer-issue-date">
-                                Ausstellungsdatum
-                            </Label>
-                            <Input
-                                id="offer-issue-date"
-                                value={values.issueDate}
-                                type="date"
-                                onChange={(e) =>
-                                    onChange("issueDate", e.target.value)
-                                }
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="offer-valid-until">
-                                Gültig bis
-                            </Label>
-                            <Input
-                                id="offer-valid-until"
-                                value={values.validUntil}
-                                type="date"
-                                onChange={(e) =>
-                                    onChange("validUntil", e.target.value)
-                                }
-                            />
-                        </div>
                     </div>
                 </CardContent>
             </Card>
