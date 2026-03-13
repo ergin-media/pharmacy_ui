@@ -55,28 +55,53 @@ export function RxOfferForm(props: {
                 <CardContent className="grid gap-4 px-0">
                     <div className="grid gap-4 md:grid-cols-2">
                         <div className="grid gap-2">
-                            <Label htmlFor="offer-patient-name">
-                                Name des Patienten
+                            <Label htmlFor="offer-patient-first-name">
+                                Vorname
                             </Label>
                             <Input
-                                id="offer-patient-name"
-                                value={values.patientName}
+                                id="offer-patient-first-name"
+                                value={values.patientFirstName}
                                 onChange={(e) =>
-                                    onChange("patientName", e.target.value)
+                                    onChange("patientFirstName", e.target.value)
                                 }
                             />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="offer-patient-birthdate">
-                                Geburtsdatum
+                            <Label htmlFor="offer-patient-last-name">
+                                Nachname
                             </Label>
                             <Input
-                                id="offer-patient-birthdate"
-                                value={values.patientBirthdate}
-                                type="date"
+                                id="offer-patient-last-name"
+                                value={values.patientLastName}
                                 onChange={(e) =>
-                                    onChange("patientBirthdate", e.target.value)
+                                    onChange("patientLastName", e.target.value)
+                                }
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div className="grid gap-2">
+                            <Label>Geburtsdatum</Label>
+                            <DatePicker
+                                value={values.patientBirthdate}
+                                onChange={(value) =>
+                                    onChange("patientBirthdate", value)
+                                }
+                                placeholder="Geburtsdatum wählen"
+                                maxDate={new Date()}
+                                clearable
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="offer-patient-email">E-Mail</Label>
+                            <Input
+                                id="offer-patient-email"
+                                value={values.patientEmail}
+                                onChange={(e) =>
+                                    onChange("patientEmail", e.target.value)
                                 }
                             />
                         </div>
@@ -115,17 +140,6 @@ export function RxOfferForm(props: {
                                 }
                             />
                         </div>
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="offer-patient-email">E-Mail</Label>
-                        <Input
-                            id="offer-patient-email"
-                            value={values.patientEmail}
-                            onChange={(e) =>
-                                onChange("patientEmail", e.target.value)
-                            }
-                        />
                     </div>
                 </CardContent>
             </Card>

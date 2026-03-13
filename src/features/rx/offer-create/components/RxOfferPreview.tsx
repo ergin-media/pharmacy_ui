@@ -37,7 +37,14 @@ export function RxOfferPreview(props: { values: RxOfferFormValues }) {
                     <div className="mb-8 grid grid-cols-2 gap-8 text-sm">
                         <div className="space-y-1">
                             <div className="font-medium">Patient</div>
-                            <div>{values.patientName || "—"}</div>
+                            <div>
+                                {[
+                                    values.patientFirstName,
+                                    values.patientLastName,
+                                ]
+                                    .filter(Boolean)
+                                    .join(" ")}
+                            </div>
                             <div>{values.patientStreet || "—"}</div>
                             <div>
                                 {[values.patientZip, values.patientCity]

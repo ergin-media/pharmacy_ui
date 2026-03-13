@@ -47,9 +47,8 @@ export function useRxOfferForm(rx: RxListItemDto) {
         currency: rx.summary?.currency ?? "EUR",
         issueDate: toDateInputValue(new Date().toISOString()),
         validUntil: "",
-        patientName: [rx.patient?.first_name, rx.patient?.last_name]
-            .filter(Boolean)
-            .join(" "),
+        patientFirstName: rx.patient?.first_name ?? "",
+        patientLastName: rx.patient?.last_name ?? "",
         patientStreet: rx.patient?.street ?? "",
         patientZip: rx.patient?.zip ?? "",
         patientCity: rx.patient?.city ?? "",

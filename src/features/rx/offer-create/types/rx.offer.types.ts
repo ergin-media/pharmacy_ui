@@ -13,7 +13,8 @@ export type RxOfferFormValues = {
     currency: string;
     issueDate: string;
     validUntil: string;
-    patientName: string;
+    patientFirstName: string;
+    patientLastName: string;
     patientStreet: string;
     patientZip: string;
     patientCity: string;
