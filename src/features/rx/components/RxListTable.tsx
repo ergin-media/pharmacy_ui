@@ -1,5 +1,6 @@
 import type { RxListItemDto } from "../types/rx.dto";
 import type { RxQueue } from "../lib/rx.queues";
+import type { RxRowActions } from "../types/rx.list.vm";
 import { getRxTableColumns, hasRxTableColumn } from "../lib/rx.table-columns";
 import { mapRxListItemToRowVm } from "../lib/rx.table-row.vm";
 
@@ -28,15 +29,15 @@ export function RxListTable(props: {
     page: number;
     perPage: number;
 
-    onOpen?: (id: number) => void;
-    onPdf?: (id: number) => void;
-    onMore?: (id: number) => void;
-    onCreateInvoice?: (id: number) => void;
+    onOpen?: RxRowActions["open"];
+    onPdf?: RxRowActions["pdf"];
+    onMore?: RxRowActions["more"];
+    onCreateInvoice?: RxRowActions["createInvoice"];
 
     onReparse?: (id: number) => void;
     isReparseBusy?: (id: number) => boolean;
 
-    onPrimaryAction?: (id: number) => void;
+    onPrimaryAction?: (rx: RxListItemDto) => void;
     isPrimaryActionPending?: boolean;
     activePrimaryActionId?: number | null;
 }) {
@@ -252,10 +253,10 @@ export function RxListTable(props: {
                                         <RxMoreActionsCell
                                             row={row}
                                             disabled={isBusy}
-                                            onOpen={onOpen}
-                                            onPdf={onPdf}
-                                            onMore={onMore}
-                                            onCreateInvoice={onCreateInvoice}
+                                            open={onOpen}
+                                            pdf={onPdf}
+                                            more={onMore}
+                                            createInvoice={onCreateInvoice}
                                         />
                                     )}
                                 </TableRow>
