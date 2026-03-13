@@ -4,21 +4,22 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSlideInPanel } from "@/shared/ui/slide-in-panel/slideInPanel.store";
 import { rxKeys } from "../queries/rx.queries";
 import { RxInvoicePanel } from "../components/RxInvoicePanel";
-import { RxOfferCreatePanel } from "../components/RxOfferCreatePanel";
+import { RxOfferCreatePanel } from "../offer-create/components/RxOfferCreatePanel";
+import type { RxListItemDto } from "../types/rx.dto";
 
 export function useRxPanels() {
     const { openPanel } = useSlideInPanel();
     const queryClient = useQueryClient();
 
     const openInvoice = useCallback(
-        (rxId: number) => {
+        (rx: RxListItemDto) => {
             openPanel({
                 title: "Rechnung erstellen",
-                description: `RX #${rxId}`,
+                description: `RX #${rx.id}`,
                 variant: "md",
                 render: ({ close }) => (
                     <RxInvoicePanel
-                        rxId={rxId}
+                        rxId={Number(rx.id)}
                         onCancel={close}
                         onCreated={async () => {
                             await queryClient.invalidateQueries({
@@ -34,14 +35,14 @@ export function useRxPanels() {
     );
 
     const openOfferCreate = useCallback(
-        (rxId: number) => {
+        (rx: RxListItemDto) => {
             openPanel({
                 title: "Angebot erstellen",
-                description: `RX #${rxId}`,
+                description: `RX #${rx.id}`,
                 variant: "lg",
                 render: ({ close }) => (
                     <RxOfferCreatePanel
-                        rxId={rxId}
+                        rx={rx}
                         onCancel={close}
                         onCreated={async () => {
                             await queryClient.invalidateQueries({
