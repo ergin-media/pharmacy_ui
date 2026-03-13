@@ -63,11 +63,13 @@ export function useTakeOverRxMutation() {
             success: "Rezept erfolgreich übernommen",
             error: "Rezept konnte nicht übernommen werden",
         },
-        onSuccess: (_data, rxId) => {
+        onSuccess: async (_data, rxId) => {
             removeRxFromListCache(qc, rxId, {
                 fromQueue: "inbox",
                 toQueue: "offer_create",
             });
+
+            await qc.invalidateQueries({ queryKey: rxKeys.lists() });
         },
     });
 }
