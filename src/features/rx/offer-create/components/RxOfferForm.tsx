@@ -38,25 +38,31 @@ export function RxOfferForm(props: {
                     <span>
                         {values.pricingMode === "provider_total" ? (
                             <>
-                                Preisquelle:{" "}
-                                <strong>
-                                    Plattformpreis
-                                    {values.providerName
-                                        ? ` (${values.providerName})`
-                                        : ""}
-                                </strong>
+                                Preisquelle: <strong>Plattformpreis</strong>
+                                {values.providerName && (
+                                    <>
+                                        {" "}
+                                        von{" "}
+                                        <strong className="font-semibold">
+                                            {values.providerName}
+                                        </strong>
+                                    </>
+                                )}
                                 .<br />
                                 Der Gesamtpreis wurde von der Plattform übermittelt.
                             </>
                         ) : (
                             <>
-                                Preisquelle:{" "}
-                                <strong>
-                                    Apothekenkalkulation
-                                    {values.providerName
-                                        ? ` (${values.providerName})`
-                                        : ""}
-                                </strong>
+                                Preisquelle: <strong>Apothekenkalkulation</strong>
+                                {values.providerName && (
+                                    <>
+                                        {" "}
+                                        für{" "}
+                                        <strong className="font-semibold">
+                                            {values.providerName}
+                                        </strong>
+                                    </>
+                                )}
                                 .<br />
                                 Die Preise dieses Angebots müssen vollständig von der Apotheke
                                 kalkuliert werden.
