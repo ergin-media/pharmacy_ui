@@ -7,6 +7,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import type { RxOfferFormValues } from "../types/rx.offer.types";
 import { RxOfferItemsTable } from "./RxOfferItemsTable";
 import { RxOfferSummary } from "./RxOfferSummary";
+import { Info } from "lucide-react";
 
 export function RxOfferForm(props: {
     values: RxOfferFormValues;
@@ -120,20 +121,30 @@ export function RxOfferForm(props: {
                 </CardContent>
             </Card>
 
-            <div className="rounded-lg border bg-muted/30 px-4 py-3 text-sm">
-                {values.pricingMode === "provider_total" ? (
+            <Card className="gap-3">
+                <div
+                    className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${values.pricingMode === "provider_total"
+                        ? "bg-blue-50/60 text-blue-900"
+                        : " bg-emerald-50/60 text-emerald-900"
+                        }`}
+                >
+                    <Info className="mt-0.5 size-4 opacity-70" />
+
                     <span>
-                        Preisquelle: <strong>Plattformpreis</strong>. Der Gesamtpreis wurde
-                        von der Plattform übermittelt. Versandkosten können bei Bedarf
-                        angepasst werden.
+                        {values.pricingMode === "provider_total" ? (
+                            <>
+                                Preisquelle: <strong>Plattformpreis</strong>. Der Gesamtpreis wurde
+                                von der Plattform übermittelt.
+                            </>
+                        ) : (
+                            <>
+                                Preisquelle: <strong>Apothekenkalkulation</strong>. Preise und
+                                Versand können manuell festgelegt werden.
+                            </>
+                        )}
                     </span>
-                ) : (
-                    <span>
-                        Preisquelle: <strong>Apothekenkalkulation</strong>. Preise und
-                        Versand können manuell festgelegt werden.
-                    </span>
-                )}
-            </div>
+                </div>
+            </Card>
 
             <Card className="gap-3">
                 <CardHeader className="px-0">
