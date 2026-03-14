@@ -64,6 +64,8 @@ export function useRxOfferForm(rx: RxListItemDto) {
     const [values, setValues] = useState<RxOfferFormValues>({
         rxId: Number(rx.id),
 
+        providerName: rx.provider?.name ?? null,
+
         offerNumber: createOfferNumberFromRxId(Number(rx.id)),
         currency: initialCurrency,
         issueDate: toDateInputValue(new Date().toISOString()),

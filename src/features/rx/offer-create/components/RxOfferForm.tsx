@@ -8,7 +8,6 @@ import type { RxOfferFormValues } from "../types/rx.offer.types";
 import { RxOfferItemsTable } from "./RxOfferItemsTable";
 import { RxOfferSummary } from "./RxOfferSummary";
 import { Info } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export function RxOfferForm(props: {
     values: RxOfferFormValues;
@@ -27,6 +26,46 @@ export function RxOfferForm(props: {
 
     return (
         <div className="grid gap-4">
+            <Card className="gap-3">
+                <div
+                    className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${values.pricingMode === "provider_total"
+                            ? "bg-blue-50/60 text-blue-900"
+                            : "bg-emerald-50/60 text-emerald-900"
+                        }`}
+                >
+                    <Info className="mt-0.5 size-4 opacity-70" />
+
+                    <span>
+                        {values.pricingMode === "provider_total" ? (
+                            <>
+                                Preisquelle:{" "}
+                                <strong>
+                                    Plattformpreis
+                                    {values.providerName
+                                        ? ` (${values.providerName})`
+                                        : ""}
+                                </strong>
+                                .<br />
+                                Der Gesamtpreis wurde von der Plattform übermittelt.
+                            </>
+                        ) : (
+                            <>
+                                Preisquelle:{" "}
+                                <strong>
+                                    Apothekenkalkulation
+                                    {values.providerName
+                                        ? ` (${values.providerName})`
+                                        : ""}
+                                </strong>
+                                .<br />
+                                Die Preise dieses Angebots müssen vollständig von der Apotheke
+                                kalkuliert werden.
+                            </>
+                        )}
+                    </span>
+                </div>
+            </Card>
+
             <Card>
                 <CardContent className="grid gap-4 px-0 md:grid-cols-2">
                     <div className="grid gap-2">
@@ -123,48 +162,8 @@ export function RxOfferForm(props: {
             </Card>
 
             <Card className="gap-3">
-                <div
-                    className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${values.pricingMode === "provider_total"
-                        ? "bg-blue-50/60 text-blue-900"
-                        : " bg-emerald-50/60 text-emerald-900"
-                        }`}
-                >
-                    <Info className="mt-0.5 size-4 opacity-70" />
-
-                    <span>
-                        {values.pricingMode === "provider_total" ? (
-                            <>
-                                Preisquelle: <strong>Plattformpreis</strong>. Der Gesamtpreis wurde
-                                von der Plattform übermittelt.
-                            </>
-                        ) : (
-                            <>
-                                Preisquelle: <strong>Apothekenkalkulation</strong>. Preise und
-                                Versand können manuell festgelegt werden.
-                            </>
-                        )}
-                    </span>
-                </div>
-            </Card>
-
-            <Card className="gap-3">
                 <CardHeader className="px-0">
-                    <div className="flex items-center justify-between gap-3">
-                        <CardTitle>Artikel</CardTitle>
-
-                        <Badge
-                            variant="outline"
-                            className={
-                                values.pricingMode === "provider_total"
-                                    ? "border-blue-200 bg-blue-50 text-blue-900"
-                                    : "border-emerald-200 bg-emerald-50 text-emerald-900"
-                            }
-                        >
-                            {values.pricingMode === "provider_total"
-                                ? "Plattformpreis"
-                                : "Apothekenkalkulation"}
-                        </Badge>
-                    </div>
+                    <CardTitle>Artikel</CardTitle>
                 </CardHeader>
 
                 <CardContent className="grid gap-4 px-0">

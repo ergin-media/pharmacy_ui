@@ -12,6 +12,8 @@ export type RxOfferFormItem = {
 export type RxOfferFormValues = {
     rxId: number;
 
+    providerName: string | null;
+
     offerNumber: string;
     currency: string;
     issueDate: string;
