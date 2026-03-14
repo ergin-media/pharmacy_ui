@@ -29,8 +29,8 @@ export function RxOfferForm(props: {
             <Card className="gap-3">
                 <div
                     className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${values.pricingMode === "provider_total"
-                            ? "bg-blue-50/60 text-blue-900"
-                            : "bg-emerald-50/60 text-emerald-900"
+                        ? "bg-blue-50/60 text-blue-900"
+                        : "bg-emerald-50/60 text-emerald-900"
                         }`}
                 >
                     <Info className="mt-0.5 size-4 opacity-70" />
