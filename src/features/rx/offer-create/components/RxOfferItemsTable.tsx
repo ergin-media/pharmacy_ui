@@ -25,73 +25,24 @@ export function RxOfferItemsTable(props: {
         <div className="overflow-hidden rounded-xl border">
             <div className="divide-y">
                 {items.map((item, index) => (
-                    <div
-                        key={item.id}
-                        className="grid grid-cols-[minmax(0,1.8fr)_120px_180px_180px_48px] gap-3 px-4 py-4"
-                    >
-                        <div className="grid min-w-0 gap-2">
-                            <Label htmlFor={`offer-item-label-${item.id}`}>
-                                Artikel {index + 1}
-                            </Label>
+                    <div key={item.id} className="px-4 py-4 space-y-4">
+                        {/* Artikelname */}
+                        <div className="flex items-end gap-3">
+                            <div className="flex-1 grid gap-2">
+                                <Label htmlFor={`offer-item-label-${item.id}`}>
+                                    Artikel {index + 1}
+                                </Label>
 
-                            <Input
-                                id={`offer-item-label-${item.id}`}
-                                value={item.label}
-                                onChange={(e) =>
-                                    onItemChange(item.id, {
-                                        label: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor={`offer-item-qty-${item.id}`}>
-                                Menge
-                            </Label>
-
-                            <NumberInput
-                                value={item.quantity}
-                                unit={item.unit}
-                                onChange={(value) =>
-                                    onItemChange(item.id, {
-                                        quantity: value,
-                                    })
-                                }
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor={`offer-item-unit-price-${item.id}`}>
-                                Preis
-                            </Label>
-
-                            <MoneyInput
-                                cents={item.unitPriceCents}
-                                currency={currency}
-                                onChange={(value) =>
-                                    onItemChange(item.id, {
-                                        unitPriceCents: value,
-                                    })
-                                }
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor={`offer-item-total-${item.id}`}>
-                                Gesamt
-                            </Label>
-
-                            <MoneyInput
-                                cents={item.totalPriceCents}
-                                currency={currency}
-                                disabled
-                                onChange={() => {}}
-                            />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label className="opacity-0">Aktion</Label>
+                                <Input
+                                    id={`offer-item-label-${item.id}`}
+                                    value={item.label}
+                                    onChange={(e) =>
+                                        onItemChange(item.id, {
+                                            label: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
 
                             <Button
                                 type="button"
@@ -103,6 +54,58 @@ export function RxOfferItemsTable(props: {
                             >
                                 <Trash2 className="size-4" />
                             </Button>
+                        </div>
+
+                        {/* Menge / Preis / Gesamt */}
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <div className="grid gap-2">
+                                <Label htmlFor={`offer-item-qty-${item.id}`}>
+                                    Menge
+                                </Label>
+
+                                <NumberInput
+                                    value={item.quantity}
+                                    unit={item.unit}
+                                    onChange={(value) =>
+                                        onItemChange(item.id, {
+                                            quantity: value,
+                                        })
+                                    }
+                                />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label
+                                    htmlFor={`offer-item-unit-price-${item.id}`}
+                                >
+                                    Preis
+                                </Label>
+
+                                <MoneyInput
+                                    cents={item.unitPriceCents}
+                                    currency={currency}
+                                    onChange={(value) =>
+                                        onItemChange(item.id, {
+                                            unitPriceCents: value,
+                                        })
+                                    }
+                                />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label
+                                    htmlFor={`offer-item-total-${item.id}`}
+                                >
+                                    Gesamt
+                                </Label>
+
+                                <MoneyInput
+                                    cents={item.totalPriceCents}
+                                    currency={currency}
+                                    disabled
+                                    onChange={() => { }}
+                                />
+                            </div>
                         </div>
                     </div>
                 ))}
