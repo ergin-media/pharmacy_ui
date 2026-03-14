@@ -8,6 +8,7 @@ import type { RxOfferFormValues } from "../types/rx.offer.types";
 import { RxOfferItemsTable } from "./RxOfferItemsTable";
 import { RxOfferSummary } from "./RxOfferSummary";
 import { Info } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export function RxOfferForm(props: {
     values: RxOfferFormValues;
@@ -148,7 +149,22 @@ export function RxOfferForm(props: {
 
             <Card className="gap-3">
                 <CardHeader className="px-0">
-                    <CardTitle>Artikel</CardTitle>
+                    <div className="flex items-center justify-between gap-3">
+                        <CardTitle>Artikel</CardTitle>
+
+                        <Badge
+                            variant="outline"
+                            className={
+                                values.pricingMode === "provider_total"
+                                    ? "border-blue-200 bg-blue-50 text-blue-900"
+                                    : "border-emerald-200 bg-emerald-50 text-emerald-900"
+                            }
+                        >
+                            {values.pricingMode === "provider_total"
+                                ? "Plattformpreis"
+                                : "Apothekenkalkulation"}
+                        </Badge>
+                    </div>
                 </CardHeader>
 
                 <CardContent className="grid gap-4 px-0">
