@@ -120,6 +120,21 @@ export function RxOfferForm(props: {
                 </CardContent>
             </Card>
 
+            <div className="rounded-lg border bg-muted/30 px-4 py-3 text-sm">
+                {values.pricingMode === "provider_total" ? (
+                    <span>
+                        Preisquelle: <strong>Plattformpreis</strong>. Der Gesamtpreis wurde
+                        von der Plattform übermittelt. Versandkosten können bei Bedarf
+                        angepasst werden.
+                    </span>
+                ) : (
+                    <span>
+                        Preisquelle: <strong>Apothekenkalkulation</strong>. Preise und
+                        Versand können manuell festgelegt werden.
+                    </span>
+                )}
+            </div>
+
             <Card className="gap-3">
                 <CardHeader className="px-0">
                     <CardTitle>Artikel</CardTitle>
@@ -139,10 +154,8 @@ export function RxOfferForm(props: {
                         subtotalCents={values.subtotalCents}
                         shippingCents={values.shippingCents}
                         totalCents={values.totalCents}
-                        onShippingChange={(value) =>
-                            onChange("shippingCents", value)
-                        }
-                    />
+                        onShippingChange={(value) => onChange("shippingCents", value)}
+                        pricingMode={values.pricingMode} />
                 </CardContent>
             </Card>
 

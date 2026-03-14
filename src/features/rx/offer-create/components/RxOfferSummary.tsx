@@ -1,27 +1,12 @@
 import { Label } from "@/components/ui/label";
-import {
-    InputGroup,
-    InputGroupInput,
-    InputGroupAddon,
-    InputGroupText,
-} from "@/components/ui/input-group";
+import { MoneyInput } from "@/components/ui/money-input";
 import { formatMoney } from "@/shared/lib/format/money";
 
-function formatMoneyInput(cents: number) {
-    return (cents / 100).toFixed(2);
-}
-
-function parseMoneyInput(value: string) {
-    const normalized = value.replace(",", ".");
-    const amount = Number(normalized);
-
-    if (!Number.isFinite(amount) || amount < 0) return 0;
-
-    return Math.round(amount * 100);
-}
+import type { RxOfferFormValues } from "../types/rx.offer.types";
 
 export function RxOfferSummary(props: {
     currency: string;
+    pricingMode: RxOfferFormValues["pricingMode"];
     subtotalCents: number;
     shippingCents: number;
     totalCents: number;
@@ -47,19 +32,11 @@ export function RxOfferSummary(props: {
             <div className="grid gap-2">
                 <Label htmlFor="offer-shipping">Versand</Label>
 
-                <InputGroup>
-                    <InputGroupInput
-                        id="offer-shipping"
-                        value={formatMoneyInput(shippingCents)}
-                        className="text-right"
-                        onChange={(e) =>
-                            onShippingChange(parseMoneyInput(e.target.value))
-                        }
-                    />
-                    <InputGroupAddon align="inline-end">
-                        <InputGroupText>{currency}</InputGroupText>
-                    </InputGroupAddon>
-                </InputGroup>
+                <MoneyInput
+                    cents={shippingCents}
+                    currency={currency}
+                    onChange={onShippingChange}
+                />
             </div>
 
             <div className="flex items-center justify-between border-t pt-3 text-sm">

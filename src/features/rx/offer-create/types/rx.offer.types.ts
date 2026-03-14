@@ -1,3 +1,5 @@
+import type { RxOfferPricingMode } from "../lib/rx-offer-pricing";
+
 export type RxOfferFormItem = {
     id: number;
     label: string;
@@ -9,18 +11,26 @@ export type RxOfferFormItem = {
 
 export type RxOfferFormValues = {
     rxId: number;
+
     offerNumber: string;
     currency: string;
     issueDate: string;
+
     patientFirstName: string;
     patientLastName: string;
     patientStreet: string;
     patientZip: string;
     patientCity: string;
+
+    pricingMode: RxOfferPricingMode;
+    providerTotalCents: number | null;
+
     items: RxOfferFormItem[];
+
     subtotalCents: number;
     shippingCents: number;
     totalCents: number;
+
     notes: string;
 };
 

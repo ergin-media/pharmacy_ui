@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
 import { rxKeys } from "../../queries/rx.queries";
-import { createRxOffer } from "../api/rx.offer.types";
+import { createRxOffer } from "../api/rx-offer.api";
 
 export function useCreateOfferMutation() {
     const queryClient = useQueryClient();
