@@ -64,7 +64,15 @@ export type RxItem = {
 
     mapping?: {
         pharmacy_product_id?: number | null;
+        pharmacy_product_name?: string | null;
         has_pharmacy_product?: boolean | 0 | 1 | null;
+        pricing?: {
+            base_price?: number | null;
+            base_price_cents?: number | null;
+            line_total?: number | null;
+            line_total_cents?: number | null;
+            currency?: string | null;
+        } | null;
     } | null;
 };
 

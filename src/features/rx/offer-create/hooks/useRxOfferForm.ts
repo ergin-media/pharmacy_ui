@@ -18,21 +18,40 @@ function toDateInputValue(value?: string | null) {
 }
 
 function mapItems(rx: RxListItemDto): RxOfferFormItem[] {
+    const pricingMode = detectOfferPricingMode(rx);
+
     return (rx.items ?? []).map((item, index) => {
         const quantity = Number(item.quantity ?? 0);
         const unit = String(item.unit ?? "g");
 
+        const mappedBasePriceCents =
+            item.mapping?.pricing?.base_price_cents ?? 0;
+
+        const mappedLineTotalCents =
+            item.mapping?.pricing?.line_total_cents ?? 0;
+
+        const unitPriceCents =
+            pricingMode === "pharmacy_calculated"
+                ? Number(mappedBasePriceCents ?? 0)
+                : 0;
+
+        const totalPriceCents =
+            pricingMode === "pharmacy_calculated"
+                ? Number(mappedLineTotalCents ?? quantity * unitPriceCents)
+                : 0;
+
         return {
             id: Number(item.id ?? index + 1),
             label:
+                item.mapping?.pharmacy_product_name ??
                 item.raw_product_name ??
                 item.normalized_product_name ??
                 item.sku ??
                 "—",
             quantity,
             unit,
-            unitPriceCents: 0,
-            totalPriceCents: 0,
+            unitPriceCents,
+            totalPriceCents,
         };
     });
 }
