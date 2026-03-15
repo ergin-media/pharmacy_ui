@@ -86,39 +86,24 @@ export function RxMissingMappingsPopover(props: {
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent align="end" className="w-[560px] p-4">
-                <div className="grid gap-4">
-                    <div>
-                        <div className="text-sm font-medium">
-                            Fehlende Zuordnungen
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                            RX #{rx.id} · {unmappedItems.length} Artikel ohne Zuordnung
-                        </div>
+            <PopoverContent align="end" className="w-140 p-4">
+                <div className="grid gap-3">
+                    <div className="text-sm font-medium">
+                        Fehlende Zuordnungen verwalten
                     </div>
 
-                    <Separator />
-
-                    <div className="grid gap-4">
+                    <div className="grid gap-3">
                         {unmappedItems.map((item, index) => (
                             <div
                                 key={item.id}
                                 className="grid gap-2 rounded-lg border p-3"
                             >
-                                <div className="text-sm font-medium">
+                                <div className="text-xs text-muted-foreground">
                                     Artikel {index + 1}
                                 </div>
 
                                 <div className="text-sm">
                                     {rxItemLabel(item)}
-                                </div>
-
-                                <div className="text-xs text-muted-foreground">
-                                    Menge:{" "}
-                                    {formatQuantity(
-                                        item.quantity ?? null,
-                                        item.unit ?? null,
-                                    )}
                                 </div>
 
                                 <ProviderProductMappingCombobox
@@ -138,8 +123,6 @@ export function RxMissingMappingsPopover(props: {
                             </div>
                         ))}
                     </div>
-
-                    <Separator />
 
                     <div className="flex items-center justify-end gap-2">
                         <Button
