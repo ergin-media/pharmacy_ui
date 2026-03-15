@@ -110,7 +110,7 @@ export function ProviderProductsListTable(props: {
                                     {/* Zuordnung (Combobox) */}
                                     <TableCell>
                                         <ProviderProductMappingCombobox
-                                            row={row}
+                                            currentPharmacyProductId={row?.pharmacy_product?.id}
                                             products={pharmacyProducts}
                                             isLoading={rowBusy}
                                             onSelect={(pid) =>

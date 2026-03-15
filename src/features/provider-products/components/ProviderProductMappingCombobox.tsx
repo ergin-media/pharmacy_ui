@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import type { ProviderProductMapDto } from "../types/provider-products.dto";
 import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
 
 import {
@@ -13,14 +12,19 @@ import {
 } from "@/components/ui/combobox";
 
 export function ProviderProductMappingCombobox(props: {
-    row: ProviderProductMapDto;
+    currentPharmacyProductId?: number | null;
+    isUnmapped?: boolean;
     products: PharmacyProductDto[];
     isLoading?: boolean;
     onSelect: (pharmacyProductId: number | null) => void;
 }) {
-    const { row, products, isLoading = false, onSelect } = props;
-
-    const isUnmapped = !row.pharmacy_product?.id;
+    const {
+        currentPharmacyProductId,
+        isUnmapped = false,
+        products,
+        isLoading = false,
+        onSelect,
+    } = props;
 
     const items = useMemo(() => products.map((p) => String(p.id)), [products]);
 
@@ -48,8 +52,8 @@ export function ProviderProductMappingCombobox(props: {
         return m;
     }, [products]);
 
-    const currentValue = row.pharmacy_product?.id
-        ? String(row.pharmacy_product.id)
+    const currentValue = currentPharmacyProductId
+        ? String(currentPharmacyProductId)
         : undefined;
 
     const handleValueChange = useCallback(
@@ -96,11 +100,10 @@ export function ProviderProductMappingCombobox(props: {
                     disabled={isLoading}
                     loading={isLoading}
                     className={cn(
-                        // Basis
                         "transition-colors",
                         isUnmapped &&
-                            !isLoading &&
-                            "border-red-400/70 bg-red-50/40 dark:bg-amber-500/10 focus-visible:ring-red-400",
+                        !isLoading &&
+                        "border-red-400/70 bg-red-50/40 dark:bg-amber-500/10 focus-visible:ring-red-400",
                     )}
                 />
 
@@ -120,13 +123,13 @@ export function ProviderProductMappingCombobox(props: {
                                         <div className="text-xs text-muted-foreground">
                                             {p
                                                 ? [
-                                                      p.product_code
-                                                          ? `PZN: ${p.product_code}`
-                                                          : "",
-                                                      p.manufacturer ?? "",
-                                                  ]
-                                                      .filter(Boolean)
-                                                      .join(" · ")
+                                                    p.product_code
+                                                        ? `PZN: ${p.product_code}`
+                                                        : "",
+                                                    p.manufacturer ?? "",
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(" · ")
                                                 : "—"}
                                         </div>
                                     </div>

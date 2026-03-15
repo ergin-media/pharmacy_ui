@@ -9,6 +9,8 @@ import {
     rxItemHasMapping,
     rxShouldShowPriceUpdateHint,
 } from "../lib/rx.reparse";
+import { RxMissingMappingsPopover } from "./RxMissingMappingsPopover";
+import { useRxMissingMappings } from "../hooks/useRxMissingMappings";
 
 function rxItemLabel(it: RxItem) {
     return it.raw_product_name ?? it.normalized_product_name ?? it.sku ?? "—";
@@ -24,10 +26,12 @@ export function RxItemsTableCell(props: {
 
     const showPriceWarning = rxShouldShowPriceUpdateHint(rx, unmappedCount);
 
+    const missingMappingsVm = useRxMissingMappings(rx);
+
     return (
         <TableCell>
             {rxItems.length > 0 ? (
-                <div className="min-w-80 space-y-1">
+                <div className="min-w-80 space-y-2">
                     {rxItems.map((it) => {
                         const mapped = rxItemHasMapping(it);
 
@@ -60,6 +64,22 @@ export function RxItemsTableCell(props: {
                             </div>
                         );
                     })}
+
+                    {unmappedCount > 0 ? (
+                        <div className="pt-1">
+                            <RxMissingMappingsPopover
+                                rx={rx}
+                                unmappedItems={missingMappingsVm.unmappedItems}
+                                pharmacyProducts={
+                                    missingMappingsVm.pharmacyProducts
+                                }
+                                isLoading={missingMappingsVm.isLoadingProducts}
+                                onAssign={
+                                    missingMappingsVm.actions.assignMapping
+                                }
+                            />
+                        </div>
+                    ) : null}
 
                     {showPriceWarning ? (
                         <Badge variant="danger">

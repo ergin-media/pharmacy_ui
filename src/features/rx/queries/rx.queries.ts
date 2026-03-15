@@ -4,6 +4,7 @@ import { fetchRxList, reparseRx, takeOverRx } from "../api/rx.api";
 import { removeRxFromListCache, replaceRxInListCache } from "../lib/rx.cache";
 import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
 
+// in rxKeys ergänzen
 export const rxKeys = {
     all: ["rx"] as const,
     lists: () => [...rxKeys.all, "list"] as const,
@@ -26,6 +27,7 @@ export const rxKeys = {
     mutations: {
         reparse: () => [...rxKeys.all, "mutation", "reparse"] as const,
         takeOver: () => [...rxKeys.all, "mutation", "take-over"] as const,
+        assignMapping: () => [...rxKeys.all, "mutation", "assign-mapping"] as const,
     },
 };
 
