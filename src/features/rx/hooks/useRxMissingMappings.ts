@@ -18,13 +18,25 @@ export function useRxMissingMappings(rx: RxListItemDto) {
         [rx.items],
     );
 
-    async function assignMapping(input: {
-        rxItemId: number;
-        providerProductMapId: number;
-        pharmacyProductId: number | null;
+    async function assignMappings(input: {
+        rxDocumentId: number;
+        mappings: Array<{
+            rxItemId: number;
+            providerProductMapId: number;
+            pharmacyProductId: number | null;
+        }>;
     }) {
-        // folgt im nächsten Schritt über RX-Mutation
-        console.log("assignMapping", input);
+        console.log("assignMappings", input);
+
+        // später:
+        // await assignMappingsMutation.mutateAsync({
+        //   rx_document_id: input.rxDocumentId,
+        //   mappings: input.mappings.map((m) => ({
+        //     rx_item_id: m.rxItemId,
+        //     provider_product_map_id: m.providerProductMapId,
+        //     pharmacy_product_id: m.pharmacyProductId,
+        //   })),
+        // });
     }
 
     return {
@@ -33,7 +45,7 @@ export function useRxMissingMappings(rx: RxListItemDto) {
         pharmacyProductsQuery,
         isLoadingProducts: pharmacyProductsQuery.isFetching,
         actions: {
-            assignMapping,
+            assignMappings,
         },
     };
 }

@@ -70,13 +70,9 @@ export function RxItemsTableCell(props: {
                             <RxMissingMappingsPopover
                                 rx={rx}
                                 unmappedItems={missingMappingsVm.unmappedItems}
-                                pharmacyProducts={
-                                    missingMappingsVm.pharmacyProducts
-                                }
+                                pharmacyProducts={missingMappingsVm.pharmacyProducts}
                                 isLoading={missingMappingsVm.isLoadingProducts}
-                                onAssign={
-                                    missingMappingsVm.actions.assignMapping
-                                }
+                                onSubmit={missingMappingsVm.actions.assignMappings}
                             />
                         </div>
                     ) : null}
