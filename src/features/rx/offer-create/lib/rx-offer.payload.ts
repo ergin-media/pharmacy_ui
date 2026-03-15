@@ -10,6 +10,7 @@ export function mapRxOfferFormToCreatePayload(
         notes: values.notes.trim() ? values.notes.trim() : null,
         shipping_cents: values.shippingCents,
         items: values.items.map((item) => ({
+            item_id: item.id,
             label: item.label.trim(),
             quantity: item.quantity,
             unit: item.unit,

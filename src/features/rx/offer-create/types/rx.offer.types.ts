@@ -37,6 +37,7 @@ export type RxOfferFormValues = {
 };
 
 export type CreateRxOfferItemPayload = {
+    item_id: number;
     label: string;
     quantity: number;
     unit: string;
