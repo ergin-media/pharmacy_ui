@@ -33,7 +33,6 @@ export function ProviderProductMappingCombobox(props: {
         onSelect,
     } = props;
 
-    // 👉 wichtig: aktuelles produkt immer rein mergen
     const mergedProducts = useMemo(() => {
         if (
             !currentPharmacyProduct?.id ||
@@ -83,7 +82,7 @@ export function ProviderProductMappingCombobox(props: {
                 value={currentValue}
                 onInputValueChange={onSearchValueChange}
                 onValueChange={handleValueChange}
-                disabled={isLoading || isDisabled}
+                disabled={isDisabled}
                 itemToStringLabel={itemToStringLabel}
                 itemToStringValue={itemToStringValue}
             >
@@ -91,7 +90,7 @@ export function ProviderProductMappingCombobox(props: {
                     placeholder="Zuordnung wählen…"
                     showClear
                     showTrigger
-                    disabled={isLoading || isDisabled}
+                    disabled={isDisabled}
                     loading={isLoading}
                     className={cn(
                         "transition-colors",

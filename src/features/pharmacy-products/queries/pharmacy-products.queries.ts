@@ -10,10 +10,15 @@ export const pharmacyProductsKeys = {
 
 export function usePharmacyProductsListQuery(
     params: PharmacyProductsListParams,
+    input?: {
+        enabled?: boolean;
+    },
 ) {
     return useQuery({
         queryKey: pharmacyProductsKeys.list(params),
         queryFn: () => fetchPharmacyProducts(params),
         staleTime: 10_000,
+        placeholderData: (previousData) => previousData,
+        enabled: input?.enabled,
     });
 }
