@@ -16,10 +16,7 @@ export function useRxMissingMappings(rx: RxListItemDto) {
 
     const assignMappingsMutation = useAssignRxMappingsMutation();
 
-    const unmappedItems = useMemo(
-        () => getUnmappedItems(rx.items),
-        [rx.items],
-    );
+    const unmappedItems = useMemo(() => getUnmappedItems(rx.items), [rx.items]);
 
     async function assignMappings(input: {
         rxDocumentId: number;

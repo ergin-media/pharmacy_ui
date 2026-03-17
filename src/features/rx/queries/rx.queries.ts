@@ -11,6 +11,7 @@ import {
     takeOverRx,
     assignRxMappings,
 } from "../api/rx.api";
+import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
 
 export const rxKeys = {
     all: ["rx"] as const,
@@ -58,7 +59,7 @@ export function useReparseRxMutation() {
 
             qc.setQueriesData(
                 { queryKey: rxKeys.all },
-                (old: any) => {
+                (old: RxListItemDto) => {
                     if (!old?.items) return old;
 
                     return {
@@ -88,25 +89,27 @@ export function useTakeOverRxMutation() {
 export function useAssignRxMappingsMutation() {
     const qc = useQueryClient();
 
-    return useMutation({
+    return useToastMutation({
         mutationKey: rxKeys.mutations.assignMappings(),
         mutationFn: assignRxMappings,
-        onSuccess: (data) => {
+        toastMessages: {
+            loading: "Zuordnungen werden gespeichert...",
+            success: "Zuordnungen erfolgreich gespeichert",
+            error: "Zuordnungen konnten nicht gespeichert werden",
+        },
+        onSuccess: async (data) => {
             const updatedRx = data.rx;
 
-            qc.setQueriesData(
-                { queryKey: rxKeys.all },
-                (old: any) => {
-                    if (!old?.items) return old;
+            qc.setQueriesData({ queryKey: rxKeys.all }, (old: any) => {
+                if (!old?.items) return old;
 
-                    return {
-                        ...old,
-                        items: old.items.map((item: RxListItemDto) =>
-                            item.id === updatedRx.id ? updatedRx : item,
-                        ),
-                    };
-                },
-            );
+                return {
+                    ...old,
+                    items: old.items.map((item: RxListItemDto) =>
+                        item.id === updatedRx.id ? updatedRx : item,
+                    ),
+                };
+            });
         },
     });
 }

@@ -111,12 +111,13 @@ export function RxMissingMappingsPopover(props: {
                                     }
                                     isUnmapped
                                     products={pharmacyProducts}
-                                    isLoading={isLoading && !isSubmitting}
+                                    isLoading={isLoading}
                                     isDisabled={isSubmitting}
                                     onSelect={(pharmacyProductId) =>
                                         setDraftMappings((prev) => ({
                                             ...prev,
-                                            [Number(item.id)]: pharmacyProductId,
+                                            [Number(item.id)]:
+                                                pharmacyProductId,
                                         }))
                                     }
                                 />
@@ -138,7 +139,7 @@ export function RxMissingMappingsPopover(props: {
                             type="button"
                             onClick={handleSubmit}
                             disabled={!allAssigned || isSubmitting}
-                            loading={isLoading}
+                            loading={isSubmitting}
                         >
                             Zuordnungen übernehmen
                         </LoadingButton>
