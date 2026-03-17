@@ -4,7 +4,12 @@ import {
     useQuery,
     useQueryClient,
 } from "@tanstack/react-query";
-import type { RxItem, RxListItemDto, RxListQueryParams } from "../types/rx.dto";
+import type {
+    RxItem,
+    RxListItemDto,
+    RxListQueryParams,
+    RxListResponseDto,
+} from "../types/rx.dto";
 import {
     fetchRxList,
     reparseRx,
@@ -100,16 +105,19 @@ export function useAssignRxMappingsMutation() {
         onSuccess: async (data) => {
             const updatedRx = data.rx;
 
-            qc.setQueriesData({ queryKey: rxKeys.all }, (old: any) => {
-                if (!old?.items) return old;
+            qc.setQueriesData<RxListResponseDto>(
+                { queryKey: rxKeys.all },
+                (old) => {
+                    if (!old?.items) return old;
 
-                return {
-                    ...old,
-                    items: old.items.map((item: RxListItemDto) =>
-                        item.id === updatedRx.id ? updatedRx : item,
-                    ),
-                };
-            });
+                    return {
+                        ...old,
+                        items: old.items.map((item) =>
+                            item.id === updatedRx.id ? updatedRx : item,
+                        ),
+                    };
+                },
+            );
         },
     });
 }
