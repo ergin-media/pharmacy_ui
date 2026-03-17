@@ -44,7 +44,7 @@ export async function assignRxMappings(input: {
 
     const res = await api.patch<{
         rx: RxListItemDto;
-    }>(`/v1/rx/${rx_document_id}/mappings`, {
+    }>(`rx/${rx_document_id}/mappings`, {
         mappings,
     });
 
