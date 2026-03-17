@@ -42,6 +42,7 @@ function mapItems(rx: RxListItemDto): RxOfferFormItem[] {
 
         return {
             id: Number(item.id ?? index + 1),
+            pharmacyProductId: item.mapping?.pharmacy_product_id ?? null,
             label:
                 item.mapping?.pharmacy_product_name ??
                 item.raw_product_name ??
@@ -63,6 +64,7 @@ function sum(items: RxOfferFormItem[]) {
 function createEmptyItem(nextId: number): RxOfferFormItem {
     return {
         id: nextId,
+        pharmacyProductId: null,
         label: "",
         quantity: 1,
         unit: "g",

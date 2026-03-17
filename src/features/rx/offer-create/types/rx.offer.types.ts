@@ -2,6 +2,7 @@ import type { RxOfferPricingMode } from "../lib/rx-offer-pricing";
 
 export type RxOfferFormItem = {
     id: number;
+    pharmacyProductId?: number | null;
     label: string;
     quantity: number;
     unit: string;
