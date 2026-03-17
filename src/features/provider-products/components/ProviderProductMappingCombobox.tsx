@@ -15,6 +15,8 @@ export function ProviderProductMappingCombobox(props: {
     currentPharmacyProductId?: number | null;
     isUnmapped?: boolean;
     products: PharmacyProductDto[];
+    searchValue: string;
+    onSearchValueChange: (value: string) => void;
     isLoading?: boolean;
     isDisabled?: boolean;
     onSelect: (pharmacyProductId: number | null) => void;
@@ -23,6 +25,8 @@ export function ProviderProductMappingCombobox(props: {
         currentPharmacyProductId,
         isUnmapped = false,
         products,
+        searchValue,
+        onSearchValueChange,
         isLoading = false,
         isDisabled = false,
         onSelect,
@@ -33,24 +37,6 @@ export function ProviderProductMappingCombobox(props: {
     const byId = useMemo(() => {
         const m = new Map<string, PharmacyProductDto>();
         for (const p of products) m.set(String(p.id), p);
-        return m;
-    }, [products]);
-
-    const searchIndex = useMemo(() => {
-        const m = new Map<string, string>();
-        for (const p of products) {
-            m.set(
-                String(p.id),
-                [
-                    p.name,
-                    p.product_code,
-                    p.manufacturer ?? "",
-                    p.name_norm ?? "",
-                ]
-                    .join(" ")
-                    .toLowerCase(),
-            );
-        }
         return m;
     }, [products]);
 
@@ -74,32 +60,23 @@ export function ProviderProductMappingCombobox(props: {
 
     const itemToStringValue = useCallback((id: string) => id, []);
 
-    const filter = useCallback(
-        (id: string, query: string) => {
-            const q = query.trim().toLowerCase();
-            if (!q) return true;
-            const hay = searchIndex.get(id);
-            return hay ? hay.includes(q) : false;
-        },
-        [searchIndex],
-    );
-
     return (
         <div className="min-w-80">
             <Combobox
                 items={items}
                 value={currentValue}
+                inputValue={searchValue}
+                onInputValueChange={onSearchValueChange}
                 onValueChange={handleValueChange}
                 disabled={isLoading || isDisabled}
                 itemToStringLabel={itemToStringLabel}
                 itemToStringValue={itemToStringValue}
-                filter={filter}
             >
                 <ComboboxInput
                     placeholder="Zuordnung wählen…"
                     showClear
                     showTrigger
-                    disabled={isLoading}
+                    disabled={isLoading || isDisabled}
                     loading={isLoading}
                     className={cn(
                         "transition-colors",
@@ -117,7 +94,6 @@ export function ProviderProductMappingCombobox(props: {
                         align: "shift",
                         fallbackAxisSide: "none",
                     }}
-                    className="max-h-72"
                 >
                     <ComboboxEmpty>Keine Treffer.</ComboboxEmpty>
 

@@ -8,20 +8,54 @@ import {
 } from "@/components/ui/popover";
 
 import { ProviderProductMappingCombobox } from "@/features/provider-products/components/ProviderProductMappingCombobox";
-import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
-
+import { usePharmacyProductsForMappingQuery } from "@/features/provider-products/queries/pharmacyProductsForMapping.queries";
 import type { RxItem, RxListItemDto } from "../types/rx.dto";
 import { Settings2 } from "lucide-react";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 
 function rxItemLabel(it: RxItem) {
     return it.raw_product_name ?? it.normalized_product_name ?? it.sku ?? "—";
 }
 
+function MappingRow(props: {
+    item: RxItem;
+    selectedPharmacyProductId: number | null;
+    isDisabled?: boolean;
+    onSelect: (pharmacyProductId: number | null) => void;
+}) {
+    const { item, selectedPharmacyProductId, isDisabled, onSelect } = props;
+
+    const [searchValue, setSearchValue] = useState("");
+    const debouncedSearchValue = useDebouncedValue(searchValue, 250);
+
+    const productsQuery =
+        usePharmacyProductsForMappingQuery(debouncedSearchValue);
+    const products = productsQuery.data?.items ?? [];
+
+    return (
+        <div className="grid gap-2 rounded-lg border p-3">
+            <div className="text-xs text-muted-foreground">Artikel</div>
+
+            <div className="text-sm">{rxItemLabel(item)}</div>
+
+            <ProviderProductMappingCombobox
+                currentPharmacyProductId={selectedPharmacyProductId}
+                isUnmapped
+                products={products}
+                searchValue={searchValue}
+                onSearchValueChange={setSearchValue}
+                isLoading={productsQuery.isFetching}
+                isDisabled={isDisabled}
+                onSelect={onSelect}
+            />
+        </div>
+    );
+}
+
 export function RxMissingMappingsPopover(props: {
     rx: RxListItemDto;
     unmappedItems: RxItem[];
-    pharmacyProducts: PharmacyProductDto[];
     isLoading?: boolean;
     onSubmit: (input: {
         rxDocumentId: number;
@@ -32,7 +66,7 @@ export function RxMissingMappingsPopover(props: {
         }>;
     }) => Promise<void>;
 }) {
-    const { rx, unmappedItems, pharmacyProducts, isLoading, onSubmit } = props;
+    const { rx, unmappedItems, isLoading, onSubmit } = props;
 
     const [open, setOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,36 +126,21 @@ export function RxMissingMappingsPopover(props: {
                     </div>
 
                     <div className="grid gap-3">
-                        {unmappedItems.map((item, index) => (
-                            <div
+                        {unmappedItems.map((item) => (
+                            <MappingRow
                                 key={item.id}
-                                className="grid gap-2 rounded-lg border p-3"
-                            >
-                                <div className="text-xs text-muted-foreground">
-                                    Artikel {index + 1}
-                                </div>
-
-                                <div className="text-sm">
-                                    {rxItemLabel(item)}
-                                </div>
-
-                                <ProviderProductMappingCombobox
-                                    currentPharmacyProductId={
-                                        draftMappings[Number(item.id)] ?? null
-                                    }
-                                    isUnmapped
-                                    products={pharmacyProducts}
-                                    isLoading={isLoading}
-                                    isDisabled={isSubmitting}
-                                    onSelect={(pharmacyProductId) =>
-                                        setDraftMappings((prev) => ({
-                                            ...prev,
-                                            [Number(item.id)]:
-                                                pharmacyProductId,
-                                        }))
-                                    }
-                                />
-                            </div>
+                                item={item}
+                                selectedPharmacyProductId={
+                                    draftMappings[Number(item.id)] ?? null
+                                }
+                                isDisabled={Boolean(isLoading) || isSubmitting}
+                                onSelect={(pharmacyProductId) =>
+                                    setDraftMappings((prev) => ({
+                                        ...prev,
+                                        [Number(item.id)]: pharmacyProductId,
+                                    }))
+                                }
+                            />
                         ))}
                     </div>
 

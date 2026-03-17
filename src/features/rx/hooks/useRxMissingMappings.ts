@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 
-import { usePharmacyProductsForMappingQuery } from "@/features/provider-products/queries/pharmacyProductsForMapping.queries";
-
 import type { RxItem, RxListItemDto } from "../types/rx.dto";
 import { rxItemHasMapping } from "../lib/rx.reparse";
 import { useAssignRxMappingsMutation } from "../queries/rx.queries";
@@ -11,9 +9,6 @@ function getUnmappedItems(items?: RxItem[] | null) {
 }
 
 export function useRxMissingMappings(rx: RxListItemDto) {
-    const pharmacyProductsQuery = usePharmacyProductsForMappingQuery();
-    const pharmacyProducts = pharmacyProductsQuery.data?.items ?? [];
-
     const assignMappingsMutation = useAssignRxMappingsMutation();
 
     const unmappedItems = useMemo(() => getUnmappedItems(rx.items), [rx.items]);
@@ -38,9 +33,6 @@ export function useRxMissingMappings(rx: RxListItemDto) {
 
     return {
         unmappedItems,
-        pharmacyProducts,
-        pharmacyProductsQuery,
-        isLoadingProducts: pharmacyProductsQuery.isFetching,
         isSaving: assignMappingsMutation.isPending,
         actions: {
             assignMappings,
