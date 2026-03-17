@@ -22,8 +22,8 @@ export function ProviderProductMappingCell(props: {
 
     return (
         <ProviderProductMappingCombobox
-            currentPharmacyProductId={row.pharmacy_product?.id ?? null}
-            isUnmapped={!row.pharmacy_product?.id}
+            currentPharmacyProductId={row.pharmacy_product?.id}
+            currentPharmacyProduct={row.pharmacy_product ?? null}
             products={products}
             searchValue={searchValue}
             onSearchValueChange={setSearchValue}

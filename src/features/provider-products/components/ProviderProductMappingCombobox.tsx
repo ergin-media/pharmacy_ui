@@ -13,6 +13,7 @@ import {
 
 export function ProviderProductMappingCombobox(props: {
     currentPharmacyProductId?: number | null;
+    currentPharmacyProduct?: PharmacyProductDto | null;
     isUnmapped?: boolean;
     products: PharmacyProductDto[];
     searchValue: string;
@@ -23,22 +24,36 @@ export function ProviderProductMappingCombobox(props: {
 }) {
     const {
         currentPharmacyProductId,
+        currentPharmacyProduct,
         isUnmapped = false,
         products,
-        searchValue,
         onSearchValueChange,
         isLoading = false,
         isDisabled = false,
         onSelect,
     } = props;
 
-    const items = useMemo(() => products.map((p) => String(p.id)), [products]);
+    const mergedProducts = useMemo(() => {
+        if (
+            !currentPharmacyProduct?.id ||
+            products.some((p) => p.id === currentPharmacyProduct.id)
+        ) {
+            return products;
+        }
+
+        return [currentPharmacyProduct, ...products];
+    }, [products, currentPharmacyProduct]);
+
+    const items = useMemo(
+        () => mergedProducts.map((p) => String(p.id)),
+        [mergedProducts],
+    );
 
     const byId = useMemo(() => {
         const m = new Map<string, PharmacyProductDto>();
-        for (const p of products) m.set(String(p.id), p);
+        for (const p of mergedProducts) m.set(String(p.id), p);
         return m;
-    }, [products]);
+    }, [mergedProducts]);
 
     const currentValue = currentPharmacyProductId
         ? String(currentPharmacyProductId)
@@ -65,7 +80,6 @@ export function ProviderProductMappingCombobox(props: {
             <Combobox
                 items={items}
                 value={currentValue}
-                inputValue={searchValue}
                 onInputValueChange={onSearchValueChange}
                 onValueChange={handleValueChange}
                 disabled={isLoading || isDisabled}
