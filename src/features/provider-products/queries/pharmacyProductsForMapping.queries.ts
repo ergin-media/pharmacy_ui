@@ -3,8 +3,7 @@ import { usePharmacyProductsListQuery } from "@/features/pharmacy-products/queri
 export function usePharmacyProductsForMappingQuery(search: string) {
     return usePharmacyProductsListQuery({
         page: 1,
-        per_page: 100,
-        // wichtig: alle, inkl aktiv/inaktiv
+        per_page: 25,
         sort: "name_asc",
         search,
     });

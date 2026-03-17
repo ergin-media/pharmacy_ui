@@ -2,7 +2,7 @@
 import { ProviderProductsListTable } from "../components/ProviderProductsListTable";
 
 import { Pagination } from "@/components/ui/pagination";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { ProviderProductsMappingsToolbar } from "../components/ProviderProductsMappingsToolbar";
 import {
@@ -18,16 +18,7 @@ export function ProviderProductsMappingsPage() {
     const vm = useProviderProductsMappingsPage();
     const providersQuery = useProviderProductsProvidersQuery();
 
-    const {
-        filters,
-        query,
-        meta,
-        actions,
-        pharmacyProducts,
-        pharmacyProductsQuery,
-        disableControls,
-        busyRowIds,
-    } = vm;
+    const { filters, query, meta, actions, disableControls, busyRowIds } = vm;
 
     const providers = providersQuery.data?.items ?? [];
 
@@ -68,8 +59,6 @@ export function ProviderProductsMappingsPage() {
                         perPage={filters.perPage}
                         isLoading={query.isFetching}
                         disableControls={disableControls}
-                        pharmacyProducts={pharmacyProducts}
-                        pharmacyProductsLoading={pharmacyProductsQuery.isFetching}
                         onSetMapping={actions.setMapping}
                         onRemoveMapping={actions.removeMapping}
                         busyRowIds={busyRowIds}

@@ -1,5 +1,4 @@
 import type { ProviderProductMapDto } from "../types/provider-products.dto";
-import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,19 +13,14 @@ import { formatDateTime } from "@/shared/lib/format/date";
 
 import { ProviderProductsListTableSkeleton } from "./ProviderProductsListTableSkeleton";
 import { ProviderProductRowActionsMenu } from "./ProviderProductRowActionsMenu";
-import { ProviderProductMappingCombobox } from "./ProviderProductMappingCombobox";
+import { ProviderProductMappingCell } from "./ProviderProductMappingCell";
 
 export function ProviderProductsListTable(props: {
     items: ProviderProductMapDto[];
     isLoading?: boolean;
     perPage: number;
 
-    pharmacyProducts: PharmacyProductDto[];
-    pharmacyProductsLoading?: boolean;
-
     disableControls?: boolean;
-
-    /** ✅ Parent setzt das, wenn Mapping-Mutation läuft */
     busyRowIds?: number[];
 
     onSetMapping: (
@@ -41,8 +35,6 @@ export function ProviderProductsListTable(props: {
         items,
         isLoading = false,
         perPage,
-        pharmacyProducts,
-        pharmacyProductsLoading = false,
         disableControls = false,
         busyRowIds = [],
         onSetMapping,
@@ -50,7 +42,7 @@ export function ProviderProductsListTable(props: {
         onRemoveMapping,
     } = props;
 
-    const tableBusy = isLoading || pharmacyProductsLoading;
+    const tableBusy = isLoading;
 
     return (
         <div className="overflow-x-auto rounded-md border">
@@ -93,25 +85,21 @@ export function ProviderProductsListTable(props: {
                                     key={row.id}
                                     className="hover:bg-muted/50"
                                 >
-                                    {/* Plattform */}
                                     <TableCell className="ps-3">
                                         <div className="font-medium">
                                             {row.provider.name ?? "—"}
                                         </div>
                                     </TableCell>
 
-                                    {/* Externer Name */}
                                     <TableCell>
                                         <div className="font-medium">
                                             {row.external.name_raw ?? "—"}
                                         </div>
                                     </TableCell>
 
-                                    {/* Zuordnung (Combobox) */}
                                     <TableCell>
-                                        <ProviderProductMappingCombobox
-                                            currentPharmacyProductId={row?.pharmacy_product?.id}
-                                            products={pharmacyProducts}
+                                        <ProviderProductMappingCell
+                                            row={row}
                                             isLoading={rowBusy}
                                             onSelect={(pid) =>
                                                 onSetMapping(row, pid)
@@ -119,7 +107,6 @@ export function ProviderProductsListTable(props: {
                                         />
                                     </TableCell>
 
-                                    {/* Status */}
                                     <TableCell>
                                         <Badge
                                             variant={
@@ -134,7 +121,6 @@ export function ProviderProductsListTable(props: {
                                         </Badge>
                                     </TableCell>
 
-                                    {/* Usage */}
                                     <TableCell>
                                         <div className="font-medium">
                                             {row.usage?.count ?? 0}×
@@ -149,14 +135,12 @@ export function ProviderProductsListTable(props: {
                                         ) : null}
                                     </TableCell>
 
-                                    {/* Updated */}
                                     <TableCell className="text-muted-foreground whitespace-nowrap">
                                         {formatDateTime(
                                             row.updated_at ?? row.created_at,
                                         )}
                                     </TableCell>
 
-                                    {/* Aktionen */}
                                     <TableCell className="text-right pe-3">
                                         <div className="flex justify-end">
                                             <ProviderProductRowActionsMenu
