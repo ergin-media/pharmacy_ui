@@ -140,12 +140,23 @@ export function PharmacyProductsListTable(props: {
                         items.map((p) => (
                             <TableRow key={p.id} className="hover:bg-muted/50">
                                 <TableCell className="ps-3">
-                                    <div className="font-medium">{p.name}</div>
-                                    {p.manufacturer ? (
-                                        <div className="text-xs text-muted-foreground">
-                                            {p.manufacturer}
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="font-medium">{p.name}</div>
+
+                                        <div className="text-xs text-muted-foreground flex flex-wrap gap-x-2">
+                                            {p.strain ? (
+                                                <span className="text-foreground/80 font-medium">
+                                                    {p.strain}
+                                                </span>
+                                            ) : null}
+
+                                            {p.manufacturer ? (
+                                                <span className="opacity-70">
+                                                    {p.manufacturer}
+                                                </span>
+                                            ) : null}
                                         </div>
-                                    ) : null}
+                                    </div>
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
                                     {p.product_code}
