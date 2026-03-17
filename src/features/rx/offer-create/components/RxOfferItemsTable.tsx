@@ -6,6 +6,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { MoneyInput } from "@/components/ui/money-input";
 import { RxOfferProductCombobox } from "./RxOfferProductCombobox";
 import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
+import { mapOfferItemPharmacyProductToDto } from "../lib/rx-offer.mappers";
 
 export function RxOfferItemsTable(props: {
     items: RxOfferFormItem[];
@@ -26,29 +27,7 @@ export function RxOfferItemsTable(props: {
         <div className="overflow-hidden rounded-xl border">
             <div className="divide-y">
                 {items.map((item, index) => {
-                    const selectedProduct: PharmacyProductDto | null =
-                        item.pharmacyProductId
-                            ? {
-                                id: item.pharmacyProductId,
-                                manufacturer: null,
-                                name: item.label,
-                                strain: null,
-                                product_code: "",
-                                name_norm: "",
-                                strain_norm: "",
-                                is_active: true,
-                                rx_items_count: 0,
-                                prices: {
-                                    base_price: item.unitPriceCents / 100,
-                                    base_price_cents: item.unitPriceCents,
-                                    price_other_provider: null,
-                                    price_other_provider_cents: null,
-                                    currency: "EUR",
-                                },
-                                created_at: "",
-                                updated_at: null,
-                            }
-                            : null;
+                    const selectedProduct = mapOfferItemPharmacyProductToDto(item);
 
                     return (
                         <div key={item.id} className="px-4 py-4 space-y-4">
