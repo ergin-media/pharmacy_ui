@@ -33,6 +33,7 @@ export function ProviderProductMappingCombobox(props: {
         onSelect,
     } = props;
 
+    // 👉 wichtig: aktuelles produkt immer rein mergen
     const mergedProducts = useMemo(() => {
         if (
             !currentPharmacyProduct?.id ||
@@ -95,8 +96,8 @@ export function ProviderProductMappingCombobox(props: {
                     className={cn(
                         "transition-colors",
                         isUnmapped &&
-                            !isLoading &&
-                            "border-red-400/70 bg-red-50/40 dark:bg-amber-500/10 focus-visible:ring-red-400",
+                        !isLoading &&
+                        "border-red-400/70 bg-red-50/40 dark:bg-amber-500/10 focus-visible:ring-red-400",
                     )}
                 />
 
@@ -114,6 +115,7 @@ export function ProviderProductMappingCombobox(props: {
                     <ComboboxList>
                         {(id) => {
                             const p = byId.get(id);
+
                             return (
                                 <ComboboxItem key={id} value={id}>
                                     <div className="flex w-full flex-col">
@@ -124,13 +126,14 @@ export function ProviderProductMappingCombobox(props: {
                                         <div className="text-xs text-muted-foreground">
                                             {p
                                                 ? [
-                                                      p.product_code
-                                                          ? `PZN: ${p.product_code}`
-                                                          : "",
-                                                      p.manufacturer ?? "",
-                                                  ]
-                                                      .filter(Boolean)
-                                                      .join(" · ")
+                                                    p.product_code
+                                                        ? `PZN: ${p.product_code}`
+                                                        : "",
+                                                    p.manufacturer ?? "",
+                                                    p.strain ?? "",
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(" · ")
                                                 : "—"}
                                         </div>
                                     </div>
