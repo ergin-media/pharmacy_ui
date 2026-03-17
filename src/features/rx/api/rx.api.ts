@@ -31,3 +31,18 @@ export async function takeOverRx(id: number) {
 
     return res.data;
 }
+
+export async function assignRxMappings(input: {
+    rx_document_id: number;
+    mappings: Array<{
+        rx_item_id: number;
+        provider_product_map_id: number;
+        pharmacy_product_id: number | null;
+    }>;
+}) {
+    const res = await api.post<{
+        rx: RxListItemDto;
+    }>("rx/mappings/assign", input);
+
+    return res.data;
+}

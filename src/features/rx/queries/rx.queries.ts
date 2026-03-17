@@ -1,10 +1,17 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { RxListQueryParams } from "../types/rx.dto";
-import { fetchRxList, reparseRx, takeOverRx } from "../api/rx.api";
-import { removeRxFromListCache, replaceRxInListCache } from "../lib/rx.cache";
-import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
+import {
+    useMutation,
+    useMutationState,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
+import type { RxItem, RxListItemDto, RxListQueryParams } from "../types/rx.dto";
+import {
+    fetchRxList,
+    reparseRx,
+    takeOverRx,
+    assignRxMappings,
+} from "../api/rx.api";
 
-// in rxKeys ergänzen
 export const rxKeys = {
     all: ["rx"] as const,
     lists: () => [...rxKeys.all, "list"] as const,
@@ -27,7 +34,8 @@ export const rxKeys = {
     mutations: {
         reparse: () => [...rxKeys.all, "mutation", "reparse"] as const,
         takeOver: () => [...rxKeys.all, "mutation", "take-over"] as const,
-        assignMapping: () => [...rxKeys.all, "mutation", "assign-mapping"] as const,
+        assignMappings: () =>
+            [...rxKeys.all, "mutation", "assign-mappings"] as const,
     },
 };
 
@@ -42,15 +50,25 @@ export function useRxListQuery(params: RxListQueryParams) {
 export function useReparseRxMutation() {
     const qc = useQueryClient();
 
-    return useToastMutation({
+    return useMutation({
+        mutationKey: rxKeys.mutations.reparse(),
         mutationFn: reparseRx,
-        toastMessages: {
-            loading: "Rezept wird neu verarbeitet...",
-            success: "Rezept erfolgreich neu verarbeitet",
-            error: "Rezept konnte nicht neu verarbeitet werden",
-        },
         onSuccess: (data) => {
-            replaceRxInListCache(qc, data.item);
+            const updatedItem = data.item;
+
+            qc.setQueriesData(
+                { queryKey: rxKeys.all },
+                (old: any) => {
+                    if (!old?.items) return old;
+
+                    return {
+                        ...old,
+                        items: old.items.map((i: RxItem) =>
+                            i.id === updatedItem.id ? updatedItem : i,
+                        ),
+                    };
+                },
+            );
         },
     });
 }
@@ -58,20 +76,50 @@ export function useReparseRxMutation() {
 export function useTakeOverRxMutation() {
     const qc = useQueryClient();
 
-    return useToastMutation({
+    return useMutation({
+        mutationKey: rxKeys.mutations.takeOver(),
         mutationFn: takeOverRx,
-        toastMessages: {
-            loading: "Rezept wird übernommen...",
-            success: "Rezept erfolgreich übernommen",
-            error: "Rezept konnte nicht übernommen werden",
-        },
-        onSuccess: async (_data, rxId) => {
-            removeRxFromListCache(qc, rxId, {
-                fromQueue: "inbox",
-                toQueue: "offer_create",
-            });
-
+        onSuccess: async () => {
             await qc.invalidateQueries({ queryKey: rxKeys.lists() });
         },
     });
+}
+
+export function useAssignRxMappingsMutation() {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationKey: rxKeys.mutations.assignMappings(),
+        mutationFn: assignRxMappings,
+        onSuccess: (data) => {
+            const updatedRx = data.rx;
+
+            qc.setQueriesData(
+                { queryKey: rxKeys.all },
+                (old: any) => {
+                    if (!old?.items) return old;
+
+                    return {
+                        ...old,
+                        items: old.items.map((item: RxListItemDto) =>
+                            item.id === updatedRx.id ? updatedRx : item,
+                        ),
+                    };
+                },
+            );
+        },
+    });
+}
+
+export function usePendingRxMutationIds(mutationKey: readonly unknown[]) {
+    return useMutationState<number>({
+        filters: {
+            mutationKey,
+            status: "pending",
+        },
+        select: (mutation) =>
+            typeof mutation.state.variables === "number"
+                ? mutation.state.variables
+                : -1,
+    }).filter((id) => id !== -1);
 }

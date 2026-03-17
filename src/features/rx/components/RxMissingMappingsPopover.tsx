@@ -6,14 +6,13 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 
 import { ProviderProductMappingCombobox } from "@/features/provider-products/components/ProviderProductMappingCombobox";
 import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
 
 import type { RxItem, RxListItemDto } from "../types/rx.dto";
-import { formatQuantity } from "@/shared/lib/format/quantity";
 import { Settings2 } from "lucide-react";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 function rxItemLabel(it: RxItem) {
     return it.raw_product_name ?? it.normalized_product_name ?? it.sku ?? "—";
@@ -134,13 +133,14 @@ export function RxMissingMappingsPopover(props: {
                             Abbrechen
                         </Button>
 
-                        <Button
+                        <LoadingButton
                             type="button"
                             onClick={handleSubmit}
                             disabled={!allAssigned || isSubmitting}
+                            loading={isLoading}
                         >
                             Zuordnungen übernehmen
-                        </Button>
+                        </LoadingButton>
                     </div>
                 </div>
             </PopoverContent>

@@ -4,6 +4,7 @@ import { usePharmacyProductsForMappingQuery } from "@/features/provider-products
 
 import type { RxItem, RxListItemDto } from "../types/rx.dto";
 import { rxItemHasMapping } from "../lib/rx.reparse";
+import { useAssignRxMappingsMutation } from "../queries/rx.queries";
 
 function getUnmappedItems(items?: RxItem[] | null) {
     return (items ?? []).filter((item) => !rxItemHasMapping(item));
@@ -12,6 +13,8 @@ function getUnmappedItems(items?: RxItem[] | null) {
 export function useRxMissingMappings(rx: RxListItemDto) {
     const pharmacyProductsQuery = usePharmacyProductsForMappingQuery();
     const pharmacyProducts = pharmacyProductsQuery.data?.items ?? [];
+
+    const assignMappingsMutation = useAssignRxMappingsMutation();
 
     const unmappedItems = useMemo(
         () => getUnmappedItems(rx.items),
@@ -26,17 +29,14 @@ export function useRxMissingMappings(rx: RxListItemDto) {
             pharmacyProductId: number | null;
         }>;
     }) {
-        console.log("assignMappings", input);
-
-        // später:
-        // await assignMappingsMutation.mutateAsync({
-        //   rx_document_id: input.rxDocumentId,
-        //   mappings: input.mappings.map((m) => ({
-        //     rx_item_id: m.rxItemId,
-        //     provider_product_map_id: m.providerProductMapId,
-        //     pharmacy_product_id: m.pharmacyProductId,
-        //   })),
-        // });
+        await assignMappingsMutation.mutateAsync({
+            rx_document_id: input.rxDocumentId,
+            mappings: input.mappings.map((m) => ({
+                rx_item_id: m.rxItemId,
+                provider_product_map_id: m.providerProductMapId,
+                pharmacy_product_id: m.pharmacyProductId,
+            })),
+        });
     }
 
     return {
@@ -44,6 +44,7 @@ export function useRxMissingMappings(rx: RxListItemDto) {
         pharmacyProducts,
         pharmacyProductsQuery,
         isLoadingProducts: pharmacyProductsQuery.isFetching,
+        isSaving: assignMappingsMutation.isPending,
         actions: {
             assignMappings,
         },

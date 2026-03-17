@@ -71,7 +71,7 @@ export function RxItemsTableCell(props: {
                                 rx={rx}
                                 unmappedItems={missingMappingsVm.unmappedItems}
                                 pharmacyProducts={missingMappingsVm.pharmacyProducts}
-                                isLoading={missingMappingsVm.isLoadingProducts}
+                                isLoading={missingMappingsVm.isLoadingProducts || missingMappingsVm.isSaving}
                                 onSubmit={missingMappingsVm.actions.assignMappings}
                             />
                         </div>
