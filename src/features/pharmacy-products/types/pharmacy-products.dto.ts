@@ -3,8 +3,8 @@ export type PharmacyProductCurrency = "EUR";
 export type PharmacyProductPricesDto = {
     base_price: number;
     base_price_cents: number;
-    price_other_provider: number;
-    price_other_provider_cents: number;
+    price_other_provider: number | null;
+    price_other_provider_cents: number | null;
     currency: PharmacyProductCurrency;
 };
 
@@ -12,6 +12,8 @@ export type PharmacyProductDto = {
     id: number;
     manufacturer: string | null;
     name: string;
+    strain: string | null;
+    strain_norm: string;
     product_code: string;
     name_norm: string;
     is_active: boolean;

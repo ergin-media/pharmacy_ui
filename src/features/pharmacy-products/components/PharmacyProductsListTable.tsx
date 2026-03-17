@@ -71,7 +71,6 @@ export function PharmacyProductsListTable(props: {
     function toggleSort(key: keyof typeof sortMap) {
         const pair = sortMap[key];
         const next = sort === pair.desc ? pair.asc : pair.desc;
-        console.log(pair, next);
         onSortChange(next);
     }
 
