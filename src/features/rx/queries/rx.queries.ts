@@ -17,6 +17,20 @@ import {
     assignRxMappings,
 } from "../api/rx.api";
 import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
+import { rxBelongsToQueue } from "../lib/rx.queue-matchers";
+import type { RxQueue } from "../lib/rx.queues";
+
+function getListParamsFromKey(
+    queryKey: readonly unknown[],
+): RxListQueryParams | null {
+    const maybeParams = queryKey[2];
+
+    if (!maybeParams || typeof maybeParams !== "object") {
+        return null;
+    }
+
+    return maybeParams as RxListQueryParams;
+}
 
 export const rxKeys = {
     all: ["rx"] as const,
@@ -105,19 +119,31 @@ export function useAssignRxMappingsMutation() {
         onSuccess: async (data) => {
             const updatedRx = data.rx;
 
-            qc.setQueriesData<RxListResponseDto>(
-                { queryKey: rxKeys.all },
-                (old) => {
-                    if (!old?.items) return old;
+            const queries = qc.getQueriesData<RxListResponseDto>({
+                queryKey: rxKeys.lists(),
+            });
 
-                    return {
-                        ...old,
-                        items: old.items.map((item) =>
-                            item.id === updatedRx.id ? updatedRx : item,
-                        ),
-                    };
-                },
-            );
+            for (const [queryKey, old] of queries) {
+                if (!old?.items) continue;
+
+                const params = getListParamsFromKey(queryKey);
+                const queue = params?.queue as RxQueue | undefined;
+
+                const belongs = rxBelongsToQueue(updatedRx, queue);
+
+                const nextItems = belongs
+                    ? old.items.map((item) =>
+                          item.id === updatedRx.id ? updatedRx : item,
+                      )
+                    : old.items.filter((item) => item.id !== updatedRx.id);
+
+                qc.setQueryData<RxListResponseDto>(queryKey, {
+                    ...old,
+                    items: nextItems,
+                });
+            }
+
+            await qc.invalidateQueries({ queryKey: rxKeys.lists() });
         },
     });
 }
