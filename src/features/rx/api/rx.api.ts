@@ -40,9 +40,13 @@ export async function assignRxMappings(input: {
         pharmacy_product_id: number | null;
     }>;
 }) {
-    const res = await api.post<{
+    const { rx_document_id, mappings } = input;
+
+    const res = await api.patch<{
         rx: RxListItemDto;
-    }>("rx/mappings/assign", input);
+    }>(`/v1/rx/${rx_document_id}/mappings`, {
+        mappings,
+    });
 
     return res.data;
 }
