@@ -15,7 +15,7 @@ export function ProviderProductMappingCell(props: {
     const { row, isLoading = false, onSelect } = props;
 
     const [searchValue, setSearchValue] = useState("");
-    const debouncedSearchValue = useDebouncedValue(searchValue, 350);
+    const debouncedSearchValue = useDebouncedValue(searchValue, 300);
 
     const pharmacyProductsQuery =
         usePharmacyProductsForMappingQuery(debouncedSearchValue);

@@ -75,6 +75,9 @@ export function ProviderProductMappingCombobox(props: {
 
     const itemToStringValue = useCallback((id: string) => id, []);
 
+    // serverseitige suche -> keine zusätzliche clientseitige filterung
+    const filter = useCallback(() => true, []);
+
     return (
         <div className="min-w-80">
             <Combobox
@@ -85,6 +88,7 @@ export function ProviderProductMappingCombobox(props: {
                 disabled={isDisabled}
                 itemToStringLabel={itemToStringLabel}
                 itemToStringValue={itemToStringValue}
+                filter={filter}
             >
                 <ComboboxInput
                     placeholder="Zuordnung wählen…"
@@ -100,15 +104,7 @@ export function ProviderProductMappingCombobox(props: {
                     )}
                 />
 
-                <ComboboxContent
-                    side="bottom"
-                    align="start"
-                    collisionAvoidance={{
-                        side: "shift",
-                        align: "shift",
-                        fallbackAxisSide: "none",
-                    }}
-                >
+                <ComboboxContent side="bottom" align="start">
                     <ComboboxEmpty>Keine Treffer.</ComboboxEmpty>
 
                     <ComboboxList>
