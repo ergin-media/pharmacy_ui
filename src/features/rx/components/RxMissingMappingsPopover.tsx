@@ -111,7 +111,8 @@ export function RxMissingMappingsPopover(props: {
                                     }
                                     isUnmapped
                                     products={pharmacyProducts}
-                                    isLoading={isLoading || isSubmitting}
+                                    isLoading={isLoading && !isSubmitting}
+                                    isDisabled={isSubmitting}
                                     onSelect={(pharmacyProductId) =>
                                         setDraftMappings((prev) => ({
                                             ...prev,

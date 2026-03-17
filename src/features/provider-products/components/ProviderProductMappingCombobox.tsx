@@ -16,6 +16,7 @@ export function ProviderProductMappingCombobox(props: {
     isUnmapped?: boolean;
     products: PharmacyProductDto[];
     isLoading?: boolean;
+    isDisabled?: boolean;
     onSelect: (pharmacyProductId: number | null) => void;
 }) {
     const {
@@ -23,6 +24,7 @@ export function ProviderProductMappingCombobox(props: {
         isUnmapped = false,
         products,
         isLoading = false,
+        isDisabled = false,
         onSelect,
     } = props;
 
@@ -88,7 +90,7 @@ export function ProviderProductMappingCombobox(props: {
                 items={items}
                 value={currentValue}
                 onValueChange={handleValueChange}
-                disabled={isLoading}
+                disabled={isLoading || isDisabled}
                 itemToStringLabel={itemToStringLabel}
                 itemToStringValue={itemToStringValue}
                 filter={filter}
