@@ -6,7 +6,7 @@ import type {
 
 export async function createRxOffer(payload: CreateRxOfferPayload) {
     const res = await api.post<CreateRxOfferResponseDto>(
-        "rx-offers",
+        `rx/${payload.rx_document_id}/offer-create`,
         payload,
     );
 
