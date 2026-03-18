@@ -1,7 +1,9 @@
 import { TableCell } from "@/components/ui/table";
-import type { RxTableRowVm } from "../lib/rx.table-row.vm";
 import { LoadingButton } from "@/components/ui/loading-button";
+
+import type { RxTableRowVm } from "../lib/rx.table-row.vm";
 import type { RxListItemDto } from "../types/rx.dto";
+import { RxMarkPaidPopover } from "../mark-paid/components/RxMarkPaidPopover";
 
 export function RxPrimaryActionCell(props: {
     row: RxTableRowVm;
@@ -15,14 +17,22 @@ export function RxPrimaryActionCell(props: {
         <TableCell className="text-right">
             {row.primaryActionLabel ? (
                 <div className="flex justify-end">
-                    <LoadingButton
-                        size="sm"
-                        loading={isLoading}
-                        disabled={disabled}
-                        onClick={() => onClick?.(row.rx)}
-                    >
-                        {row.primaryActionLabel}
-                    </LoadingButton>
+                    {row.queue === "await_payment" ? (
+                        <RxMarkPaidPopover
+                            rxId={row.id}
+                            disabled={disabled || isLoading}
+                            triggerLabel={row.primaryActionLabel}
+                        />
+                    ) : (
+                        <LoadingButton
+                            size="sm"
+                            loading={isLoading}
+                            disabled={disabled}
+                            onClick={() => onClick?.(row.rx)}
+                        >
+                            {row.primaryActionLabel}
+                        </LoadingButton>
+                    )}
                 </div>
             ) : null}
         </TableCell>
