@@ -1,5 +1,3 @@
-// /features/rx/mark-paid/queries/rx-mark-paid.queries.ts
-
 import { useQueryClient } from "@tanstack/react-query";
 
 import { markRxPaid } from "../api/rx-mark-paid.api";
@@ -33,7 +31,7 @@ export function useMarkRxPaidMutation() {
         },
 
         onSuccess: async (data) => {
-            const updatedRx = data.rx;
+            const updatedRx = data.item;
 
             const queries = qc.getQueriesData<RxListResponseDto>({
                 queryKey: rxKeys.lists(),
@@ -53,7 +51,7 @@ export function useMarkRxPaidMutation() {
                       )
                     : old.items.filter((item) => item.id !== updatedRx.id);
 
-                qc.setQueryData(queryKey, {
+                qc.setQueryData<RxListResponseDto>(queryKey, {
                     ...old,
                     items: nextItems,
                 });
