@@ -67,6 +67,62 @@ function getPatientMetaItems(rx: RxListItemDto) {
     ].filter(Boolean) as string[];
 }
 
+function getPatientIssueMessages(rx: RxListItemDto) {
+    const issues = rx.patient?.issues;
+    if (!issues) return [];
+
+    const messages: string[] = [];
+
+    if (issues.patient_missing) messages.push("Patientendaten fehlen");
+    if (issues.first_name_missing) messages.push("Vorname fehlt");
+    if (issues.last_name_missing) messages.push("Nachname fehlt");
+    if (issues.birthdate_missing) messages.push("Geburtsdatum fehlt");
+    if (issues.email_missing) messages.push("E-Mail fehlt");
+    if (issues.phone_missing) messages.push("Telefonnummer fehlt");
+    if (issues.street_missing) messages.push("Straße fehlt");
+    if (issues.zip_missing) messages.push("PLZ fehlt");
+    if (issues.city_missing) messages.push("Ort fehlt");
+    if (issues.country_missing) messages.push("Land fehlt");
+    if (issues.address_incomplete) messages.push("Adresse unvollständig");
+
+    return messages;
+}
+
+function getParseIssueMessages(rx: RxListItemDto, unmappedCount: number) {
+    const messages: string[] = [];
+
+    if (unmappedCount > 0) {
+        messages.push(
+            unmappedCount === 1
+                ? "1 Artikel ohne Zuordnung"
+                : `${unmappedCount} Artikel ohne Zuordnung`,
+        );
+    }
+
+    if (rx.parse?.flags?.pricing_base_price_missing) {
+        messages.push("Grundpreis fehlt");
+    }
+
+    if (rx.parse_status === "failed") {
+        messages.push("Parsing fehlgeschlagen");
+    }
+
+    if (rx.parse_status === "parsed_with_warnings") {
+        messages.push("Warnungen vorhanden");
+    }
+
+    return messages;
+}
+
+function getIssueMessages(rx: RxListItemDto, unmappedCount: number) {
+    const messages = [
+        ...getPatientIssueMessages(rx),
+        ...getParseIssueMessages(rx, unmappedCount),
+    ];
+
+    return Array.from(new Set(messages));
+}
+
 export type RxTableRowVm = {
     id: number;
     queue: RxQueue;
@@ -98,6 +154,7 @@ export type RxTableRowVm = {
 
     fulfillmentTypeLabel: string;
     issueLabel: string;
+    issueMessages: string[];
 
     workflowStatus: RxListItemDto["workflow_status"];
     paymentState: RxListItemDto["payment_state"];
@@ -143,6 +200,7 @@ export function mapRxListItemToRowVm(input: {
 
     const timeline = rx.timeline ?? undefined;
     const primaryAction = getRxQueuePrimaryAction(queue);
+    const issueMessages = getIssueMessages(rx, unmappedCount);
 
     return {
         id: rowId,
@@ -175,6 +233,7 @@ export function mapRxListItemToRowVm(input: {
 
         fulfillmentTypeLabel: getFulfillmentTypeLabel(rx),
         issueLabel: getIssueLabel(rx, unmappedCount),
+        issueMessages,
 
         workflowStatus: rx.workflow_status,
         paymentState: rx.payment_state,

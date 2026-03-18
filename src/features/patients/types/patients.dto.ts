@@ -40,6 +40,26 @@ export type PatientDto = {
     email: string | null;
     age?: number | null;
     status?: PatientStatusDto | null;
+    issues?: PatientIssuesDto | null;
 
     created_at: ISODateTime;
+};
+
+export type PatientIssuesDto = {
+    patient_missing?: boolean;
+
+    first_name_missing?: boolean;
+    last_name_missing?: boolean;
+
+    birthdate_missing?: boolean;
+
+    email_missing?: boolean;
+    phone_missing?: boolean;
+
+    street_missing?: boolean;
+    zip_missing?: boolean;
+    city_missing?: boolean;
+    country_missing?: boolean;
+
+    address_incomplete?: boolean;
 };
