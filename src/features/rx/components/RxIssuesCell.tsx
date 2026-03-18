@@ -1,5 +1,5 @@
+import { Badge } from "@/components/ui/badge";
 import { TableCell } from "@/components/ui/table";
-import { AlertTriangle } from "lucide-react";
 
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
 
@@ -9,15 +9,15 @@ export function RxIssuesCell(props: { row: RxTableRowVm }) {
     return (
         <TableCell>
             {row.issueMessages.length > 0 ? (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col items-start gap-1">
                     {row.issueMessages.map((message) => (
-                        <div
+                        <Badge
                             key={message}
-                            className="flex items-start gap-2 text-xs text-destructive"
+                            variant="danger"
+                            className="max-w-full whitespace-normal text-left"
                         >
-                            <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
-                            <span>{message}</span>
-                        </div>
+                            {message}
+                        </Badge>
                     ))}
                 </div>
             ) : (
