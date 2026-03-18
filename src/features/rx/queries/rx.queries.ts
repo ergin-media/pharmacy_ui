@@ -54,6 +54,7 @@ export const rxKeys = {
     mutations: {
         reparse: () => [...rxKeys.all, "mutation", "reparse"] as const,
         takeOver: () => [...rxKeys.all, "mutation", "take-over"] as const,
+        markPaid: () => [...rxKeys.all, "mutation", "mark-paid"] as const,
         assignMappings: () =>
             [...rxKeys.all, "mutation", "assign-mappings"] as const,
     },
