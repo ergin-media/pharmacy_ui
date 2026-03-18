@@ -31,28 +31,14 @@ export function useToastMutation<
         toastMessages?: ToastMessages<TData, TVariables, TError>;
     },
 ) {
-    const {
-        toastMessages,
-        mutationFn,
-        onMutate,
-        onSuccess,
-        onError,
-        ...rest
-    } = options;
+    const { toastMessages, mutationFn, onMutate, onSuccess, onError, ...rest } =
+        options;
 
-    return useMutation<
-        TData,
-        TError,
-        TVariables,
-        TOnMutateResult | undefined
-    >({
+    return useMutation<TData, TError, TVariables, TOnMutateResult | undefined>({
         mutationFn,
         ...rest,
 
-        onMutate: async (
-            variables,
-            context: MutationFunctionContext,
-        ) => {
+        onMutate: async (variables, context: MutationFunctionContext) => {
             const toastId = `mutation-${JSON.stringify(variables)}`;
 
             if (toastMessages?.loading) {
@@ -67,13 +53,10 @@ export function useToastMutation<
             return await onMutate?.(variables, context);
         },
 
-        onSuccess: async (
-            data,
-            variables,
-            onMutateResult,
-            context,
-        ) => {
+        onSuccess: async (data, variables, onMutateResult, context) => {
             const toastId = `mutation-${JSON.stringify(variables)}`;
+
+            appToast.dismiss(toastId);
 
             if (toastMessages?.success) {
                 const message =
@@ -84,18 +67,13 @@ export function useToastMutation<
                 appToast.success(message);
             }
 
-            appToast.dismiss(toastId);
-
             await onSuccess?.(data, variables, onMutateResult, context);
         },
 
-        onError: async (
-            error,
-            variables,
-            onMutateResult,
-            context,
-        ) => {
+        onError: async (error, variables, onMutateResult, context) => {
             const toastId = `mutation-${JSON.stringify(variables)}`;
+
+            appToast.dismiss(toastId);
 
             if (toastMessages?.error) {
                 const message =
@@ -105,8 +83,6 @@ export function useToastMutation<
 
                 appToast.error(message);
             }
-
-            appToast.dismiss(toastId);
 
             await onError?.(error, variables, onMutateResult, context);
         },

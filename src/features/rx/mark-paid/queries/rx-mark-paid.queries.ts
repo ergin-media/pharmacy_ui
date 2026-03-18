@@ -7,7 +7,7 @@ import type { RxListResponseDto } from "@/features/rx/types/rx.dto";
 import type { RxQueue } from "@/features/rx/lib/rx.queues";
 import { rxBelongsToQueue } from "@/features/rx/lib/rx.queue-matchers";
 import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
-import { getMarkPaidErrorMessage } from "../lib/rx-mark-paid.errors";
+import { getApiErrorMessage } from "@/shared/api/api-errors";
 
 function getListParamsFromKey(queryKey: readonly unknown[]) {
     const maybeParams = queryKey[2];
@@ -28,7 +28,7 @@ export function useMarkRxPaidMutation() {
         toastMessages: {
             loading: "Zahlung wird bestätigt...",
             success: "Zahlung bestätigt",
-            error: (error) => getMarkPaidErrorMessage(error),
+            error: (error) => getApiErrorMessage(error),
         },
 
         onSuccess: async (data) => {
