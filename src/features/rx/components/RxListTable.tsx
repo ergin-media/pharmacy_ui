@@ -20,6 +20,7 @@ import { RxPrimaryActionCell } from "./RxPrimaryActionCell";
 import { RxMoreActionsCell } from "./RxMoreActionsCell";
 import { RxPatientCell } from "./RxPatientCell";
 import { RxProviderCell } from "./RxProviderCell";
+import { RxIssuesCell } from "./RxIssuesCell";
 
 export function RxListTable(props: {
     queue: RxQueue;
@@ -227,11 +228,7 @@ export function RxListTable(props: {
                                     )}
 
                                     {hasRxTableColumn(columns, "issue") && (
-                                        <TableCell>
-                                            <div className="text-sm">
-                                                {row.issueLabel}
-                                            </div>
-                                        </TableCell>
+                                        <RxIssuesCell row={row} />
                                     )}
 
                                     {hasRxTableColumn(
