@@ -8,6 +8,7 @@ import type { RxQueue } from "@/features/rx/lib/rx.queues";
 import { rxBelongsToQueue } from "@/features/rx/lib/rx.queue-matchers";
 import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
 import { getApiErrorMessage } from "@/shared/api/api-errors";
+import { MARK_PAID_ERROR_MESSAGES } from "../lib/rx-mark-paid.errors";
 
 function getListParamsFromKey(queryKey: readonly unknown[]) {
     const maybeParams = queryKey[2];
@@ -28,7 +29,14 @@ export function useMarkRxPaidMutation() {
         toastMessages: {
             loading: "Zahlung wird bestätigt...",
             success: "Zahlung bestätigt",
-            error: (error) => getApiErrorMessage(error),
+            error: (error) =>
+                getApiErrorMessage(error, {
+                    fallback: "Fehler beim Bestätigen der Zahlung",
+                    codeMap: MARK_PAID_ERROR_MESSAGES,
+                    statusMap: {
+                        409: "Statuskonflikt – bitte Seite neu laden",
+                    },
+                }),
         },
 
         onSuccess: async (data) => {

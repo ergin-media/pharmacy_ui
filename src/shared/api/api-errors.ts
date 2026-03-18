@@ -6,25 +6,46 @@ export type ApiErrorInfo = {
     message: string | null;
 };
 
+type ApiErrorResponseData = {
+    code?: unknown;
+    message?: unknown;
+    error?:
+        | unknown
+        | {
+              code?: unknown;
+              message?: unknown;
+              details?: unknown;
+          };
+};
+
 export function getApiErrorInfo(error: unknown): ApiErrorInfo {
     if (axios.isAxiosError(error)) {
-        const data = error.response?.data as
-            | {
-                  code?: unknown;
-                  error?: unknown;
-                  message?: unknown;
-              }
-            | undefined;
+        const data = error.response?.data as ApiErrorResponseData | undefined;
+
+        const nestedError =
+            typeof data?.error === "object" && data.error !== null
+                ? data.error
+                : null;
 
         const code =
             typeof data?.code === "string"
                 ? data.code
-                : typeof data?.error === "string"
-                  ? data.error
-                  : null;
+                : nestedError &&
+                    "code" in nestedError &&
+                    typeof nestedError.code === "string"
+                  ? nestedError.code
+                  : typeof data?.error === "string"
+                    ? data.error
+                    : null;
 
         const message =
-            typeof data?.message === "string" ? data.message : error.message;
+            typeof data?.message === "string"
+                ? data.message
+                : nestedError &&
+                    "message" in nestedError &&
+                    typeof nestedError.message === "string"
+                  ? nestedError.message
+                  : error.message;
 
         return {
             status: error.response?.status ?? null,
