@@ -7,6 +7,7 @@ import { mapRxOfferFormToCreatePayload } from "../lib/rx-offer.payload";
 import { useCreateOfferMutation } from "../queries/rx-offer.queries";
 import { RxOfferForm } from "./RxOfferForm";
 import { RxOfferPreview } from "./RxOfferPreview";
+import { useSendOfferMutation } from "../../offer-send/queries/rx-offer-send.queries";
 
 export function RxOfferCreatePanel(props: {
     rx: RxListItemDto;
@@ -17,11 +18,19 @@ export function RxOfferCreatePanel(props: {
 
     const form = useRxOfferForm(rx);
     const createOfferMutation = useCreateOfferMutation();
+    const sendOfferMutation = useSendOfferMutation();
 
-    async function handleCreate() {
+    const isPending =
+        createOfferMutation.isPending || sendOfferMutation.isPending;
+
+    async function handleCreateAndSend() {
         const payload = mapRxOfferFormToCreatePayload(form.values);
 
-        await createOfferMutation.mutateAsync(payload);
+        const createResult = await createOfferMutation.mutateAsync(payload);
+        await sendOfferMutation.mutateAsync({
+            offerId: createResult.offer.id,
+        });
+
         await onCreated();
     }
 
@@ -52,16 +61,16 @@ export function RxOfferCreatePanel(props: {
                     <Button
                         variant="outline"
                         onClick={onCancel}
-                        disabled={createOfferMutation.isPending}
+                        disabled={isPending}
                     >
                         Abbrechen
                     </Button>
 
                     <LoadingButton
-                        loading={createOfferMutation.isPending}
-                        onClick={handleCreate}
+                        loading={isPending}
+                        onClick={handleCreateAndSend}
                     >
-                        Angebot erstellen
+                        Angebot erstellen &amp; versenden
                     </LoadingButton>
                 </div>
             </div>
