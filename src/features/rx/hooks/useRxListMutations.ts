@@ -113,9 +113,9 @@ export function useRxListMutations(input?: {
         offer_create: offerCreate,
         await_payment: createNoopController("confirmPayment"),
         paid_not_started: startPackaging,
-        packaging: createNoopController("finishPackaging"),
-        shipping: markReady,
-        pickup: markReady,
+        packaging: markReady,
+        shipping: createNoopController("markShipped"),
+        pickup: createNoopController("markPickedUp"),
     };
 
     return {
