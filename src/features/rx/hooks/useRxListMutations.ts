@@ -6,6 +6,8 @@ import {
 } from "../queries/rx.queries";
 import { useStartRxPackagingMutation } from "../start-packaging/queries/rx-start-packaging.queries";
 import { useMarkRxReadyMutation } from "../mark-ready/queries/rx-mark-ready.queries";
+import { useMarkRxShippedMutation } from "../mark-shipped/queries/rx-mark-shipped.queries";
+import { useMarkRxHandedOverMutation } from "../mark-handed-over/queries/rx-mark-handed-over.queries";
 
 import type { RxListItemDto } from "../types/rx.dto";
 
@@ -31,6 +33,8 @@ export function useRxListMutations(input?: {
     const takeOverMutation = useTakeOverRxMutation();
     const startPackagingMutation = useStartRxPackagingMutation();
     const markReadyMutation = useMarkRxReadyMutation();
+    const markShippedMutation = useMarkRxShippedMutation();
+    const markHandedOverMutation = useMarkRxHandedOverMutation();
 
     const [activePrimaryActionId, setActivePrimaryActionId] = useState<
         number | null
@@ -108,14 +112,42 @@ export function useRxListMutations(input?: {
         },
     };
 
+    const markShipped: RxActionController = {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+
+            setActivePrimaryActionId(id);
+
+            try {
+                await markShippedMutation.mutateAsync({ id });
+            } finally {
+                setActivePrimaryActionId(null);
+            }
+        },
+    };
+
+    const markHandedOver: RxActionController = {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+
+            setActivePrimaryActionId(id);
+
+            try {
+                await markHandedOverMutation.mutateAsync({ id });
+            } finally {
+                setActivePrimaryActionId(null);
+            }
+        },
+    };
+
     const primary: RxPrimaryActionControllers = {
         inbox: takeOver,
         offer_create: offerCreate,
         await_payment: createNoopController("confirmPayment"),
         paid_not_started: startPackaging,
         packaging: markReady,
-        shipping: createNoopController("markShipped"),
-        pickup: createNoopController("markPickedUp"),
+        shipping: markShipped,
+        pickup: markHandedOver,
     };
 
     return {
