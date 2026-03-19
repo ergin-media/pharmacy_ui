@@ -6,11 +6,7 @@ export function rxHasMissingMappings(rx: RxListItemDto) {
 }
 
 export function rxIsCompleted(rx: RxListItemDto) {
-    return (
-        rx.workflow_status === "completed" ||
-        Boolean(rx.timeline?.completed_at) ||
-        Boolean(rx.timeline?.fulfilled_at)
-    );
+    return rx.workflow_status === "completed";
 }
 
 export function rxIsPaid(rx: RxListItemDto) {
@@ -25,92 +21,57 @@ export function rxIsReady(rx: RxListItemDto) {
     return Boolean(rx.timeline?.pickup_ready_at);
 }
 
-/**
- * Queue-Zuordnung für die UI.
- *
- * Wichtige Annahmen für den aktuellen Workflow:
- * - prepared_at => "In Vorbereitung" wurde gestartet
- * - pickup_ready_at => "Fertig vorbereitet"
- * - danach landet der Fall je nach fulfillment_type in Versand oder Abholung
- * - completed_at / fulfilled_at => abgeschlossen
- */
-export function rxBelongsToQueue(
-    rx: RxListItemDto,
-    queue?: RxQueue,
-): boolean {
+export function rxBelongsToQueue(rx: RxListItemDto, queue?: RxQueue): boolean {
     if (!queue || queue === "all") return true;
-
-    const hasMissingMappings = rxHasMissingMappings(rx);
-    const isCompleted = rxIsCompleted(rx);
-    const isPaid = rxIsPaid(rx);
-    const hasStartedPackaging = rxHasStartedPackaging(rx);
-    const isReady = rxIsReady(rx);
-    const fulfillmentType = rx.fulfillment_type;
 
     switch (queue) {
         case "clarify":
-            return hasMissingMappings;
-
-        case "inbox":
-            return (
-                !hasMissingMappings &&
-                !isCompleted &&
-                !rx.timeline?.offer_created_at
-            );
-
-        case "offer_create":
-            return (
-                !hasMissingMappings &&
-                !isCompleted &&
-                !rx.timeline?.offer_created_at
-            );
+            return rxHasMissingMappings(rx);
 
         case "await_payment":
             return (
-                !hasMissingMappings &&
-                !isCompleted &&
-                Boolean(rx.timeline?.offer_created_at) &&
-                Boolean(rx.timeline?.offer_sent_at) &&
-                !isPaid
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                !rxIsPaid(rx)
             );
 
         case "paid_not_started":
             return (
-                !hasMissingMappings &&
-                !isCompleted &&
-                isPaid &&
-                !hasStartedPackaging
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                rxIsPaid(rx) &&
+                !rxHasStartedPackaging(rx)
             );
 
         case "packaging":
             return (
-                !hasMissingMappings &&
-                !isCompleted &&
-                isPaid &&
-                hasStartedPackaging &&
-                !isReady
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                rxIsPaid(rx) &&
+                rxHasStartedPackaging(rx) &&
+                !rxIsReady(rx)
             );
 
         case "shipping":
             return (
-                !hasMissingMappings &&
-                !isCompleted &&
-                isPaid &&
-                isReady &&
-                fulfillmentType === "shipping"
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                rxIsPaid(rx) &&
+                rxIsReady(rx) &&
+                rx.fulfillment_type === "shipping"
             );
 
         case "pickup":
             return (
-                !hasMissingMappings &&
-                !isCompleted &&
-                isPaid &&
-                isReady &&
-                fulfillmentType === "pickup"
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                rxIsPaid(rx) &&
+                rxIsReady(rx) &&
+                rx.fulfillment_type === "pickup"
             );
 
         case "completed":
-            return isCompleted;
+            return rxIsCompleted(rx);
 
         default:
             return true;
