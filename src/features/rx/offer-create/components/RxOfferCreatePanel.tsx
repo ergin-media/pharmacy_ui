@@ -4,10 +4,9 @@ import { LoadingButton } from "@/components/ui/loading-button";
 import type { RxListItemDto } from "../../types/rx.dto";
 import { useRxOfferForm } from "../hooks/useRxOfferForm";
 import { mapRxOfferFormToCreatePayload } from "../lib/rx-offer.payload";
-import { useCreateOfferMutation } from "../queries/rx-offer.queries";
+import { useCreateAndSendOfferMutation } from "../queries/rx-offer.queries";
 import { RxOfferForm } from "./RxOfferForm";
 import { RxOfferPreview } from "./RxOfferPreview";
-import { useSendOfferMutation } from "../../offer-send/queries/rx-offer-send.queries";
 
 export function RxOfferCreatePanel(props: {
     rx: RxListItemDto;
@@ -17,20 +16,12 @@ export function RxOfferCreatePanel(props: {
     const { rx, onCancel, onCreated } = props;
 
     const form = useRxOfferForm(rx);
-    const createOfferMutation = useCreateOfferMutation();
-    const sendOfferMutation = useSendOfferMutation();
-
-    const isPending =
-        createOfferMutation.isPending || sendOfferMutation.isPending;
+    const createAndSendOfferMutation = useCreateAndSendOfferMutation();
 
     async function handleCreateAndSend() {
         const payload = mapRxOfferFormToCreatePayload(form.values);
 
-        const createResult = await createOfferMutation.mutateAsync(payload);
-        await sendOfferMutation.mutateAsync({
-            offerId: createResult.offer.id,
-        });
-
+        await createAndSendOfferMutation.mutateAsync(payload);
         await onCreated();
     }
 
@@ -61,13 +52,13 @@ export function RxOfferCreatePanel(props: {
                     <Button
                         variant="outline"
                         onClick={onCancel}
-                        disabled={isPending}
+                        disabled={createAndSendOfferMutation.isPending}
                     >
                         Abbrechen
                     </Button>
 
                     <LoadingButton
-                        loading={isPending}
+                        loading={createAndSendOfferMutation.isPending}
                         onClick={handleCreateAndSend}
                     >
                         Angebot erstellen &amp; versenden

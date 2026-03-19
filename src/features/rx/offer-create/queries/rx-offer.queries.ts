@@ -1,13 +1,13 @@
 import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
-import { createRxOffer } from "../api/rx-offer.api";
+import { createAndSendRxOffer } from "../api/rx-offer.api";
 
-export function useCreateOfferMutation() {
+export function useCreateAndSendOfferMutation() {
     return useToastMutation({
-        mutationFn: createRxOffer,
+        mutationFn: createAndSendRxOffer,
         toastMessages: {
-            loading: "Angebot wird erstellt...",
-            success: "Angebot erfolgreich erstellt",
-            error: "Angebot konnte nicht erstellt werden",
+            loading: "Angebot wird erstellt und versendet...",
+            success: "Angebot erfolgreich erstellt und versendet",
+            error: "Angebot konnte nicht erstellt und versendet werden",
         },
     });
 }
