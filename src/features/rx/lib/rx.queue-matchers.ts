@@ -13,6 +13,10 @@ export function rxIsPaid(rx: RxListItemDto) {
     return rx.payment_state === "paid" || Boolean(rx.timeline?.paid_at);
 }
 
+export function rxHasStartedPackaging(rx: RxListItemDto) {
+    return Boolean(rx.timeline?.prepared_at);
+}
+
 export function rxBelongsToQueue(rx: RxListItemDto, queue?: RxQueue): boolean {
     if (!queue || queue === "all") return true;
 
@@ -27,7 +31,26 @@ export function rxBelongsToQueue(rx: RxListItemDto, queue?: RxQueue): boolean {
 
         case "paid_not_started":
             return (
-                !rxHasMissingMappings(rx) && !rxIsCompleted(rx) && rxIsPaid(rx)
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                rxIsPaid(rx) &&
+                !rxHasStartedPackaging(rx)
+            );
+
+        case "shipping":
+            return (
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                rxHasStartedPackaging(rx) &&
+                rx.fulfillment_type === "shipping"
+            );
+
+        case "pickup":
+            return (
+                !rxHasMissingMappings(rx) &&
+                !rxIsCompleted(rx) &&
+                rxHasStartedPackaging(rx) &&
+                rx.fulfillment_type === "pickup"
             );
 
         case "completed":
