@@ -6,7 +6,7 @@ import type {
 
 export async function sendRxOffer(input: SendRxOfferInput) {
     const res = await api.post<SendRxOfferResponseDto>(
-        `rx-offers/${input.offerId}/send`,
+        `rx/${input.offerId}/offer-send`,
         {},
     );
 
