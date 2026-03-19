@@ -6,6 +6,7 @@ import { RxInvoicePanel } from "../components/RxInvoicePanel";
 import { RxOfferCreatePanel } from "../offer-create/components/RxOfferCreatePanel";
 import { rxKeys } from "../queries/rx.queries";
 import type { RxListItemDto } from "../types/rx.dto";
+import { formatRxPanelDescription } from "../lib/rx.format";
 
 export function useRxPanels() {
     const { openPanel } = useSlideInPanel();
@@ -38,7 +39,7 @@ export function useRxPanels() {
         (rx: RxListItemDto) => {
             openPanel({
                 title: "Angebot erstellen",
-                description: `RX #${rx.id}`,
+                description: formatRxPanelDescription(rx),
                 variant: "custom",
                 widthClassName: "w-[95vw] max-w-[1500px]",
                 render: ({ close }) => (
