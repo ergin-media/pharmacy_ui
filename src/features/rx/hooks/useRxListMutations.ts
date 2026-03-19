@@ -5,6 +5,8 @@ import {
     useTakeOverRxMutation,
 } from "../queries/rx.queries";
 
+import { useStartRxPackagingMutation } from "../start-packaging/queries/rx-start-packaging.queries";
+
 import type { RxListItemDto } from "../types/rx.dto";
 
 import type {
@@ -27,6 +29,7 @@ export function useRxListMutations(input?: {
 
     const reparseMutation = useReparseRxMutation();
     const takeOverMutation = useTakeOverRxMutation();
+    const startPackagingMutation = useStartRxPackagingMutation();
 
     const [activePrimaryActionId, setActivePrimaryActionId] = useState<
         number | null
@@ -71,11 +74,25 @@ export function useRxListMutations(input?: {
         },
     };
 
+    const startPackaging: RxActionController = {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+
+            setActivePrimaryActionId(id);
+
+            try {
+                await startPackagingMutation.mutateAsync({ id });
+            } finally {
+                setActivePrimaryActionId(null);
+            }
+        },
+    };
+
     const primary: RxPrimaryActionControllers = {
         inbox: takeOver,
         offer_create: offerCreate,
         await_payment: createNoopController("confirmPayment"),
-        paid_not_started: createNoopController("startPackaging"),
+        paid_not_started: startPackaging,
         packaging: createNoopController("finishPackaging"),
         shipping: createNoopController("markShipped"),
         pickup: createNoopController("markPickedUp"),
