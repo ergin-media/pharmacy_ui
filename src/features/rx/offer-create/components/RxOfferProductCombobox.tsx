@@ -56,7 +56,10 @@ export function RxOfferProductCombobox(props: {
     const debouncedSearchValue = useDebouncedValue(searchValue, 300);
 
     const initialProductsQuery = usePharmacyProductsForComboboxQuery();
-    const initialProducts = initialProductsQuery.data?.items ?? [];
+    const initialProducts = useMemo(
+        () => initialProductsQuery.data?.items ?? [],
+        [initialProductsQuery.data?.items],
+    );
 
     const localMatches = useMemo(() => {
         return initialProducts.filter((product) =>
@@ -71,7 +74,10 @@ export function RxOfferProductCombobox(props: {
         shouldUseRemoteSearch ? debouncedSearchValue : "",
     );
 
-    const remoteProducts = remoteProductsQuery.data?.items ?? [];
+    const remoteProducts = useMemo(
+        () => remoteProductsQuery.data?.items ?? [],
+        [remoteProductsQuery.data?.items],
+    );
 
     const products = useMemo(() => {
         return shouldUseRemoteSearch ? remoteProducts : localMatches;
