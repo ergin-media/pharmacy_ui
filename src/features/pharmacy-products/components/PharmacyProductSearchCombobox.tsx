@@ -38,24 +38,24 @@ function matchesProduct(product: PharmacyProductDto, query: string) {
 }
 
 export function PharmacyProductSearchCombobox(props: {
-    value: string;
+    inputValue: string;
     selectedProductId?: number | null;
     selectedProduct?: PharmacyProductDto | null;
     disabled?: boolean;
     isUnmapped?: boolean;
     placeholder?: string;
-    onInputChange: (value: string) => void;
+    onInputValueChange: (value: string) => void;
     onSelectProduct: (product: PharmacyProductDto) => void;
     onClearSelection?: () => void;
 }) {
     const {
-        value,
+        inputValue,
         selectedProductId,
         selectedProduct,
         disabled = false,
         isUnmapped = false,
         placeholder = "Artikel wählen…",
-        onInputChange,
+        onInputValueChange,
         onSelectProduct,
         onClearSelection,
     } = props;
@@ -138,8 +138,6 @@ export function PharmacyProductSearchCombobox(props: {
 
     const itemToStringValue = useCallback((id: string) => id, []);
 
-    // Hybrid-Suche: lokal bzw. remote ist bereits entschieden,
-    // daher keine zusätzliche Combobox-Filterung
     const filter = useCallback(() => true, []);
 
     const handleValueChange = useCallback(
@@ -168,9 +166,9 @@ export function PharmacyProductSearchCombobox(props: {
             <Combobox
                 items={items}
                 value={currentValue}
-                inputValue={value}
+                inputValue={inputValue}
                 onInputValueChange={(next) => {
-                    onInputChange(next);
+                    onInputValueChange(next);
                     setSearchValue(next);
                 }}
                 onValueChange={handleValueChange}

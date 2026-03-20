@@ -27,6 +27,10 @@ function MappingRow(props: {
 
     const [searchValue, setSearchValue] = useState("");
 
+    const inputValue = useMemo(() => {
+        return searchValue;
+    }, [searchValue]);
+
     return (
         <div className="grid gap-2 rounded-lg border p-3">
             <div className="text-xs text-muted-foreground">Artikel</div>
@@ -34,15 +38,21 @@ function MappingRow(props: {
             <div className="text-sm">{rxItemLabel(item)}</div>
 
             <PharmacyProductSearchCombobox
-                value={searchValue}
+                inputValue={inputValue}
                 selectedProductId={selectedPharmacyProductId}
                 selectedProduct={null}
                 disabled={isDisabled}
                 isUnmapped
                 placeholder="Zuordnung wählen…"
-                onInputChange={setSearchValue}
-                onSelectProduct={(product) => onSelect(product.id)}
-                onClearSelection={() => onSelect(null)}
+                onInputValueChange={setSearchValue}
+                onSelectProduct={(product) => {
+                    setSearchValue("");
+                    onSelect(product.id);
+                }}
+                onClearSelection={() => {
+                    setSearchValue("");
+                    onSelect(null);
+                }}
             />
         </div>
     );
