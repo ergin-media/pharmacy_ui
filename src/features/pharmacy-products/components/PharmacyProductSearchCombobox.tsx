@@ -126,9 +126,10 @@ export function PharmacyProductSearchCombobox(props: {
         return map;
     }, [mergedProducts]);
 
-    const currentValue = selectedProductId
-        ? String(selectedProductId)
-        : undefined;
+    const currentValue = useMemo(() => {
+        if (selectedProductId == null) return null;
+        return String(selectedProductId);
+    }, [selectedProductId]);
 
     const itemToStringLabel = useCallback(
         (id: string) => byId.get(id)?.name ?? id,
@@ -137,11 +138,14 @@ export function PharmacyProductSearchCombobox(props: {
 
     const itemToStringValue = useCallback((id: string) => id, []);
 
+    // Hybrid-Suche: lokal bzw. remote ist bereits entschieden,
+    // daher keine zusätzliche Combobox-Filterung
     const filter = useCallback(() => true, []);
 
     const handleValueChange = useCallback(
         (next: string | null) => {
-            if (!next) {
+            if (next == null) {
+                setSearchValue("");
                 onClearSelection?.();
                 return;
             }
