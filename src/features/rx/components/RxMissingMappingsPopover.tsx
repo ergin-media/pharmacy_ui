@@ -6,13 +6,12 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { LoadingButton } from "@/components/ui/loading-button";
 
-import { ProviderProductMappingCombobox } from "@/features/provider-products/components/ProviderProductMappingCombobox";
-import { usePharmacyProductsForMappingQuery } from "@/features/provider-products/queries/pharmacyProductsForMapping.queries";
+import { PharmacyProductSearchCombobox } from "@/features/pharmacy-products/components/PharmacyProductSearchCombobox";
+
 import type { RxItem, RxListItemDto } from "../types/rx.dto";
 import { Settings2 } from "lucide-react";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 
 function rxItemLabel(it: RxItem) {
     return it.raw_product_name ?? it.normalized_product_name ?? it.sku ?? "—";
@@ -27,11 +26,6 @@ function MappingRow(props: {
     const { item, selectedPharmacyProductId, isDisabled, onSelect } = props;
 
     const [searchValue, setSearchValue] = useState("");
-    const debouncedSearchValue = useDebouncedValue(searchValue, 250);
-
-    const productsQuery =
-        usePharmacyProductsForMappingQuery(debouncedSearchValue);
-    const products = productsQuery.data?.items ?? [];
 
     return (
         <div className="grid gap-2 rounded-lg border p-3">
@@ -39,15 +33,16 @@ function MappingRow(props: {
 
             <div className="text-sm">{rxItemLabel(item)}</div>
 
-            <ProviderProductMappingCombobox
-                currentPharmacyProductId={selectedPharmacyProductId}
+            <PharmacyProductSearchCombobox
+                value={searchValue}
+                selectedProductId={selectedPharmacyProductId}
+                selectedProduct={null}
+                disabled={isDisabled}
                 isUnmapped
-                products={products}
-                searchValue={searchValue}
-                onSearchValueChange={setSearchValue}
-                isLoading={productsQuery.isFetching}
-                isDisabled={isDisabled}
-                onSelect={onSelect}
+                placeholder="Zuordnung wählen…"
+                onInputChange={setSearchValue}
+                onSelectProduct={(product) => onSelect(product.id)}
+                onClearSelection={() => onSelect(null)}
             />
         </div>
     );
