@@ -11,6 +11,29 @@ import {
 import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
 import { usePharmacyProductsForMappingQuery } from "@/features/provider-products/queries/pharmacyProductsForMapping.queries";
+import { usePharmacyProductsForComboboxQuery } from "@/features/provider-products/queries/pharmacyProductsForCombobox.queries";
+
+function normalize(value: string) {
+    return value.trim().toLowerCase();
+}
+
+function matchesProduct(product: PharmacyProductDto, query: string) {
+    const q = normalize(query);
+    if (!q) return true;
+
+    const haystack = [
+        product.name,
+        product.product_code,
+        product.manufacturer ?? "",
+        product.strain ?? "",
+        product.name_norm ?? "",
+        product.strain_norm ?? "",
+    ]
+        .join(" ")
+        .toLowerCase();
+
+    return haystack.includes(q);
+}
 
 export function RxOfferProductCombobox(props: {
     value: string;
@@ -32,9 +55,27 @@ export function RxOfferProductCombobox(props: {
     const [searchValue, setSearchValue] = useState("");
     const debouncedSearchValue = useDebouncedValue(searchValue, 300);
 
-    const productsQuery =
-        usePharmacyProductsForMappingQuery(debouncedSearchValue);
-    const products = productsQuery.data?.items ?? [];
+    const initialProductsQuery = usePharmacyProductsForComboboxQuery();
+    const initialProducts = initialProductsQuery.data?.items ?? [];
+
+    const localMatches = useMemo(() => {
+        return initialProducts.filter((product) =>
+            matchesProduct(product, searchValue),
+        );
+    }, [initialProducts, searchValue]);
+
+    const shouldUseRemoteSearch =
+        normalize(searchValue).length >= 2 && localMatches.length === 0;
+
+    const remoteProductsQuery = usePharmacyProductsForMappingQuery(
+        shouldUseRemoteSearch ? debouncedSearchValue : "",
+    );
+
+    const remoteProducts = remoteProductsQuery.data?.items ?? [];
+
+    const products = useMemo(() => {
+        return shouldUseRemoteSearch ? remoteProducts : localMatches;
+    }, [shouldUseRemoteSearch, remoteProducts, localMatches]);
 
     const mergedProducts = useMemo(() => {
         if (
@@ -60,7 +101,9 @@ export function RxOfferProductCombobox(props: {
         return map;
     }, [mergedProducts]);
 
-    const currentValue = selectedProductId ? String(selectedProductId) : undefined;
+    const currentValue = selectedProductId
+        ? String(selectedProductId)
+        : undefined;
 
     const itemToStringLabel = useCallback(
         (id: string) => byId.get(id)?.name ?? id,
@@ -84,6 +127,10 @@ export function RxOfferProductCombobox(props: {
         [byId, onSelectProduct],
     );
 
+    const isLoading =
+        initialProductsQuery.isFetching ||
+        (shouldUseRemoteSearch && remoteProductsQuery.isFetching);
+
     return (
         <Combobox
             items={items}
@@ -104,7 +151,7 @@ export function RxOfferProductCombobox(props: {
                 showClear
                 showTrigger
                 disabled={disabled}
-                loading={productsQuery.isFetching}
+                loading={isLoading}
             />
 
             <ComboboxContent side="bottom" align="start">

@@ -5,7 +5,6 @@ import type { RxOfferFormItem } from "../types/rx.offer.types";
 import { Plus, Trash2 } from "lucide-react";
 import { MoneyInput } from "@/components/ui/money-input";
 import { RxOfferProductCombobox } from "./RxOfferProductCombobox";
-import type { PharmacyProductDto } from "@/features/pharmacy-products/types/pharmacy-products.dto";
 import { mapOfferItemPharmacyProductToDto } from "../lib/rx-offer.mappers";
 
 export function RxOfferItemsTable(props: {
@@ -27,13 +26,16 @@ export function RxOfferItemsTable(props: {
         <div className="overflow-hidden rounded-xl border">
             <div className="divide-y">
                 {items.map((item, index) => {
-                    const selectedProduct = mapOfferItemPharmacyProductToDto(item);
+                    const selectedProduct =
+                        mapOfferItemPharmacyProductToDto(item);
 
                     return (
                         <div key={item.id} className="px-4 py-4 space-y-4">
                             <div className="flex items-end gap-3">
                                 <div className="flex-1 grid gap-2">
-                                    <Label htmlFor={`offer-item-label-${item.id}`}>
+                                    <Label
+                                        htmlFor={`offer-item-label-${item.id}`}
+                                    >
                                         Artikel {index + 1}
                                     </Label>
 
@@ -54,7 +56,8 @@ export function RxOfferItemsTable(props: {
                                                 pharmacyProductId: product.id,
                                                 label: product.name,
                                                 unitPriceCents:
-                                                    product.prices.base_price_cents,
+                                                    product.prices
+                                                        .base_price_cents,
                                             })
                                         }
                                     />
@@ -74,7 +77,9 @@ export function RxOfferItemsTable(props: {
 
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`offer-item-qty-${item.id}`}>
+                                    <Label
+                                        htmlFor={`offer-item-qty-${item.id}`}
+                                    >
                                         Menge
                                     </Label>
 
@@ -90,7 +95,9 @@ export function RxOfferItemsTable(props: {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`offer-item-unit-price-${item.id}`}>
+                                    <Label
+                                        htmlFor={`offer-item-unit-price-${item.id}`}
+                                    >
                                         Preis
                                     </Label>
 
@@ -106,7 +113,9 @@ export function RxOfferItemsTable(props: {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`offer-item-total-${item.id}`}>
+                                    <Label
+                                        htmlFor={`offer-item-total-${item.id}`}
+                                    >
                                         Gesamt
                                     </Label>
 
@@ -114,7 +123,7 @@ export function RxOfferItemsTable(props: {
                                         cents={item.totalPriceCents}
                                         currency={currency}
                                         disabled
-                                        onChange={() => { }}
+                                        onChange={() => {}}
                                     />
                                 </div>
                             </div>
