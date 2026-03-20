@@ -41,7 +41,6 @@ export function RxItemsTableCell(props: {
                 <div className="min-w-80 space-y-2">
                     {rxItems.map((it) => {
                         const mapped = rxItemHasMapping(it);
-
                         const issueMeta = !mapped
                             ? getMappingIssueMeta(rx)
                             : null;
@@ -72,15 +71,7 @@ export function RxItemsTableCell(props: {
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger>
-                                                    <AlertTriangle
-                                                        className={[
-                                                            "size-4 cursor-help",
-                                                            issueMeta.variant ===
-                                                            "critical"
-                                                                ? "text-destructive"
-                                                                : "text-amber-600",
-                                                        ].join(" ")}
-                                                    />
+                                                    <AlertTriangle className="size-4 cursor-help text-destructive" />
                                                 </TooltipTrigger>
 
                                                 <TooltipContent className="max-w-60 text-xs">
@@ -94,7 +85,7 @@ export function RxItemsTableCell(props: {
                         );
                     })}
 
-                    {unmappedCount > 0 ? (
+                    {missingMappingsVm.unmappedItems.length > 0 ? (
                         <div className="pt-1">
                             <RxMissingMappingsPopover
                                 rx={rx}

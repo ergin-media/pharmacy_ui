@@ -115,7 +115,7 @@ export function RxMissingMappingsPopover(props: {
             <PopoverTrigger>
                 <Button type="button" variant="outline" size="sm">
                     <Settings2 className="mr-2 size-4" />
-                    Zuordnen
+                    Artikel zuordnen
                 </Button>
             </PopoverTrigger>
 
