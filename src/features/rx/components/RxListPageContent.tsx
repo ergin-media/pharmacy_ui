@@ -26,7 +26,7 @@ export function RxListPageContent(props: {
     const { queueVm, listVm, toolbarVm, tableVm, rowActions } = props;
 
     return (
-        <div className="grid h-full gap-2 xl:grid-cols-[210px_1fr] 2xl:grid-cols-[240px_1fr]">
+        <div className="grid h-full gap-2 xl:grid-cols-[235px_1fr]">
             <Card className="gap-3">
                 <TypographyP className="pl-1 text-[.7rem] uppercase text-gray-400">
                     Prozesse
