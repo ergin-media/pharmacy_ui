@@ -1,11 +1,7 @@
 import { useState } from "react";
-
-import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
-
 import type { ProviderProductMapDto } from "../types/provider-products.dto";
-import { usePharmacyProductsForMappingQuery } from "../queries/pharmacyProductsForMapping.queries";
 import { mapProviderMappingPharmacyProductToDto } from "../lib/provider-products.mappers";
-import { ProviderProductMappingCombobox } from "./ProviderProductMappingCombobox";
+import { PharmacyProductSearchCombobox } from "@/features/pharmacy-products/components/PharmacyProductSearchCombobox";
 
 export function ProviderProductMappingCell(props: {
     row: ProviderProductMapDto;
@@ -15,26 +11,22 @@ export function ProviderProductMappingCell(props: {
     const { row, isLoading = false, onSelect } = props;
 
     const [searchValue, setSearchValue] = useState("");
-    const debouncedSearchValue = useDebouncedValue(searchValue, 300);
 
-    const pharmacyProductsQuery =
-        usePharmacyProductsForMappingQuery(debouncedSearchValue);
-
-    const products = pharmacyProductsQuery.data?.items ?? [];
     const currentPharmacyProduct = mapProviderMappingPharmacyProductToDto(
         row.pharmacy_product,
     );
 
     return (
-        <ProviderProductMappingCombobox
-            currentPharmacyProductId={row.pharmacy_product?.id}
-            currentPharmacyProduct={currentPharmacyProduct}
-            products={products}
-            searchValue={searchValue}
-            onSearchValueChange={setSearchValue}
-            isLoading={pharmacyProductsQuery.isFetching}
-            isDisabled={isLoading}
-            onSelect={onSelect}
+        <PharmacyProductSearchCombobox
+            value={searchValue}
+            selectedProductId={row.pharmacy_product?.id}
+            selectedProduct={currentPharmacyProduct}
+            disabled={isLoading}
+            isUnmapped={!row.pharmacy_product?.id}
+            placeholder="Zuordnung wählen…"
+            onInputChange={setSearchValue}
+            onSelectProduct={(product) => onSelect(product.id)}
+            onClearSelection={() => onSelect(null)}
         />
     );
 }
