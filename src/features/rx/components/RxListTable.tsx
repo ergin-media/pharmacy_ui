@@ -21,6 +21,7 @@ import { RxMoreActionsCell } from "./RxMoreActionsCell";
 import { RxPatientCell } from "./RxPatientCell";
 import { RxProviderCell } from "./RxProviderCell";
 import { RxIssuesCell } from "./RxIssuesCell";
+import { RelativeDateTime } from "@/shared/ui/RelativeDateTime";
 
 export function RxListTable(props: {
     queue: RxQueue;
@@ -163,7 +164,9 @@ export function RxListTable(props: {
                                         "receivedAt",
                                     ) && (
                                         <TableCell className="whitespace-nowrap">
-                                            {row.receivedAtLabel}
+                                            <RelativeDateTime
+                                                value={row.receivedAtLabel}
+                                            />
                                         </TableCell>
                                     )}
 

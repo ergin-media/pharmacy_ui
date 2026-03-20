@@ -224,7 +224,7 @@ export function mapRxListItemToRowVm(input: {
         totalPriceLabel: formatMoney(priceCents, currency),
         totalPriceDimmed: !priceMeta.isComplete,
 
-        receivedAtLabel: formatOptionalDate(rx.mail?.received_at),
+        receivedAtLabel: rx.mail?.received_at ?? "-",
         offerCreatedAtLabel: formatOptionalDate(timeline?.offer_created_at),
         paidAtLabel: formatOptionalDate(timeline?.paid_at),
         preparedAtLabel: formatOptionalDate(timeline?.prepared_at),

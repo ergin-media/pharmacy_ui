@@ -6,7 +6,6 @@ import { AlertTriangle } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
-    TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
@@ -68,17 +67,15 @@ export function RxItemsTableCell(props: {
                                     </span>
 
                                     {!mapped && issueMeta ? (
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger>
-                                                    <AlertTriangle className="size-4 cursor-help text-destructive" />
-                                                </TooltipTrigger>
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <AlertTriangle className="size-4 cursor-help text-destructive" />
+                                            </TooltipTrigger>
 
-                                                <TooltipContent className="max-w-60 text-xs">
-                                                    {issueMeta.message}
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                            <TooltipContent className="max-w-60 text-xs">
+                                                {issueMeta.message}
+                                            </TooltipContent>
+                                        </Tooltip>
                                     ) : null}
                                 </div>
                             </div>
