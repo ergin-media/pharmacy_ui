@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import {
@@ -61,6 +61,8 @@ export function PharmacyProductSearchCombobox(props: {
     } = props;
 
     const [searchValue, setSearchValue] = useState("");
+    const ignoreNextInputChangeRef = useRef(false);
+
     const debouncedSearchValue = useDebouncedValue(searchValue, 300);
 
     const initialProductsQuery = usePharmacyProductsForComboboxQuery();
@@ -143,6 +145,7 @@ export function PharmacyProductSearchCombobox(props: {
     const handleValueChange = useCallback(
         (next: string | null) => {
             if (next == null) {
+                ignoreNextInputChangeRef.current = true;
                 setSearchValue("");
                 onClearSelection?.();
                 return;
@@ -151,6 +154,7 @@ export function PharmacyProductSearchCombobox(props: {
             const product = byId.get(next);
             if (!product) return;
 
+            ignoreNextInputChangeRef.current = true;
             setSearchValue("");
             onSelectProduct(product);
         },
@@ -168,6 +172,11 @@ export function PharmacyProductSearchCombobox(props: {
                 value={currentValue}
                 inputValue={inputValue}
                 onInputValueChange={(next) => {
+                    if (ignoreNextInputChangeRef.current) {
+                        ignoreNextInputChangeRef.current = false;
+                        return;
+                    }
+
                     onInputValueChange(next);
                     setSearchValue(next);
                 }}
