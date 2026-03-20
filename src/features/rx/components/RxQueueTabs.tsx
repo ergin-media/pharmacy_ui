@@ -52,6 +52,9 @@ export function RxQueueTabs(props: {
                                     "data-active:bg-background hover:bg-background",
                                     "px-1.5 py-2 font-normal text-foreground",
                                     "group-data-[variant=default]/tabs-list:data-active:shadow-none",
+                                    item.value === "clarify" && count > 0
+                                        ? "bg-red-50 data-active:bg-red-100 hover:bg-red-100"
+                                        : "",
                                 ].join(" ")}
                             >
                                 <span className="flex w-full min-w-0 flex-1 items-center gap-2 text-left">
