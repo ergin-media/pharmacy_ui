@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 
@@ -17,12 +19,23 @@ export function RxOfferCreatePanel(props: {
 
     const form = useRxOfferForm(rx);
     const createAndSendOfferMutation = useCreateAndSendOfferMutation();
+    const [isFinishing, setIsFinishing] = useState(false);
+
+    const isBusy = createAndSendOfferMutation.isPending || isFinishing;
 
     async function handleCreateAndSend() {
-        const payload = mapRxOfferFormToCreatePayload(form.values);
+        if (isBusy) return;
 
-        await createAndSendOfferMutation.mutateAsync(payload);
-        await onCreated();
+        setIsFinishing(true);
+
+        try {
+            const payload = mapRxOfferFormToCreatePayload(form.values);
+
+            await createAndSendOfferMutation.mutateAsync(payload);
+            await onCreated();
+        } finally {
+            setIsFinishing(false);
+        }
     }
 
     return (
@@ -49,18 +62,11 @@ export function RxOfferCreatePanel(props: {
 
             <div className="sticky bottom-0 px-1 pt-3">
                 <div className="flex items-center justify-end gap-2">
-                    <Button
-                        variant="outline"
-                        onClick={onCancel}
-                        disabled={createAndSendOfferMutation.isPending}
-                    >
+                    <Button variant="outline" onClick={onCancel} disabled={isBusy}>
                         Abbrechen
                     </Button>
 
-                    <LoadingButton
-                        loading={createAndSendOfferMutation.isPending}
-                        onClick={handleCreateAndSend}
-                    >
+                    <LoadingButton loading={isBusy} onClick={handleCreateAndSend}>
                         Angebot erstellen &amp; versenden
                     </LoadingButton>
                 </div>

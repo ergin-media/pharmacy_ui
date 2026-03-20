@@ -47,10 +47,11 @@ export function useRxPanels() {
                         rx={rx}
                         onCancel={close}
                         onCreated={async () => {
+                            close();
+
                             await queryClient.invalidateQueries({
                                 queryKey: rxKeys.lists(),
                             });
-                            close();
                         }}
                     />
                 ),
