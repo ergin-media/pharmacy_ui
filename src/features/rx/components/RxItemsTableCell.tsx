@@ -3,6 +3,13 @@ import { TableCell } from "@/components/ui/table";
 import { formatQuantity } from "@/shared/lib/format/quantity";
 import { AlertTriangle } from "lucide-react";
 
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import type { RxItem, RxListItemDto } from "../types/rx.dto";
 import { getPriceMeta } from "../lib/rx.summary";
 import {
@@ -11,6 +18,7 @@ import {
 } from "../lib/rx.reparse";
 import { RxMissingMappingsPopover } from "./RxMissingMappingsPopover";
 import { useRxMissingMappings } from "../hooks/useRxMissingMappings";
+import { getMappingIssueMeta } from "../lib/rx.items";
 
 function rxItemLabel(it: RxItem) {
     return it.raw_product_name ?? it.normalized_product_name ?? it.sku ?? "—";
@@ -25,7 +33,6 @@ export function RxItemsTableCell(props: {
     const { rx, rxItems, unmappedCount, priceMeta } = props;
 
     const showPriceWarning = rxShouldShowPriceUpdateHint(rx, unmappedCount);
-
     const missingMappingsVm = useRxMissingMappings(rx);
 
     return (
@@ -34,6 +41,10 @@ export function RxItemsTableCell(props: {
                 <div className="min-w-80 space-y-2">
                     {rxItems.map((it) => {
                         const mapped = rxItemHasMapping(it);
+
+                        const issueMeta = !mapped
+                            ? getMappingIssueMeta(rx, it)
+                            : null;
 
                         return (
                             <div
@@ -57,8 +68,26 @@ export function RxItemsTableCell(props: {
                                         )
                                     </span>
 
-                                    {!mapped ? (
-                                        <AlertTriangle className="size-4 text-destructive" />
+                                    {!mapped && issueMeta ? (
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <AlertTriangle
+                                                        className={[
+                                                            "size-4 cursor-help",
+                                                            issueMeta.variant ===
+                                                            "critical"
+                                                                ? "text-destructive"
+                                                                : "text-amber-600",
+                                                        ].join(" ")}
+                                                    />
+                                                </TooltipTrigger>
+
+                                                <TooltipContent className="max-w-60 text-xs">
+                                                    {issueMeta.message}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     ) : null}
                                 </div>
                             </div>

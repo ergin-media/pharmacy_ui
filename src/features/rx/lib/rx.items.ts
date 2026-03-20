@@ -1,4 +1,4 @@
-import type { RxListItemDto } from "../types/rx.dto";
+import type { RxItem, RxListItemDto } from "../types/rx.dto";
 
 /**
  * Prüft ob ein RX-Item eine gültige Zuordnung hat.
@@ -24,11 +24,7 @@ export function rxItemLabel(item: {
     raw_product_name?: string | null;
     normalized_product_name?: string | null;
 }): string {
-    return (
-        item.raw_product_name ??
-        item.normalized_product_name ??
-        "—"
-    );
+    return item.raw_product_name ?? item.normalized_product_name ?? "—";
 }
 
 /**
@@ -42,4 +38,22 @@ export function rxUnmappedCount(rx: RxListItemDto): number {
 
     const items = rx.items ?? [];
     return items.filter((it) => !rxItemHasMapping(it)).length;
+}
+
+export function getMappingIssueMeta(rx: RxListItemDto) {
+    const requiresMapping = rx.provider?.mapping_required === true;
+
+    if (requiresMapping) {
+        return {
+            message:
+                "Dieser Artikel ist noch nicht zugeordnet und muss vor der weiteren Bearbeitung zugewiesen werden.",
+            variant: "critical" as const,
+        };
+    }
+
+    return {
+        message:
+            "Dieser Artikel ist nicht zugeordnet. Die Verarbeitung erfolgt anhand der Plattformdaten.",
+        variant: "warning" as const,
+    };
 }
