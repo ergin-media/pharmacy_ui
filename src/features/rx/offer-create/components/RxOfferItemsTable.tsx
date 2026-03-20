@@ -30,9 +30,9 @@ export function RxOfferItemsTable(props: {
                         mapOfferItemPharmacyProductToDto(item);
 
                     return (
-                        <div key={item.id} className="px-4 py-4 space-y-4">
+                        <div key={item.id} className="space-y-4 px-4 py-4">
                             <div className="flex items-end gap-3">
-                                <div className="flex-1 grid gap-2">
+                                <div className="grid flex-1 gap-2">
                                     <Label
                                         htmlFor={`offer-item-label-${item.id}`}
                                     >
@@ -51,15 +51,20 @@ export function RxOfferItemsTable(props: {
                                                 pharmacyProductId: null,
                                             })
                                         }
-                                        onSelectProduct={(product) =>
+                                        onSelectProduct={(product) => {
+                                            const unitPriceCents =
+                                                product.prices
+                                                    .base_price_cents ?? 0;
+
                                             onItemChange(item.id, {
                                                 pharmacyProductId: product.id,
                                                 label: product.name,
-                                                unitPriceCents:
-                                                    product.prices
-                                                        .base_price_cents,
-                                            })
-                                        }
+                                                unitPriceCents,
+                                                totalPriceCents:
+                                                    item.quantity *
+                                                    unitPriceCents,
+                                            });
+                                        }}
                                     />
                                 </div>
 
