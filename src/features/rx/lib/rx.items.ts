@@ -1,4 +1,4 @@
-import type { RxItem, RxListItemDto } from "../types/rx.dto";
+import type { RxListItemDto } from "../types/rx.dto";
 
 /**
  * Prüft ob ein RX-Item eine gültige Zuordnung hat.

@@ -43,7 +43,7 @@ export function RxItemsTableCell(props: {
                         const mapped = rxItemHasMapping(it);
 
                         const issueMeta = !mapped
-                            ? getMappingIssueMeta(rx, it)
+                            ? getMappingIssueMeta(rx)
                             : null;
 
                         return (
