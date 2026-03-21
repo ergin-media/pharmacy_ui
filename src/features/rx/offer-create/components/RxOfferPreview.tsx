@@ -9,36 +9,34 @@ export function RxOfferPreview(props: { values: RxOfferFormValues }) {
     const preview = useRxOfferPreview(values);
 
     return (
-        <Card className="h-full min-h-195">
-            <CardContent>
-                <div className="relative flex min-h-170 w-full items-center justify-center overflow-hidden rounded-2xl border bg-white shadow-sm">
+        <Card className="flex h-full min-h-195 flex-col">
+            <CardContent className="flex min-h-0 flex-1 flex-col p-0">
+                <div className="relative flex min-h-0 flex-1 flex-col">
                     {!preview.isValid ? (
-                        <div className="px-6 text-center text-sm text-muted-foreground">
+                        <div className="flex h-full flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">
                             Bitte vervollständige die Angebotsdaten, damit die
                             PDF-Vorschau erzeugt werden kann.
                         </div>
                     ) : preview.error ? (
-                        <div className="px-6 text-center text-sm text-destructive">
+                        <div className="flex h-full flex-1 items-center justify-center px-6 text-center text-sm text-destructive">
                             {preview.error}
                         </div>
                     ) : preview.blobUrl ? (
                         <>
-                            {/* PDF */}
                             <iframe
                                 title={`Angebotsvorschau ${values.offerNumber}`}
                                 src={preview.blobUrl}
-                                className="h-170 w-full"
+                                className="absolute inset-0 h-full w-full"
                             />
 
-                            {/* Loading Overlay */}
                             {preview.isLoading && (
-                                <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+                                <div className="absolute inset-0 z-10 grid place-items-center bg-background/70 backdrop-blur-sm">
                                     <Loader2 className="size-8 animate-spin text-muted-foreground" />
                                 </div>
                             )}
                         </>
                     ) : (
-                        <div className="px-6 text-center text-sm text-muted-foreground">
+                        <div className="flex h-full flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">
                             Vorschau wird geladen…
                         </div>
                     )}
