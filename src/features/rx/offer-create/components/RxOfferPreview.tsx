@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatMoney } from "@/shared/lib/format/money";
 import type { RxOfferFormValues } from "../types/rx.offer.types";
+import { useRxOfferPreview } from "../hooks/useRxOfferPreview";
 
 export function RxOfferPreview(props: { values: RxOfferFormValues }) {
     const { values } = props;
+
+    const preview = useRxOfferPreview(values);
 
     return (
         <Card className="h-full min-h-195">
@@ -12,136 +14,35 @@ export function RxOfferPreview(props: { values: RxOfferFormValues }) {
             </CardHeader>
 
             <CardContent>
-                <div className="mx-auto min-h-170 w-full max-w-190 rounded-2xl border bg-white p-8 shadow-sm">
-                    <div className="mb-8 flex items-start justify-between">
-                        <div>
-                            <h2 className="text-4xl font-semibold tracking-tight">
-                                Angebot
-                            </h2>
-                            <p className="mt-3 text-sm text-muted-foreground">
-                                PDF-Vorschau wird im nächsten Schritt über das
-                                Backend generiert.
-                            </p>
+                <div className="flex min-h-170 w-full items-center justify-center overflow-hidden rounded-2xl border bg-white shadow-sm">
+                    {!preview.isValid ? (
+                        <div className="px-6 text-center text-sm text-muted-foreground">
+                            Bitte vervollständige die Angebotsdaten, damit die
+                            PDF-Vorschau erzeugt werden kann.
                         </div>
-
-                        <div className="text-right text-sm">
-                            <div className="text-muted-foreground">
-                                Angebotsnummer
-                            </div>
-                            <div className="font-semibold">
-                                {values.offerNumber}
-                            </div>
+                    ) : preview.error ? (
+                        <div className="px-6 text-center text-sm text-destructive">
+                            {preview.error}
                         </div>
-                    </div>
-
-                    <div className="mb-8 grid grid-cols-2 gap-8 text-sm">
-                        <div className="space-y-1">
-                            <div className="font-medium">Patient</div>
-                            <div>
-                                {[
-                                    values.patientFirstName,
-                                    values.patientLastName,
-                                ]
-                                    .filter(Boolean)
-                                    .join(" ")}
-                            </div>
-                            <div>{values.patientStreet || "—"}</div>
-                            <div>
-                                {[values.patientZip, values.patientCity]
-                                    .filter(Boolean)
-                                    .join(" ") || "—"}
-                            </div>
-                        </div>
-
-                        <div className="space-y-1 text-right">
-                            <div>
-                                <span className="text-muted-foreground">
-                                    Ausgestellt:
-                                </span>{" "}
-                                {values.issueDate || "—"}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mb-8 overflow-hidden rounded-xl border">
-                        <div className="grid grid-cols-[1.8fr_90px_140px_140px] gap-3 border-b bg-muted/30 px-4 py-3 text-sm font-medium">
-                            <div>Artikel</div>
-                            <div>Menge</div>
-                            <div>Preis</div>
-                            <div>Gesamt</div>
-                        </div>
-
-                        <div className="divide-y">
-                            {values.items.map((item) => (
-                                <div
-                                    key={item.id}
-                                    className="grid grid-cols-[1.8fr_90px_140px_140px] gap-3 px-4 py-3 text-sm"
-                                >
-                                    <div>{item.label}</div>
-                                    <div>{item.quantity}</div>
-                                    <div>
-                                        {formatMoney(
-                                            item.unitPriceCents,
-                                            values.currency,
-                                        )}
-                                    </div>
-                                    <div>
-                                        {formatMoney(
-                                            item.totalPriceCents,
-                                            values.currency,
-                                        )}
-                                    </div>
+                    ) : preview.blobUrl ? (
+                        <div className="relative h-170 w-full">
+                            {preview.isLoading ? (
+                                <div className="absolute inset-x-0 top-0 z-10 border-b bg-background/90 px-3 py-2 text-xs text-muted-foreground backdrop-blur">
+                                    Vorschau wird aktualisiert…
                                 </div>
-                            ))}
-                        </div>
-                    </div>
+                            ) : null}
 
-                    <div className="ml-auto grid max-w-[320px] gap-2 text-sm">
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">
-                                Zwischensumme
-                            </span>
-                            <span>
-                                {formatMoney(
-                                    values.subtotalCents,
-                                    values.currency,
-                                )}
-                            </span>
+                            <iframe
+                                title={`Angebotsvorschau ${values.offerNumber}`}
+                                src={preview.blobUrl}
+                                className="h-full w-full"
+                            />
                         </div>
-
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">
-                                Versand
-                            </span>
-                            <span>
-                                {formatMoney(
-                                    values.shippingCents,
-                                    values.currency,
-                                )}
-                            </span>
+                    ) : (
+                        <div className="px-6 text-center text-sm text-muted-foreground">
+                            Vorschau wird geladen…
                         </div>
-
-                        <div className="flex items-center justify-between border-t pt-3 font-semibold">
-                            <span>Gesamt</span>
-                            <span>
-                                {formatMoney(
-                                    values.totalCents,
-                                    values.currency,
-                                )}
-                            </span>
-                        </div>
-                    </div>
-
-                    {values.notes ? (
-                        <div className="mt-10">
-                            <div className="mb-2 text-sm font-medium">
-                                Hinweise
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                                {values.notes}
-                            </div>
-                        </div>
-                    ) : null}
+                    )}
                 </div>
             </CardContent>
         </Card>
