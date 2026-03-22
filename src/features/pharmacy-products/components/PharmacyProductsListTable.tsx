@@ -40,8 +40,17 @@ export function PharmacyProductsListTable(props: {
     sort: PharmacyProductsSort;
     onSortChange: (next: PharmacyProductsSort) => void;
     onEdit?: (p: PharmacyProductDto) => void;
+    onDelete?: (p: PharmacyProductDto) => void;
 }) {
-    const { items, isLoading, perPage, sort, onSortChange, onEdit } = props;
+    const {
+        items,
+        isLoading,
+        perPage,
+        sort,
+        onSortChange,
+        onEdit,
+        onDelete,
+    } = props;
 
     const sortMap: Record<
         "name" | "price" | "usage" | "updated_at",
@@ -179,6 +188,7 @@ export function PharmacyProductsListTable(props: {
                                         <PharmacyProductRowActionsMenu
                                             disabled={isLoading}
                                             onEdit={() => onEdit?.(p)}
+                                            onDelete={() => onDelete?.(p)}
                                         />
                                     </div>
                                 </TableCell>
