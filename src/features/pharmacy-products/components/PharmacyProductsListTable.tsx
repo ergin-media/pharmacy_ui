@@ -37,26 +37,11 @@ export function PharmacyProductsListTable(props: {
     items: PharmacyProductDto[];
     isLoading?: boolean;
     perPage: number;
-
     sort: PharmacyProductsSort;
     onSortChange: (next: PharmacyProductsSort) => void;
-
-    onCopyPzn?: (p: PharmacyProductDto) => void;
-    onOpenDetails?: (p: PharmacyProductDto) => void;
     onEdit?: (p: PharmacyProductDto) => void;
-    onToggleActive?: (p: PharmacyProductDto) => void;
 }) {
-    const {
-        items,
-        isLoading,
-        perPage,
-        sort,
-        onSortChange,
-        onCopyPzn,
-        onOpenDetails,
-        onEdit,
-        onToggleActive,
-    } = props;
+    const { items, isLoading, perPage, sort, onSortChange, onEdit } = props;
 
     const sortMap: Record<
         "name" | "price" | "usage" | "updated_at",
@@ -143,9 +128,9 @@ export function PharmacyProductsListTable(props: {
                                     <div className="flex flex-col gap-1.5">
                                         <div className="font-medium">{p.name}</div>
 
-                                        <div className="text-xs text-muted-foreground flex flex-wrap gap-x-2">
+                                        <div className="flex flex-wrap gap-x-2 text-xs text-muted-foreground">
                                             {p.strain ? (
-                                                <span className="text-foreground/80 font-medium">
+                                                <span className="font-medium text-foreground/80">
                                                     {p.strain}
                                                 </span>
                                             ) : null}
@@ -158,53 +143,42 @@ export function PharmacyProductsListTable(props: {
                                         </div>
                                     </div>
                                 </TableCell>
+
                                 <TableCell className="text-muted-foreground">
                                     {p.product_code}
                                 </TableCell>
+
                                 <TableCell>
                                     {formatMoney(p.prices.base_price_cents)}
                                 </TableCell>
+
                                 <TableCell>
                                     {formatMoney(
                                         p.prices.price_other_provider_cents,
                                     )}
                                 </TableCell>
-                                <TableCell>
-                                    {p.rx_items_count}
-                                </TableCell>
+
+                                <TableCell>{p.rx_items_count}</TableCell>
+
                                 <TableCell>
                                     <Badge
                                         variant={
-                                            p.is_active
-                                                ? "success"
-                                                : "secondary"
+                                            p.is_active ? "success" : "secondary"
                                         }
                                     >
                                         {p.is_active ? "Aktiv" : "Inaktiv"}
                                     </Badge>
                                 </TableCell>
+
                                 <TableCell className="whitespace-nowrap text-muted-foreground">
-                                    {formatDateTime(
-                                        p.updated_at ?? p.created_at,
-                                    )}
+                                    {formatDateTime(p.updated_at ?? p.created_at)}
                                 </TableCell>
-                                <TableCell className="sticky right-0 text-right pe-3">
+
+                                <TableCell className="sticky right-0 pe-3 text-right">
                                     <div className="flex justify-end">
                                         <PharmacyProductRowActionsMenu
                                             disabled={isLoading}
-                                            toggleLabel={
-                                                p.is_active
-                                                    ? "Deaktivieren"
-                                                    : "Aktivieren"
-                                            }
-                                            onOpenDetails={() =>
-                                                onOpenDetails?.(p)
-                                            }
-                                            onCopyPzn={() => onCopyPzn?.(p)}
                                             onEdit={() => onEdit?.(p)}
-                                            onToggleActive={() =>
-                                                onToggleActive?.(p)
-                                            }
                                         />
                                     </div>
                                 </TableCell>
