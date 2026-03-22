@@ -7,7 +7,7 @@ export async function createPharmacyProduct(
 ) {
     const res = await api.post<{
         item: PharmacyProductDto;
-    }>("pharmacy-products", payload);
+    }>("pharmacy-products/create", payload);
 
     return res.data;
 }
