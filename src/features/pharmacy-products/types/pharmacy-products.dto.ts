@@ -1,4 +1,5 @@
 export type PharmacyProductCurrency = "EUR";
+export const CURRENCY: PharmacyProductCurrency = "EUR";
 
 export type PharmacyProductPricesDto = {
     base_price: number;
@@ -19,6 +20,7 @@ export type PharmacyProductDto = {
     is_active: boolean;
     rx_items_count: number;
     prices: PharmacyProductPricesDto;
+    currency: string;
     created_at: string; // "YYYY-MM-DD HH:mm:ss"
     updated_at: string | null;
 };

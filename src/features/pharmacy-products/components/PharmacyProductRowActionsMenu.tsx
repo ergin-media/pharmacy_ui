@@ -21,7 +21,7 @@ export function PharmacyProductRowActionsMenu(props: {
     onOpenDetails?: () => void;
     onEdit?: () => void;
     onToggleActive?: () => void;
-    toggleLabel?: string; // "Deaktivieren" / "Aktivieren"
+    toggleLabel?: string;
 }) {
     const {
         disabled,
@@ -49,26 +49,26 @@ export function PharmacyProductRowActionsMenu(props: {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onSelect={() => onOpenDetails?.()}>
+                <DropdownMenuItem onClick={() => onOpenDetails?.()}>
                     <ExternalLink className="size-4" />
                     <span>Details öffnen</span>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onSelect={() => onCopyPzn?.()}>
+                <DropdownMenuItem onClick={() => onCopyPzn?.()}>
                     <Copy className="size-4" />
                     <span>PZN kopieren</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem onSelect={() => onEdit?.()}>
+                <DropdownMenuItem onClick={() => onEdit?.()}>
                     <Pencil className="size-4" />
                     <span>Bearbeiten</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
                     variant="destructive"
-                    onSelect={() => onToggleActive?.()}
+                    onClick={() => onToggleActive?.()}
                 >
                     <Power className="size-4" />
                     <span>{toggleLabel}</span>

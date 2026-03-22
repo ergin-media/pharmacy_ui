@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import { usePharmacyProductsListPage } from "../hooks/usePharmacyProductsListPage";
@@ -7,13 +7,21 @@ import { PharmacyProductsListTable } from "../components/PharmacyProductsListTab
 import { Pagination } from "@/components/ui/pagination";
 import { TypographyH1 } from "@/components/ui/typography";
 import { Separator } from "@/components/ui/separator";
+import { usePharmacyProductPanels } from "../hooks/usePharmacyProductPanels";
 
 export function PharmacyProductsListPage() {
     const vm = usePharmacyProductsListPage();
+    const panels = usePharmacyProductPanels();
 
     return (
         <div className="h-full w-full">
-            <TypographyH1 className="mb-4">Produkte</TypographyH1>
+            <div className="flex justify-between mb-4 items-center">
+                <TypographyH1 className="">Produkte</TypographyH1>
+
+                <Button onClick={panels.create.open}>
+                    Artikel erstellen
+                </Button>
+            </div>
             <Card>
                 <CardContent className="space-y-3">
                     {vm.query.isError ? (
@@ -78,6 +86,7 @@ export function PharmacyProductsListPage() {
                                 perPage={vm.filters.perPage}
                                 sort={vm.filters.sort ?? "created_at_desc"}
                                 onSortChange={vm.actions.setSort}
+                                onEdit={panels.edit.open}
                             />
 
                             <Pagination
