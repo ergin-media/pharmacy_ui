@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
@@ -35,20 +36,21 @@ export function PharmacyProductDeleteDialog(props: {
             open={open}
             onOpenChange={onOpenChange}
             title="Artikel löschen"
-            description={
-                <>
-                    Möchtest du den Artikel{" "}
-                    <span className="font-medium text-foreground">
-                        {product?.name ?? "—"}
-                    </span>{" "}
-                    wirklich löschen?
-                </>
-            }
+            icon={<Trash2 className="size-5" />}
             confirmLabel="Löschen"
             cancelLabel="Abbrechen"
-            confirmVariant="destructive"
+            isDangerous
             isLoading={isBusy}
             onConfirm={handleDelete}
-        />
+        >
+            Soll der Artikel{" "}
+            <span className="font-medium text-foreground">
+                {product?.name ?? "—"}
+            </span>{" "}
+            wirklich gelöscht werden?
+            <div className="text-sm text-muted-foreground">
+                Der Artikel ist danach nicht mehr aktiv auswählbar.
+            </div>
+        </ConfirmDialog>
     );
 }
