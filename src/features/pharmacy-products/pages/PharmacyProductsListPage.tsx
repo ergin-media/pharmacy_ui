@@ -8,6 +8,7 @@ import { usePharmacyProductsListPage } from "../hooks/usePharmacyProductsListPag
 import { PharmacyProductsToolbar } from "../components/PharmacyProductsToolbar";
 import { PharmacyProductsListTable } from "../components/PharmacyProductsListTable";
 import { usePharmacyProductsPageActions } from "../hooks/usePharmacyProductsPageActions";
+import { Plus, Upload } from "lucide-react";
 
 export function PharmacyProductsListPage() {
     const vm = usePharmacyProductsListPage();
@@ -23,10 +24,12 @@ export function PharmacyProductsListPage() {
                         variant="outline"
                         onClick={pageActions.actions.import}
                     >
+                        <Upload className="mr-1 size-4" />
                         CSV importieren
                     </Button>
 
                     <Button onClick={pageActions.actions.create}>
+                        <Plus className="mr-1 size-4" />
                         Artikel erstellen
                     </Button>
                 </div>
