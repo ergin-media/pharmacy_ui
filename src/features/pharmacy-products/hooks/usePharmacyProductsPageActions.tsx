@@ -12,6 +12,7 @@ export function usePharmacyProductsPageActions() {
 
     const actions = {
         create: () => panels.create.open(),
+        import: () => panels.import.open(),
         edit: (product: PharmacyProductDto) => panels.edit.open(product),
         remove: (product: PharmacyProductDto) => {
             confirm({

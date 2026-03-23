@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { TypographyH1 } from "@/components/ui/typography";
 import { Separator } from "@/components/ui/separator";
+
 import { usePharmacyProductsListPage } from "../hooks/usePharmacyProductsListPage";
 import { PharmacyProductsToolbar } from "../components/PharmacyProductsToolbar";
 import { PharmacyProductsListTable } from "../components/PharmacyProductsListTable";
@@ -17,9 +18,18 @@ export function PharmacyProductsListPage() {
             <div className="mb-4 flex items-center justify-between">
                 <TypographyH1>Produkte</TypographyH1>
 
-                <Button onClick={pageActions.actions.create}>
-                    Artikel erstellen
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={pageActions.actions.import}
+                    >
+                        CSV importieren
+                    </Button>
+
+                    <Button onClick={pageActions.actions.create}>
+                        Artikel erstellen
+                    </Button>
+                </div>
             </div>
 
             <Card>

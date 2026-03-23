@@ -7,6 +7,7 @@ import type { SlideInPanelRenderApi } from "@/shared/ui/slide-in-panel/slideInPa
 import { pharmacyProductsKeys } from "../queries/pharmacy-products.queries";
 import type { PharmacyProductDto } from "../types/pharmacy-products.dto";
 import { PharmacyProductFormPanel } from "../product-form/components/PharmacyProductFormPanel";
+import { PharmacyProductsImportPanel } from "../import/components/PharmacyProductsImportPanel";
 
 export function usePharmacyProductPanels() {
     const { openPanel } = useSlideInPanel();
@@ -53,12 +54,33 @@ export function usePharmacyProductPanels() {
         [openPanel, queryClient],
     );
 
+    const openImport = useCallback(() => {
+        openPanel({
+            title: "CSV Import",
+            variant: "md",
+            render: ({ close }) => (
+                <PharmacyProductsImportPanel
+                    onCancel={close}
+                    onImported={async () => {
+                        await queryClient.invalidateQueries({
+                            queryKey: pharmacyProductsKeys.all,
+                        });
+                        close();
+                    }}
+                />
+            ),
+        });
+    }, [openPanel, queryClient]);
+
     return {
         create: {
             open: openCreate,
         },
         edit: {
             open: openEdit,
+        },
+        import: {
+            open: openImport
         },
     };
 }
