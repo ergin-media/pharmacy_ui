@@ -98,14 +98,14 @@ export function DashboardRevenueComparisonCard(props: {
                                         return [
                                             formatEUR(Number(value)),
                                             "Aktueller Monat",
-                                        ];
+                                        ].join(" ");
                                     }
 
                                     if (key === "prev_revenue_total") {
                                         return [
                                             formatEUR(Number(value)),
                                             "Vormonat",
-                                        ];
+                                        ].join(" ");
                                     }
 
                                     return [String(value), key];

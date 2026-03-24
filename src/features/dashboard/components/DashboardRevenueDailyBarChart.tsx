@@ -1,4 +1,4 @@
-import { formatDateDayMonth } from "@/shared/lib/format/date";
+import { formatDate, formatDateDayMonth } from "@/shared/lib/format/date";
 import { formatEUR } from "@/shared/lib/format/figures";
 import {
     ChartContainer,
@@ -93,11 +93,16 @@ export function DashboardRevenueDailyBarChart(props: {
                                     const key = String(name);
 
                                     if (key === "revenue_total") {
-                                        return [formatEUR(Number(value)), " Umsatz"];
+                                        return [
+                                            formatEUR(Number(value)),
+                                            "Umsatz",
+                                        ].join(" ");
                                     }
 
                                     if (key === "rx_count") {
-                                        return [String(value), " Rezepte"];
+                                        return [String(value), "Rezepte"].join(
+                                            " ",
+                                        );
                                     }
 
                                     return [String(value), key];
@@ -105,7 +110,7 @@ export function DashboardRevenueDailyBarChart(props: {
                                 labelFormatter={(_, payload) => {
                                     const rawDate = payload?.[0]?.payload?.date;
                                     return rawDate
-                                        ? `Datum: ${formatDateDayMonth(String(rawDate))}`
+                                        ? `Datum: ${formatDate(String(rawDate))}`
                                         : "Datum: —";
                                 }}
                             />

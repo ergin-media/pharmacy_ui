@@ -4,6 +4,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
+import { formatInt } from "@/shared/lib/format/figures";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export function DashboardTopProvidersBarChart(props: {
@@ -11,7 +12,7 @@ export function DashboardTopProvidersBarChart(props: {
 }) {
     const data = (props.providers ?? []).slice(0, 8).map((p) => ({
         name: p.name,
-        recipes: p.rx_documents_count, // ✅ RX -> Rezepte
+        recipes: formatInt(p.rx_documents_count),
     }));
 
     const chartConfig = {
@@ -47,7 +48,7 @@ export function DashboardTopProvidersBarChart(props: {
                             <ChartTooltipContent
                                 formatter={(value, name) => {
                                     if (name === "recipes")
-                                        return [String(value), "Rezepte"];
+                                        return [String(value), " Rezepte"];
                                     return [String(value), String(name)];
                                 }}
                             />

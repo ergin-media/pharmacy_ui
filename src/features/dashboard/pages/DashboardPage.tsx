@@ -10,18 +10,9 @@ import { DashboardCashCards } from "../components/DashboardCashCards";
 import { DashboardPageSkeleton } from "../components/DashboardPageSkeleton";
 
 import { useDashboardPage } from "../hooks/useDashboardPage";
-import { TypographyH1 } from "@/components/ui/typography";
-import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { DashboardBusinessKpis } from "../components/DashboardBusinessKpis";
 import { DashboardRevenueComparisonCard } from "../components/DashboardRevenueComparisonCard";
-
-function getPeriodLabel(period: ReturnType<typeof useDashboardPage>["period"]) {
-    if (period === "rolling_30d") return "Letzte 30 Tage";
-    if (period === "mtd") return "Monat bis heute";
-    if (period === "prev_month") return "Vormonat";
-    return "YTD";
-}
 
 export function DashboardPage() {
     const vm = useDashboardPage();
@@ -55,8 +46,8 @@ export function DashboardPage() {
                     {/* Soft error (stale data) */}
                     {isError ? (
                         <div className="rounded-lg bg-white p-3 text-sm text-destructive">
-                            Hinweis: Dashboard konnte nicht aktualisiert werden –
-                            es werden ggf. ältere Daten angezeigt.
+                            Hinweis: Dashboard konnte nicht aktualisiert werden
+                            – es werden ggf. ältere Daten angezeigt.
                         </div>
                     ) : null}
 
@@ -76,7 +67,9 @@ export function DashboardPage() {
 
                     <DashboardBusinessKpis
                         newPatients30d={data.analytics.new_patients_30d}
-                        avgGramsPerRxMonth={data.analytics.avg_grams_per_rx_month}
+                        avgGramsPerRxMonth={
+                            data.analytics.avg_grams_per_rx_month
+                        }
                     />
 
                     <DashboardDailyActivityCard

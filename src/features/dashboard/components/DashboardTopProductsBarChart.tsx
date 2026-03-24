@@ -2,11 +2,8 @@
 "use client";
 
 import type { DashboardTopProductDto } from "../types/dashboard.dto";
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { formatEUR, formatInt } from "@/shared/lib/format/figures";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export function DashboardTopProductsBarChart(props: {
@@ -59,15 +56,17 @@ export function DashboardTopProductsBarChart(props: {
                             const item = payload[0].payload;
 
                             return (
-                                <div className="rounded-md border bg-background p-3 text-xs shadow-md">
-                                    <div className="font-medium mb-1">
+                                <div className="rounded-md border bg-background p-3 text-xs shadow-md flex flex-col gap-1.5">
+                                    <div className="font-medium">
                                         {item.name}
                                     </div>
+                                    <div>Umsatz: {formatEUR(item.revenue)}</div>
                                     <div>
-                                        Umsatz: {item.revenue.toFixed(2)} €
+                                        Gramm gesamt: {formatInt(item.grams)}
                                     </div>
-                                    <div>Gramm gesamt: {item.grams}</div>
-                                    <div>RX Dokumente: {item.rx}</div>
+                                    <div>
+                                        RX Dokumente: {formatInt(item.rx)}
+                                    </div>
                                 </div>
                             );
                         }}

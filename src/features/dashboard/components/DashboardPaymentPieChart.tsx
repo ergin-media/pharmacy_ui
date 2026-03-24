@@ -8,7 +8,6 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import { formatInt } from "@/shared/lib/format/figures";
 import { PieChart, Pie, Cell } from "recharts";
 
 type PaymentCounts = { unpaid: number; paid: number };
@@ -26,11 +25,11 @@ export function DashboardPaymentPieChart(props: { payment: PaymentCounts }) {
 
     const chartConfig = {
         paid: {
-            label: `Bezahlt (${formatInt(payment.paid)})`,
+            label: " Bezahlt",
             color: "#16a34a",
         }, // grün
         unpaid: {
-            label: `Offen (${formatInt(payment.unpaid)})`,
+            label: " Offen",
             color: "#dc2626",
         }, // rot
     } as const;

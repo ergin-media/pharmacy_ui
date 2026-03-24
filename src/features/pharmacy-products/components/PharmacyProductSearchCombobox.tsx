@@ -14,6 +14,7 @@ import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 import type { PharmacyProductDto } from "../types/pharmacy-products.dto";
 import { usePharmacyProductsForComboboxQuery } from "@/features/provider-products/queries/pharmacyProductsForCombobox.queries";
 import { usePharmacyProductsForMappingQuery } from "@/features/provider-products/queries/pharmacyProductsForMapping.queries";
+import { formatMoney } from "@/shared/lib/format/money";
 
 function normalize(value: string) {
     return value.trim().toLowerCase();
@@ -209,7 +210,7 @@ export function PharmacyProductSearchCombobox(props: {
 
                             return (
                                 <ComboboxItem key={id} value={id}>
-                                    <div className="flex w-full flex-col">
+                                    <div className="flex w-full flex-col gap-1.5">
                                         <div className="font-medium">
                                             {p?.name ?? id}
                                         </div>
@@ -227,6 +228,24 @@ export function PharmacyProductSearchCombobox(props: {
                                                       .join(" · ")
                                                 : "—"}
                                         </div>
+
+                                        {p ? (
+                                            <div className="text-xs text-muted-foreground">
+                                                {[
+                                                    p.prices.base_price_cents !=
+                                                    null
+                                                        ? `Basis: ${formatMoney(p.prices.base_price_cents)}`
+                                                        : "",
+                                                    p.prices
+                                                        .price_other_provider_cents !=
+                                                    null
+                                                        ? `Preis (andere): ${formatMoney(p.prices.price_other_provider_cents)}`
+                                                        : "",
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(" · ")}
+                                            </div>
+                                        ) : null}
                                     </div>
                                 </ComboboxItem>
                             );

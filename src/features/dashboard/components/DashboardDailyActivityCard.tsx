@@ -5,13 +5,15 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardRevenueDailyBarChart } from "./DashboardRevenueDailyBarChart";
 import { DashboardOrdersDailyBarChart } from "./DashboardOrdersDailyBarChart";
+import type {} from "./DashboardRevenueDailyBarChart";
 import type {
-} from "./DashboardRevenueDailyBarChart";
-import type { DashboardOrdersDailyPointDto, DashboardRevenueDailyDto } from "../types/dashboard.dto";
+    DashboardOrdersDailyPointDto,
+    DashboardTimeSeriesPointDto,
+} from "../types/dashboard.dto";
 
 export function DashboardDailyActivityCard(props: {
     rangeLabel: string;
-    revenueDaily: DashboardRevenueDailyDto[];
+    revenueDaily: DashboardTimeSeriesPointDto[];
     ordersDaily: DashboardOrdersDailyPointDto[];
 }) {
     const { rangeLabel, revenueDaily, ordersDaily } = props;

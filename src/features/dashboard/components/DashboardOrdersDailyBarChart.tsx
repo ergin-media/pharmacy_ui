@@ -7,7 +7,7 @@ import {
     ChartLegendContent,
 } from "@/components/ui/chart";
 import { formatInt } from "@/shared/lib/format/figures";
-import { formatDateDayMonth } from "@/shared/lib/format/date";
+import { formatDate, formatDateDayMonth } from "@/shared/lib/format/date";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type Row = {
@@ -94,7 +94,7 @@ export function DashboardOrdersDailyBarChart(props: {
                                 labelFormatter={(_, payload) => {
                                     const rawDate = payload?.[0]?.payload?.date;
                                     return rawDate
-                                        ? `Datum: ${formatDateDayMonth(String(rawDate))}`
+                                        ? `Datum: ${formatDate(String(rawDate))}`
                                         : "Datum: —";
                                 }}
                             />
