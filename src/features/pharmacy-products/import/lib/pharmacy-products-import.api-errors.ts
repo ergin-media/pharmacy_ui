@@ -35,13 +35,48 @@ function formatMissingColumns(details: unknown) {
         return "Pflichtspalte fehlt";
     }
 
-    const missing = (details as { missing?: unknown }).missing;
+    const typedDetails = details as {
+        missing?: unknown;
+        field?: unknown;
+        required_column?: unknown;
+        columns_found?: unknown;
+    };
 
-    if (!Array.isArray(missing) || missing.length === 0) {
-        return "Pflichtspalte fehlt";
+    let missingLabel: string | null = null;
+
+    if (
+        Array.isArray(typedDetails.missing) &&
+        typedDetails.missing.length > 0
+    ) {
+        missingLabel = typedDetails.missing.join(", ");
+    } else if (
+        typeof typedDetails.required_column === "string" &&
+        typedDetails.required_column.trim() !== ""
+    ) {
+        missingLabel = typedDetails.required_column;
+    } else if (
+        typeof typedDetails.field === "string" &&
+        typedDetails.field.trim() !== ""
+    ) {
+        missingLabel = typedDetails.field;
     }
 
-    return `Pflichtspalte fehlt: ${missing.join(", ")}`;
+    const foundColumns = Array.isArray(typedDetails.columns_found)
+        ? typedDetails.columns_found.filter(
+              (value): value is string =>
+                  typeof value === "string" && value.trim() !== "",
+          )
+        : [];
+
+    if (missingLabel && foundColumns.length > 0) {
+        return `Pflichtspalte fehlt: ${missingLabel}. Gefundene Spalten: ${foundColumns.join(", ")}`;
+    }
+
+    if (missingLabel) {
+        return `Pflichtspalte fehlt: ${missingLabel}`;
+    }
+
+    return "Pflichtspalte fehlt";
 }
 
 export function parsePharmacyProductsImportError(
