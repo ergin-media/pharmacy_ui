@@ -9,17 +9,18 @@ import type {
     PharmacyProductsImportPreviewError,
     PharmacyProductsImportPreviewRow,
 } from "../types/pharmacy-products-import.types";
+import { parsePharmacyProductsImportError } from "../lib/pharmacy-products-import.api-errors";
 
 export function usePharmacyProductsImport() {
     const [file, setFile] = useState<File | null>(null);
 
     const [columns, setColumns] = useState<string[]>([]);
-    const [preview, setPreview] = useState<
-        PharmacyProductsImportPreviewRow[]
-    >([]);
-    const [errors, setErrors] = useState<
-        PharmacyProductsImportPreviewError[]
-    >([]);
+    const [preview, setPreview] = useState<PharmacyProductsImportPreviewRow[]>(
+        [],
+    );
+    const [errors, setErrors] = useState<PharmacyProductsImportPreviewError[]>(
+        [],
+    );
 
     const [summary, setSummary] = useState<{
         total_rows: number;
@@ -33,9 +34,6 @@ export function usePharmacyProductsImport() {
     const [previewError, setPreviewError] = useState<string | null>(null);
     const [importError, setImportError] = useState<string | null>(null);
 
-    // -----------------------------
-    // PREVIEW
-    // -----------------------------
     async function handlePreview(nextFile: File) {
         setFile(nextFile);
         setIsPreviewLoading(true);
@@ -51,24 +49,24 @@ export function usePharmacyProductsImport() {
             setErrors(res.errors ?? []);
             setSummary(res.summary ?? null);
         } catch (err) {
-            const message =
-                err instanceof Error
-                    ? err.message
-                    : "CSV-Vorschau konnte nicht geladen werden.";
+            const parsed = parsePharmacyProductsImportError(err);
 
             setColumns([]);
             setPreview([]);
-            setErrors([]);
             setSummary(null);
-            setPreviewError(message);
+
+            if (parsed.code === "csv_validation_failed") {
+                setErrors(parsed.validationErrors);
+                setPreviewError(parsed.message);
+            } else {
+                setErrors([]);
+                setPreviewError(parsed.message);
+            }
         } finally {
             setIsPreviewLoading(false);
         }
     }
 
-    // -----------------------------
-    // IMPORT
-    // -----------------------------
     async function handleImport() {
         if (!file || isImporting) return null;
 
@@ -79,21 +77,19 @@ export function usePharmacyProductsImport() {
             const res = await importPharmacyProductsCsv(file);
             return res;
         } catch (err) {
-            const message =
-                err instanceof Error
-                    ? err.message
-                    : "CSV-Import fehlgeschlagen.";
+            const parsed = parsePharmacyProductsImportError(err);
 
-            setImportError(message);
+            if (parsed.code === "csv_validation_failed") {
+                setErrors(parsed.validationErrors);
+            }
+
+            setImportError(parsed.message);
             return null;
         } finally {
             setIsImporting(false);
         }
     }
 
-    // -----------------------------
-    // RESET
-    // -----------------------------
     function reset() {
         setFile(null);
         setColumns([]);
@@ -106,11 +102,7 @@ export function usePharmacyProductsImport() {
         setIsImporting(false);
     }
 
-    // -----------------------------
-    // DERIVED STATE
-    // -----------------------------
-    const hasPreview =
-        preview.length > 0 || columns.length > 0 || !!summary;
+    const hasPreview = preview.length > 0 || columns.length > 0 || !!summary;
 
     const canImport =
         !!file &&
@@ -121,21 +113,16 @@ export function usePharmacyProductsImport() {
 
     return {
         file,
-
         columns,
         preview,
         errors,
         summary,
-
         isPreviewLoading,
         isImporting,
-
         previewError,
         importError,
-
         hasPreview,
         canImport,
-
         actions: {
             preview: handlePreview,
             import: handleImport,

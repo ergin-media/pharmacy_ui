@@ -1,24 +1,7 @@
-import { api } from "@/shared/api/axios";
-import type { PharmacyProductsImportPreviewResponse, PharmacyProductsImportResponse } from "../types/pharmacy-products-import.types";
-
-export async function uploadPharmacyProductsCsv(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch(`/v1/pharmacy-products/import`, {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        throw new Error(data?.error?.message ?? "Upload failed");
-    }
-
-    return data;
-}
+import type {
+    PharmacyProductsImportPreviewResponse,
+    PharmacyProductsImportResponse,
+} from "../types/pharmacy-products-import.types";
 
 function buildCsvFormData(file: File) {
     const formData = new FormData();
@@ -26,30 +9,32 @@ function buildCsvFormData(file: File) {
     return formData;
 }
 
-export async function previewPharmacyProductsImport(file: File) {
-    const res = await api.post<PharmacyProductsImportPreviewResponse>(
-        "pharmacy-products/import-preview",
-        buildCsvFormData(file),
-        {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        },
-    );
+async function postCsv<T>(url: string, file: File): Promise<T> {
+    const res = await fetch(`/v1/${url}`, {
+        method: "POST",
+        body: buildCsvFormData(file),
+        credentials: "include",
+    });
 
-    return res.data;
+    const data = await res.json();
+
+    if (!res.ok || data?.ok === false) {
+        throw new Error(JSON.stringify(data));
+    }
+
+    return data as T;
+}
+
+export async function previewPharmacyProductsImport(file: File) {
+    return postCsv<PharmacyProductsImportPreviewResponse>(
+        "pharmacy-products/import-preview",
+        file,
+    );
 }
 
 export async function importPharmacyProductsCsv(file: File) {
-    const res = await api.post<PharmacyProductsImportResponse>(
+    return postCsv<PharmacyProductsImportResponse>(
         "pharmacy-products/import",
-        buildCsvFormData(file),
-        {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        },
+        file,
     );
-
-    return res.data;
 }

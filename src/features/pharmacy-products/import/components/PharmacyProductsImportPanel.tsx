@@ -1,10 +1,14 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { AlertCircle, FileSpreadsheet, Upload } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { Card } from "@/components/ui/card";
 
 import { usePharmacyProductsImport } from "../hooks/usePharmacyProductsImport";
+import { formatImportErrorHeadline } from "../lib/pharmacy-products-import.error-formatters";
 
 export function PharmacyProductsImportPanel(props: {
     onCancel: () => void;
@@ -15,6 +19,11 @@ export function PharmacyProductsImportPanel(props: {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const vm = usePharmacyProductsImport();
 
+    const errorRows = useMemo(
+        () => new Set(vm.errors.map((error) => error.row)),
+        [vm.errors],
+    );
+
     async function handleImport() {
         const result = await vm.actions.import();
         if (!result) return;
@@ -24,16 +33,8 @@ export function PharmacyProductsImportPanel(props: {
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <div className="flex-1 space-y-6 overflow-auto p-4">
-                <div className="space-y-2">
-                    <div className="text-base font-medium">CSV-Import</div>
-                    <div className="text-sm text-muted-foreground">
-                        Lade eine CSV-Datei hoch, prüfe die Vorschau und starte
-                        anschließend den Import.
-                    </div>
-                </div>
-
-                <div className="rounded-xl border border-dashed p-6">
+            <div className="flex flex-1 flex-col gap-3 overflow-auto">
+                <Card className="rounded-xl p-6">
                     <div className="flex flex-col items-center justify-center gap-3 text-center">
                         <div className="rounded-full bg-muted p-3">
                             <FileSpreadsheet className="size-6 text-muted-foreground" />
@@ -65,9 +66,7 @@ export function PharmacyProductsImportPanel(props: {
                             <Button
                                 variant="outline"
                                 onClick={() => fileInputRef.current?.click()}
-                                disabled={
-                                    vm.isPreviewLoading || vm.isImporting
-                                }
+                                disabled={vm.isPreviewLoading || vm.isImporting}
                             >
                                 <Upload className="mr-2 size-4" />
                                 Datei auswählen
@@ -92,18 +91,20 @@ export function PharmacyProductsImportPanel(props: {
                             </div>
                         ) : null}
                     </div>
-                </div>
+                </Card>
 
                 {vm.previewError ? (
-                    <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-                        <AlertCircle className="mt-0.5 size-4 shrink-0" />
-                        <div>{vm.previewError}</div>
-                    </div>
+                    <Card className="p-4">
+                        <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                            <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                            <div>{vm.previewError}</div>
+                        </div>
+                    </Card>
                 ) : null}
 
                 {vm.summary ? (
                     <div className="grid gap-3 md:grid-cols-3">
-                        <div className="rounded-lg border p-4">
+                        <div className="rounded-lg bg-white p-4">
                             <div className="text-xs text-muted-foreground">
                                 Gesamtzeilen
                             </div>
@@ -112,7 +113,7 @@ export function PharmacyProductsImportPanel(props: {
                             </div>
                         </div>
 
-                        <div className="rounded-lg border p-4">
+                        <div className="rounded-lg bg-white p-4">
                             <div className="text-xs text-muted-foreground">
                                 Gültig
                             </div>
@@ -121,7 +122,7 @@ export function PharmacyProductsImportPanel(props: {
                             </div>
                         </div>
 
-                        <div className="rounded-lg border p-4">
+                        <div className="rounded-lg bg-white p-4">
                             <div className="text-xs text-muted-foreground">
                                 Fehlerhaft
                             </div>
@@ -132,8 +133,14 @@ export function PharmacyProductsImportPanel(props: {
                     </div>
                 ) : null}
 
+                {vm.summary && vm.summary.invalid_rows > 0 ? (
+                    <div className="text-sm text-muted-foreground">
+                        Zeilen mit Fehlern werden nicht importiert.
+                    </div>
+                ) : null}
+
                 {vm.errors.length > 0 ? (
-                    <div className="space-y-2">
+                    <Card className="gap-3 p-4">
                         <div className="text-sm font-medium">
                             Fehler in der Datei
                         </div>
@@ -149,11 +156,11 @@ export function PharmacyProductsImportPanel(props: {
 
                                         <div className="space-y-0.5">
                                             <div className="font-medium">
-                                                Zeile {error.row}
-                                                {error.field
-                                                    ? ` · ${error.field}`
-                                                    : ""}
+                                                {formatImportErrorHeadline(
+                                                    error,
+                                                )}
                                             </div>
+
                                             <div className="text-muted-foreground">
                                                 {error.message}
                                             </div>
@@ -162,11 +169,11 @@ export function PharmacyProductsImportPanel(props: {
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 ) : null}
 
                 {vm.hasPreview && vm.columns.length > 0 ? (
-                    <div className="space-y-2">
+                    <Card className="gap-3 p-4">
                         <div className="text-sm font-medium">
                             Vorschau der ersten Zeilen
                         </div>
@@ -200,7 +207,11 @@ export function PharmacyProductsImportPanel(props: {
                                         vm.preview.map((row) => (
                                             <tr
                                                 key={row.row}
-                                                className="border-t"
+                                                className={cn(
+                                                    "border-t",
+                                                    errorRows.has(row.row) &&
+                                                        "bg-destructive/5",
+                                                )}
                                             >
                                                 {vm.columns.map((column) => (
                                                     <td
@@ -208,13 +219,13 @@ export function PharmacyProductsImportPanel(props: {
                                                         className="whitespace-nowrap px-3 py-2"
                                                     >
                                                         {row.values[column] ==
-                                                            null
+                                                        null
                                                             ? "—"
                                                             : String(
-                                                                row.values[
-                                                                column
-                                                                ],
-                                                            )}
+                                                                  row.values[
+                                                                      column
+                                                                  ],
+                                                              )}
                                                     </td>
                                                 ))}
                                             </tr>
@@ -223,7 +234,7 @@ export function PharmacyProductsImportPanel(props: {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </Card>
                 ) : null}
             </div>
 
