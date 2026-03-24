@@ -22,7 +22,6 @@ export function DashboardWorkflowBarChart(props: { workflow: WorkflowCounts }) {
         { label: "Offen", value: workflow.pending },
         { label: "Bearbeitung", value: workflow.processing },
         { label: "Abgeschlossen", value: workflow.completed },
-        { label: "Abgelehnt", value: workflow.rejected },
     ];
 
     const chartConfig = {
