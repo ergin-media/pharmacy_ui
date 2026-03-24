@@ -12,11 +12,13 @@ type ImportApiErrorResponse = {
 export type ParsedPharmacyProductsImportError = {
     code: string;
     message: string;
-
     validationErrors: PharmacyProductsImportPreviewError[];
 
     missingColumns?: string[];
     foundColumns?: string[];
+
+    unknownColumns?: string[];
+    allowedColumns?: string[];
 };
 
 function isValidationErrorArray(
@@ -63,6 +65,31 @@ function extractMissingColumns(details: unknown) {
     return { missing, found };
 }
 
+function extractUnknownColumns(details: unknown) {
+    if (!details || typeof details !== "object") {
+        return { unknown: [], allowed: [] };
+    }
+
+    const d = details as {
+        unknown_columns?: unknown;
+        allowed_columns?: unknown;
+    };
+
+    const unknown = Array.isArray(d.unknown_columns)
+        ? d.unknown_columns.filter(
+              (value): value is string => typeof value === "string",
+          )
+        : [];
+
+    const allowed = Array.isArray(d.allowed_columns)
+        ? d.allowed_columns.filter(
+              (value): value is string => typeof value === "string",
+          )
+        : [];
+
+    return { unknown, allowed };
+}
+
 export function parsePharmacyProductsImportError(
     error: unknown,
 ): ParsedPharmacyProductsImportError {
@@ -102,6 +129,18 @@ export function parsePharmacyProductsImportError(
                 validationErrors: [],
                 missingColumns: missing,
                 foundColumns: found,
+            };
+        }
+
+        if (code === "csv_unknown_columns") {
+            const { unknown, allowed } = extractUnknownColumns(details);
+
+            return {
+                code,
+                message: rawMessage,
+                validationErrors: [],
+                unknownColumns: unknown,
+                allowedColumns: allowed,
             };
         }
 

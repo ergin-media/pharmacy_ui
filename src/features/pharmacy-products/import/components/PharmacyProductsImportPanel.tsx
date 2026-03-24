@@ -7,8 +7,50 @@ import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { Card } from "@/components/ui/card";
 
+import { formatMoney } from "@/shared/lib/format/money";
+
 import { usePharmacyProductsImport } from "../hooks/usePharmacyProductsImport";
 import { formatImportErrorHeadline } from "../lib/pharmacy-products-import.error-formatters";
+
+function formatPreviewCellValue(
+    row: { values: Record<string, string | number | null> },
+    column: string,
+) {
+    const values = row.values;
+
+    const directValue = values[column];
+
+    if (directValue != null) {
+        if (
+            column === "base_price_cents" ||
+            column === "price_other_provider_cents"
+        ) {
+            return formatMoney(
+                typeof directValue === "number" ? directValue : null,
+            );
+        }
+
+        return String(directValue);
+    }
+
+    if (column === "base_price") {
+        return formatMoney(
+            typeof values.base_price_cents === "number"
+                ? values.base_price_cents
+                : null,
+        );
+    }
+
+    if (column === "price_other_provider") {
+        return formatMoney(
+            typeof values.price_other_provider_cents === "number"
+                ? values.price_other_provider_cents
+                : null,
+        );
+    }
+
+    return "—";
+}
 
 export function PharmacyProductsImportPanel(props: {
     onCancel: () => void;
@@ -93,58 +135,103 @@ export function PharmacyProductsImportPanel(props: {
                     </div>
                 </Card>
 
-                {vm.previewError ? (
-                    <Card className="p-4">
-                        <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-                            <AlertCircle className="mt-0.5 size-4 shrink-0" />
-                            <div>{vm.previewError}</div>
-                        </div>
-                    </Card>
-                ) : null}
-
-                {vm.missingColumns.length > 0 || vm.foundColumns.length > 0 ? (
-                    <Card className="gap-3 p-4">
-                        <div className="text-sm font-medium">
-                            CSV-Spalten prüfen
-                        </div>
-
-                        {vm.missingColumns.length > 0 ? (
-                            <div className="space-y-2">
-                                <div className="text-xs font-medium text-destructive">
-                                    Fehlende Pflichtspalten
-                                </div>
-
-                                <div className="flex flex-wrap gap-2">
-                                    {vm.missingColumns.map((column) => (
-                                        <span
-                                            key={column}
-                                            className="rounded-md bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive"
-                                        >
-                                            {column}
-                                        </span>
-                                    ))}
-                                </div>
+                {vm.previewError ||
+                vm.missingColumns.length > 0 ||
+                vm.foundColumns.length > 0 ||
+                vm.unknownColumns.length > 0 ||
+                vm.allowedColumns.length > 0 ? (
+                    <Card className="gap-4 p-4">
+                        {vm.previewError ? (
+                            <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+                                <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                                <div>{vm.previewError}</div>
                             </div>
                         ) : null}
 
-                        {vm.foundColumns.length > 0 ? (
-                            <div className="space-y-2">
-                                <div className="text-xs font-medium text-muted-foreground">
-                                    Gefundene Spalten in der Datei
-                                </div>
+                        {(vm.missingColumns.length > 0 ||
+                            vm.foundColumns.length > 0 ||
+                            vm.unknownColumns.length > 0 ||
+                            vm.allowedColumns.length > 0) && (
+                            <div className="space-y-4">
+                                {vm.missingColumns.length > 0 ? (
+                                    <div className="space-y-2">
+                                        <div className="text-sm font-medium text-muted-foreground">
+                                            Die Pflichtspalten dürfen nicht
+                                            fehlen:
+                                        </div>
 
-                                <div className="flex flex-wrap gap-2">
-                                    {vm.foundColumns.map((column) => (
-                                        <span
-                                            key={column}
-                                            className="rounded-md bg-muted px-2 py-1 text-xs"
-                                        >
-                                            {column}
-                                        </span>
-                                    ))}
-                                </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {vm.missingColumns.map((column) => (
+                                                <span
+                                                    key={column}
+                                                    className="rounded-md border border-destructive/20 bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive"
+                                                >
+                                                    {column}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null}
+
+                                {vm.unknownColumns.length > 0 ? (
+                                    <div className="space-y-2">
+                                        <div className="text-sm font-medium text-muted-foreground">
+                                            Diese Spalten werden nicht erkannt:
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2">
+                                            {vm.unknownColumns.map((column) => (
+                                                <span
+                                                    key={column}
+                                                    className="rounded-md border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300"
+                                                >
+                                                    {column}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null}
+
+                                {vm.foundColumns.length > 0 ? (
+                                    <div className="space-y-2">
+                                        <div className="text-sm font-medium text-muted-foreground">
+                                            Gefundene Spalten in der Datei:
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2">
+                                            {vm.foundColumns.map((column) => (
+                                                <span
+                                                    key={column}
+                                                    className="rounded-md border border-border bg-muted px-2 py-1 text-xs text-foreground"
+                                                >
+                                                    {column}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null}
+
+                                {vm.allowedColumns.length > 0 &&
+                                vm.unknownColumns.length > 0 ? (
+                                    <div className="space-y-2">
+                                        <div className="text-sm font-medium text-muted-foreground">
+                                            Erlaubte Spalten:
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2">
+                                            {vm.allowedColumns.map((column) => (
+                                                <span
+                                                    key={column}
+                                                    className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
+                                                >
+                                                    {column}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null}
                             </div>
-                        ) : null}
+                        )}
                     </Card>
                 ) : null}
 
@@ -264,14 +351,10 @@ export function PharmacyProductsImportPanel(props: {
                                                         key={`${row.row}-${column}`}
                                                         className="whitespace-nowrap px-3 py-2"
                                                     >
-                                                        {row.values[column] ==
-                                                        null
-                                                            ? "—"
-                                                            : String(
-                                                                  row.values[
-                                                                      column
-                                                                  ],
-                                                              )}
+                                                        {formatPreviewCellValue(
+                                                            row,
+                                                            column,
+                                                        )}
                                                     </td>
                                                 ))}
                                             </tr>
