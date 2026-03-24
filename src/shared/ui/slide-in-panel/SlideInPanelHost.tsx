@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useSlideInPanel } from "./slideInPanel.store";
-import type { SlideInPanelState } from "./slideInPanel.types";
+import { useSlideInPanel, getPanelWidthClass } from "./slideInPanel.store";
 
 import {
     Sheet,
@@ -9,17 +8,6 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-
-function widthByVariant(p: SlideInPanelState) {
-    if (p.variant === "custom") {
-        return p.widthClassName ?? "w-[95vw] max-w-[1400px]";
-    }
-
-    if (p.variant === "sm") return "w-full max-w-sm";
-    if (p.variant === "lg") return "w-full max-w-3xl";
-
-    return "w-full max-w-xl"; // md
-}
 
 export function SlideInPanelHost() {
     const { panels, closeTop, removeTop } = useSlideInPanel();
@@ -40,12 +28,16 @@ export function SlideInPanelHost() {
                     >
                         <SheetContent
                             side="right"
-                            className={cn(widthByVariant(p))}
+                            className={cn(
+                                getPanelWidthClass(
+                                    p.variant ?? "md",
+                                    p.widthClassName,
+                                ),
+                            )}
                         >
                             <div
-                                className="flex h-full flex-col"
+                                className="flex h-full min-h-0 flex-col"
                                 onAnimationEnd={() => {
-                                    // nur Top-Panel entfernen, und nur wenn es geschlossen ist
                                     if (!isTop) return;
                                     if (p.isOpen) return;
 
@@ -57,6 +49,7 @@ export function SlideInPanelHost() {
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
                                             <SheetTitle>{p.title}</SheetTitle>
+
                                             {p.description ? (
                                                 <SheetDescription>
                                                     {p.description}
