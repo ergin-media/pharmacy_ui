@@ -56,12 +56,12 @@ export function getPanelWidthClass(
     }
 
     const map: Record<Exclude<SlideInPanelVariant, "custom">, string> = {
-        sm: "w-full sm:max-w-sm", // ~384px
-        md: "w-full sm:max-w-md", // ~448px
-        lg: "w-full sm:max-w-lg", // ~512px
-        xl: "w-full sm:max-w-xl", // ~576px
-        "2xl": "w-full sm:max-w-2xl", // ~672px
-        fullwidth: "w-full max-w-none", // full width
+        sm: "w-full sm:max-w-md",
+        md: "w-full sm:max-w-xl",
+        lg: "w-full lg:max-w-3xl",
+        xl: "w-full xl:max-w-5xl",
+        "2xl": "w-full 2xl:max-w-7xl",
+        fullwidth: "w-full max-w-none",
     };
 
     return map[variant];

@@ -57,8 +57,7 @@ export function usePharmacyProductPanels() {
     const openImport = useCallback(() => {
         openPanel({
             title: "CSV Import",
-            variant: "custom",
-            widthClassName: "w-[95vw] max-w-[1500px]",
+            variant: "2xl",
             render: ({ close }) => (
                 <PharmacyProductsImportPanel
                     onCancel={close}
