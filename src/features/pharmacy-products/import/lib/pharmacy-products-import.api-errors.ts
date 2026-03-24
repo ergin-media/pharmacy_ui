@@ -12,7 +12,11 @@ type ImportApiErrorResponse = {
 export type ParsedPharmacyProductsImportError = {
     code: string;
     message: string;
+
     validationErrors: PharmacyProductsImportPreviewError[];
+
+    missingColumns?: string[];
+    foundColumns?: string[];
 };
 
 function isValidationErrorArray(
@@ -30,53 +34,33 @@ function isValidationErrorArray(
     );
 }
 
-function formatMissingColumns(details: unknown) {
+function extractMissingColumns(details: unknown) {
     if (!details || typeof details !== "object") {
-        return "Pflichtspalte fehlt";
+        return { missing: [], found: [] };
     }
 
-    const typedDetails = details as {
+    const d = details as {
         missing?: unknown;
         field?: unknown;
         required_column?: unknown;
         columns_found?: unknown;
     };
 
-    let missingLabel: string | null = null;
+    let missing: string[] = [];
 
-    if (
-        Array.isArray(typedDetails.missing) &&
-        typedDetails.missing.length > 0
-    ) {
-        missingLabel = typedDetails.missing.join(", ");
-    } else if (
-        typeof typedDetails.required_column === "string" &&
-        typedDetails.required_column.trim() !== ""
-    ) {
-        missingLabel = typedDetails.required_column;
-    } else if (
-        typeof typedDetails.field === "string" &&
-        typedDetails.field.trim() !== ""
-    ) {
-        missingLabel = typedDetails.field;
+    if (Array.isArray(d.missing)) {
+        missing = d.missing.filter((v): v is string => typeof v === "string");
+    } else if (typeof d.required_column === "string") {
+        missing = [d.required_column];
+    } else if (typeof d.field === "string") {
+        missing = [d.field];
     }
 
-    const foundColumns = Array.isArray(typedDetails.columns_found)
-        ? typedDetails.columns_found.filter(
-              (value): value is string =>
-                  typeof value === "string" && value.trim() !== "",
-          )
+    const found = Array.isArray(d.columns_found)
+        ? d.columns_found.filter((v): v is string => typeof v === "string")
         : [];
 
-    if (missingLabel && foundColumns.length > 0) {
-        return `Pflichtspalte fehlt: ${missingLabel}. Gefundene Spalten: ${foundColumns.join(", ")}`;
-    }
-
-    if (missingLabel) {
-        return `Pflichtspalte fehlt: ${missingLabel}`;
-    }
-
-    return "Pflichtspalte fehlt";
+    return { missing, found };
 }
 
 export function parsePharmacyProductsImportError(
@@ -110,10 +94,14 @@ export function parsePharmacyProductsImportError(
         }
 
         if (code === "csv_missing_column") {
+            const { missing, found } = extractMissingColumns(details);
+
             return {
                 code,
-                message: formatMissingColumns(details),
+                message: rawMessage,
                 validationErrors: [],
+                missingColumns: missing,
+                foundColumns: found,
             };
         }
 

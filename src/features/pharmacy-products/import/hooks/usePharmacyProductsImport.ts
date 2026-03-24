@@ -22,6 +22,9 @@ export function usePharmacyProductsImport() {
         [],
     );
 
+    const [missingColumns, setMissingColumns] = useState<string[]>([]);
+    const [foundColumns, setFoundColumns] = useState<string[]>([]);
+
     const [summary, setSummary] = useState<{
         total_rows: number;
         valid_rows: number;
@@ -40,6 +43,8 @@ export function usePharmacyProductsImport() {
 
         setPreviewError(null);
         setImportError(null);
+        setMissingColumns([]);
+        setFoundColumns([]);
 
         try {
             const res = await previewPharmacyProductsImport(nextFile);
@@ -48,6 +53,8 @@ export function usePharmacyProductsImport() {
             setPreview(res.preview ?? []);
             setErrors(res.errors ?? []);
             setSummary(res.summary ?? null);
+            setMissingColumns([]);
+            setFoundColumns([]);
         } catch (err) {
             const parsed = parsePharmacyProductsImportError(err);
 
@@ -58,9 +65,18 @@ export function usePharmacyProductsImport() {
             if (parsed.code === "csv_validation_failed") {
                 setErrors(parsed.validationErrors);
                 setPreviewError(parsed.message);
+                setMissingColumns([]);
+                setFoundColumns([]);
+            } else if (parsed.code === "csv_missing_column") {
+                setErrors([]);
+                setPreviewError(parsed.message);
+                setMissingColumns(parsed.missingColumns ?? []);
+                setFoundColumns(parsed.foundColumns ?? []);
             } else {
                 setErrors([]);
                 setPreviewError(parsed.message);
+                setMissingColumns([]);
+                setFoundColumns([]);
             }
         } finally {
             setIsPreviewLoading(false);
@@ -81,6 +97,11 @@ export function usePharmacyProductsImport() {
 
             if (parsed.code === "csv_validation_failed") {
                 setErrors(parsed.validationErrors);
+                setMissingColumns([]);
+                setFoundColumns([]);
+            } else if (parsed.code === "csv_missing_column") {
+                setMissingColumns(parsed.missingColumns ?? []);
+                setFoundColumns(parsed.foundColumns ?? []);
             }
 
             setImportError(parsed.message);
@@ -95,6 +116,8 @@ export function usePharmacyProductsImport() {
         setColumns([]);
         setPreview([]);
         setErrors([]);
+        setMissingColumns([]);
+        setFoundColumns([]);
         setSummary(null);
         setPreviewError(null);
         setImportError(null);
@@ -116,6 +139,8 @@ export function usePharmacyProductsImport() {
         columns,
         preview,
         errors,
+        missingColumns,
+        foundColumns,
         summary,
         isPreviewLoading,
         isImporting,

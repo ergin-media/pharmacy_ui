@@ -102,6 +102,52 @@ export function PharmacyProductsImportPanel(props: {
                     </Card>
                 ) : null}
 
+                {vm.missingColumns.length > 0 || vm.foundColumns.length > 0 ? (
+                    <Card className="gap-3 p-4">
+                        <div className="text-sm font-medium">
+                            CSV-Spalten prüfen
+                        </div>
+
+                        {vm.missingColumns.length > 0 ? (
+                            <div className="space-y-2">
+                                <div className="text-xs font-medium text-destructive">
+                                    Fehlende Pflichtspalten
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    {vm.missingColumns.map((column) => (
+                                        <span
+                                            key={column}
+                                            className="rounded-md bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive"
+                                        >
+                                            {column}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+
+                        {vm.foundColumns.length > 0 ? (
+                            <div className="space-y-2">
+                                <div className="text-xs font-medium text-muted-foreground">
+                                    Gefundene Spalten in der Datei
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    {vm.foundColumns.map((column) => (
+                                        <span
+                                            key={column}
+                                            className="rounded-md bg-muted px-2 py-1 text-xs"
+                                        >
+                                            {column}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+                    </Card>
+                ) : null}
+
                 {vm.summary ? (
                     <div className="grid gap-3 md:grid-cols-3">
                         <div className="rounded-lg bg-white p-4">
