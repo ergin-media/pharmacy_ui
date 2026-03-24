@@ -1,6 +1,13 @@
 import type { ReactNode } from "react";
 
-export type SlideInPanelVariant = "sm" | "md" | "lg" | "custom";
+export type SlideInPanelVariant =
+    | "sm"
+    | "md"
+    | "lg"
+    | "xl"
+    | "2xl"
+    | "fullwidth"
+    | "custom";
 
 export type SlideInPanelRenderApi = {
     close: () => void;

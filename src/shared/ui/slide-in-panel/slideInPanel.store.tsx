@@ -5,7 +5,12 @@ import {
     useReducer,
     type ReactNode,
 } from "react";
-import type { SlideInPanelOptions, SlideInPanelState } from "./slideInPanel.types";
+
+import type {
+    SlideInPanelOptions,
+    SlideInPanelState,
+    SlideInPanelVariant,
+} from "./slideInPanel.types";
 
 type Action =
     | { type: "OPEN"; payload: SlideInPanelState }
@@ -16,7 +21,10 @@ function uid() {
     return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
-function reducer(state: SlideInPanelState[], action: Action): SlideInPanelState[] {
+function reducer(
+    state: SlideInPanelState[],
+    action: Action,
+): SlideInPanelState[] {
     switch (action.type) {
         case "OPEN":
             return [...state, action.payload];
@@ -36,11 +44,34 @@ function reducer(state: SlideInPanelState[], action: Action): SlideInPanelState[
     }
 }
 
+//
+// 👉 ZENTRALES WIDTH-MAPPING (Tailwind + responsive)
+//
+export function getPanelWidthClass(
+    variant: SlideInPanelVariant,
+    custom?: string,
+) {
+    if (variant === "custom") {
+        return custom ?? "w-full";
+    }
+
+    const map: Record<Exclude<SlideInPanelVariant, "custom">, string> = {
+        sm: "w-full sm:max-w-sm", // ~384px
+        md: "w-full sm:max-w-md", // ~448px
+        lg: "w-full sm:max-w-lg", // ~512px
+        xl: "w-full sm:max-w-xl", // ~576px
+        "2xl": "w-full sm:max-w-2xl", // ~672px
+        fullwidth: "w-full max-w-none", // full width
+    };
+
+    return map[variant];
+}
+
 type SlideInPanelCtx = {
     panels: SlideInPanelState[];
     openPanel: (options: SlideInPanelOptions) => void;
     closeTop: () => void;
-    removeTop: () => void; // vom Host aufgerufen nach Exit
+    removeTop: () => void;
 };
 
 const SlideInPanelContext = createContext<SlideInPanelCtx | null>(null);
@@ -81,10 +112,12 @@ export function SlideInPanelProvider({ children }: { children: ReactNode }) {
 
 export function useSlideInPanel() {
     const ctx = useContext(SlideInPanelContext);
+
     if (!ctx) {
         throw new Error(
             "useSlideInPanel muss innerhalb SlideInPanelProvider verwendet werden.",
         );
     }
+
     return ctx;
 }
