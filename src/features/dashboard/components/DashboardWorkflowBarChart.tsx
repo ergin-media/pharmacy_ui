@@ -1,12 +1,16 @@
-// src/features/dashboard/components/DashboardWorkflowBarChart.tsx
-"use client";
-
 import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+    BarChart,
+    Bar,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    LabelList,
+} from "recharts";
 
 type WorkflowCounts = {
     pending: number;
@@ -29,7 +33,7 @@ export function DashboardWorkflowBarChart(props: { workflow: WorkflowCounts }) {
     } as const;
 
     return (
-        <div className="rounded-lg p-4 bg-white">
+        <div className="rounded-lg bg-white p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">Workflow</div>
                 <div className="text-xs text-muted-foreground">
@@ -38,20 +42,38 @@ export function DashboardWorkflowBarChart(props: { workflow: WorkflowCounts }) {
             </div>
 
             <ChartContainer config={chartConfig} className="h-64 w-full">
-                <BarChart data={data} margin={{ left: 12, right: 12 }}>
+                <BarChart data={data} margin={{ left: 12, right: 12, top: 20 }}>
                     <CartesianGrid vertical={false} />
+
                     <XAxis
                         dataKey="label"
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
                     />
-                    <YAxis tickLine={false} axisLine={false} width={40} />
+
+                    <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        width={40}
+                        allowDecimals={false}
+                    />
+
                     <ChartTooltip
                         cursor={false}
                         content={<ChartTooltipContent />}
                     />
-                    <Bar dataKey="value" fill="var(--color-value)" radius={6} />
+
+                    <Bar dataKey="value" fill="var(--color-value)" radius={6}>
+                        <LabelList
+                            dataKey="value"
+                            position="top"
+                            formatter={(value: number) =>
+                                value > 0 ? String(value) : ""
+                            }
+                            className="fill-foreground text-xs"
+                        />
+                    </Bar>
                 </BarChart>
             </ChartContainer>
         </div>
