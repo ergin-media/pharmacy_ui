@@ -8,7 +8,14 @@ import {
 } from "@/components/ui/chart";
 import { formatInt } from "@/shared/lib/format/figures";
 import { formatDate, formatDateDayMonth } from "@/shared/lib/format/date";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+    BarChart,
+    Bar,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    LabelList,
+} from "recharts";
 
 type Row = {
     date: string;
@@ -55,7 +62,7 @@ export function DashboardOrdersDailyBarChart(props: {
             ) : null}
 
             <ChartContainer config={chartConfig} className="h-72 w-full">
-                <BarChart data={rows} margin={{ left: 12, right: 12 }}>
+                <BarChart data={rows} margin={{ left: 12, right: 12, top: 20 }}>
                     <CartesianGrid vertical={false} />
 
                     <XAxis
@@ -107,7 +114,16 @@ export function DashboardOrdersDailyBarChart(props: {
                         dataKey="orders_count"
                         fill="var(--color-orders_count)"
                         radius={6}
-                    />
+                    >
+                        <LabelList
+                            dataKey="orders_count"
+                            position="top"
+                            formatter={(value: number) =>
+                                value > 0 ? formatInt(value) : ""
+                            }
+                            className="fill-foreground text-xs"
+                        />
+                    </Bar>
                 </BarChart>
             </ChartContainer>
         </>
