@@ -3,6 +3,7 @@ import { FileSpreadsheet, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 export function PharmacyProductsImportUploadCard(props: {
     file: File | null;
@@ -41,16 +42,16 @@ export function PharmacyProductsImportUploadCard(props: {
                 />
 
                 <div className="flex items-center gap-2">
-                    <Button
+                    <LoadingButton
                         variant="outline"
                         onClick={() => fileInputRef.current?.click()}
-                        disabled={isBusy}
+                        loading={isBusy}
                     >
                         <Upload className="mr-2 size-4" />
                         Datei auswählen
-                    </Button>
+                    </LoadingButton>
 
-                    {file ? (
+                    {(file && !isBusy) ? (
                         <Button
                             variant="ghost"
                             onClick={onReset}
