@@ -1,10 +1,14 @@
-// src/features/dashboard/components/DashboardTopProductsBarChart.tsx
-"use client";
-
 import type { DashboardTopProductDto } from "../types/dashboard.dto";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { formatEUR, formatInt } from "@/shared/lib/format/figures";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+    BarChart,
+    Bar,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    LabelList,
+} from "recharts";
 
 export function DashboardTopProductsBarChart(props: {
     products: DashboardTopProductDto[];
@@ -26,7 +30,7 @@ export function DashboardTopProductsBarChart(props: {
     } as const;
 
     return (
-        <div className="rounded-lg p-4 bg-white">
+        <div className="rounded-lg bg-white p-4">
             <div className="mb-3">
                 <div className="text-sm font-medium">Top Produkte</div>
                 <div className="text-xs text-muted-foreground">
@@ -38,10 +42,12 @@ export function DashboardTopProductsBarChart(props: {
                 <BarChart
                     data={data}
                     layout="vertical"
-                    margin={{ left: 12, right: 12 }}
+                    margin={{ left: 12, right: 48 }}
                 >
                     <CartesianGrid horizontal={false} />
+
                     <XAxis type="number" tickLine={false} axisLine={false} />
+
                     <YAxis
                         type="category"
                         dataKey="name"
@@ -49,6 +55,7 @@ export function DashboardTopProductsBarChart(props: {
                         tickLine={false}
                         axisLine={false}
                     />
+
                     <ChartTooltip
                         content={({ active, payload }) => {
                             if (!active || !payload?.length) return null;
@@ -56,7 +63,7 @@ export function DashboardTopProductsBarChart(props: {
                             const item = payload[0].payload;
 
                             return (
-                                <div className="rounded-md border bg-background p-3 text-xs shadow-md flex flex-col gap-1.5">
+                                <div className="flex flex-col gap-1.5 rounded-md border bg-background p-3 text-xs shadow-md">
                                     <div className="font-medium">
                                         {item.name}
                                     </div>
@@ -71,11 +78,21 @@ export function DashboardTopProductsBarChart(props: {
                             );
                         }}
                     />
+
                     <Bar
                         dataKey="revenue"
                         fill="var(--color-revenue)"
                         radius={6}
-                    />
+                    >
+                        <LabelList
+                            dataKey="revenue"
+                            position="right"
+                            formatter={(value: number) =>
+                                value > 0 ? formatEUR(value) : ""
+                            }
+                            className="fill-foreground text-xs"
+                        />
+                    </Bar>
                 </BarChart>
             </ChartContainer>
 
