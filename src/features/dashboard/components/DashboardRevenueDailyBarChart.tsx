@@ -7,7 +7,15 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Line } from "recharts";
+import {
+    BarChart,
+    Bar,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Line,
+    LabelList,
+} from "recharts";
 import type { DashboardTimeSeriesPointDto } from "../types/dashboard.dto";
 
 type Row = {
@@ -58,7 +66,7 @@ export function DashboardRevenueDailyBarChart(props: {
             ) : null}
 
             <ChartContainer config={chartConfig} className="h-72 w-full">
-                <BarChart data={rows} margin={{ left: 12, right: 12 }}>
+                <BarChart data={rows} margin={{ left: 12, right: 12, top: 20 }}>
                     <CartesianGrid vertical={false} />
 
                     <XAxis
@@ -124,7 +132,16 @@ export function DashboardRevenueDailyBarChart(props: {
                         dataKey="revenue_total"
                         fill="var(--color-revenue_total)"
                         radius={6}
-                    />
+                    >
+                        <LabelList
+                            dataKey="revenue_total"
+                            position="top"
+                            formatter={(value: number) =>
+                                value > 0 ? formatEUR(value) : ""
+                            }
+                            className="fill-foreground text-xs"
+                        />
+                    </Bar>
 
                     <Line
                         yAxisId="rx"
