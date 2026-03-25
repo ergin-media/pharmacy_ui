@@ -1,3 +1,5 @@
+"use client";
+
 import type { DashboardTopProductDto } from "../types/dashboard.dto";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { formatEUR, formatInt } from "@/shared/lib/format/figures";
@@ -15,18 +17,18 @@ export function DashboardTopProductsBarChart(props: {
 }) {
     const data = (props.products ?? []).slice(0, 8).map((p) => ({
         name: p.name,
-        revenue: p.revenue_estimated,
-        grams: p.grams_total,
-        rx: p.rx_documents_count,
+        grams: p.grams_total ?? 0,
+        revenue: p.revenue_estimated ?? 0,
+        recipes: p.rx_documents_count ?? 0,
     }));
 
-    const totalRevenue = data.reduce((sum, p) => sum + p.revenue, 0);
-    const top5Revenue = data.slice(0, 5).reduce((sum, p) => sum + p.revenue, 0);
+    const totalGrams = data.reduce((sum, p) => sum + p.grams, 0);
+    const top5Grams = data.slice(0, 5).reduce((sum, p) => sum + p.grams, 0);
     const concentrationPct =
-        totalRevenue > 0 ? (top5Revenue / totalRevenue) * 100 : 0;
+        totalGrams > 0 ? (top5Grams / totalGrams) * 100 : 0;
 
     const chartConfig = {
-        revenue: { label: "Umsatz (est.)", color: "var(--chart-1)" },
+        grams: { label: "Gramm", color: "var(--chart-1)" },
     } as const;
 
     return (
@@ -34,7 +36,7 @@ export function DashboardTopProductsBarChart(props: {
             <div className="mb-3">
                 <div className="text-sm font-medium">Top Produkte</div>
                 <div className="text-xs text-muted-foreground">
-                    Umsatz (geschätzt)
+                    Absatz nach Gramm
                 </div>
             </div>
 
@@ -67,28 +69,24 @@ export function DashboardTopProductsBarChart(props: {
                                     <div className="font-medium">
                                         {item.name}
                                     </div>
-                                    <div>Umsatz: {formatEUR(item.revenue)}</div>
                                     <div>
                                         Gramm gesamt: {formatInt(item.grams)}
                                     </div>
+                                    <div>Umsatz: {formatEUR(item.revenue)}</div>
                                     <div>
-                                        RX Dokumente: {formatInt(item.rx)}
+                                        Rezepte: {formatInt(item.recipes)}
                                     </div>
                                 </div>
                             );
                         }}
                     />
 
-                    <Bar
-                        dataKey="revenue"
-                        fill="var(--color-revenue)"
-                        radius={6}
-                    >
+                    <Bar dataKey="grams" fill="var(--color-grams)" radius={6}>
                         <LabelList
-                            dataKey="revenue"
+                            dataKey="grams"
                             position="right"
                             formatter={(value: number) =>
-                                value > 0 ? formatEUR(value) : ""
+                                value > 0 ? `${formatInt(value)} g` : ""
                             }
                             className="fill-foreground text-xs"
                         />
@@ -101,7 +99,7 @@ export function DashboardTopProductsBarChart(props: {
                 <span className="font-medium text-foreground">
                     {concentrationPct.toFixed(1)}%
                 </span>{" "}
-                des Top-Produkt-Umsatzes.
+                des Gesamt-Absatzes (Gramm).
             </div>
         </div>
     );
