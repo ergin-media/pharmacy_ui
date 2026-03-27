@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import type { RxListItemDto } from "../../types/rx.dto";
 import type {
@@ -115,16 +115,15 @@ function recalculateFromManualTotal(
     };
 }
 
-export function useRxOfferForm(rx: RxListItemDto) {
+function createInitialValues(rx: RxListItemDto): RxOfferFormValues {
     const pricingMode = detectOfferPricingMode(rx);
-
-    const initialItems = useMemo(() => mapItems(rx), [rx]);
-    const initialSubtotal = useMemo(() => sum(initialItems), [initialItems]);
+    const initialItems = mapItems(rx);
+    const initialSubtotal = sum(initialItems);
 
     const providerTotalCents = rx.summary?.final_price_cents ?? null;
     const initialCurrency = rx.summary?.currency ?? "EUR";
 
-    const [values, setValues] = useState<RxOfferFormValues>({
+    return {
         rxId: Number(rx.id),
 
         providerName: rx.provider?.name ?? null,
@@ -151,11 +150,17 @@ export function useRxOfferForm(rx: RxListItemDto) {
         shippingCents: 0,
 
         totalCents: isProviderTotalPricing(pricingMode)
-            ? (providerTotalCents ?? 0) + 0
+            ? (providerTotalCents ?? 0)
             : initialSubtotal,
 
         notes: "",
-    });
+    };
+}
+
+export function useRxOfferForm(rx: RxListItemDto) {
+    const [values, setValues] = useState<RxOfferFormValues>(() =>
+        createInitialValues(rx),
+    );
 
     function patch<K extends keyof RxOfferFormValues>(
         key: K,
