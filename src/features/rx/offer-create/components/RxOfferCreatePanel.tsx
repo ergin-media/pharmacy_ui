@@ -52,21 +52,24 @@ export function RxOfferCreatePanel(props: {
                         />
                     </div>
 
-                    <div className="min-w-0">
-                        <div className="sticky top-0">
-                            <RxOfferPreview values={form.values} />
-                        </div>
-                    </div>
+                    <RxOfferPreview values={form.values} />
                 </div>
             </div>
 
             <div className="sticky bottom-0 px-1 pt-3">
                 <div className="flex items-center justify-end gap-2">
-                    <Button variant="outline" onClick={onCancel} disabled={isBusy}>
+                    <Button
+                        variant="outline"
+                        onClick={onCancel}
+                        disabled={isBusy}
+                    >
                         Abbrechen
                     </Button>
 
-                    <LoadingButton loading={isBusy} onClick={handleCreateAndSend}>
+                    <LoadingButton
+                        loading={isBusy}
+                        onClick={handleCreateAndSend}
+                    >
                         Angebot erstellen &amp; versenden
                     </LoadingButton>
                 </div>
