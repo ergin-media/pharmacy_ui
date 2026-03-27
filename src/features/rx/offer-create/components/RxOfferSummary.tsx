@@ -11,6 +11,7 @@ export function RxOfferSummary(props: {
     shippingCents: number;
     totalCents: number;
     onShippingChange: (value: number) => void;
+    onTotalChange: (value: number) => void;
 }) {
     const {
         currency,
@@ -18,6 +19,7 @@ export function RxOfferSummary(props: {
         shippingCents,
         totalCents,
         onShippingChange,
+        onTotalChange,
     } = props;
 
     return (
@@ -39,11 +41,14 @@ export function RxOfferSummary(props: {
                 />
             </div>
 
-            <div className="flex items-center justify-between border-t pt-3 text-sm">
-                <span className="font-medium">Gesamt</span>
-                <span className="text-base font-semibold">
-                    {formatMoney(totalCents, currency)}
-                </span>
+            <div className="grid gap-2 border-t pt-3">
+                <Label htmlFor="offer-total">Gesamt</Label>
+
+                <MoneyInput
+                    cents={totalCents}
+                    currency={currency}
+                    onChange={onTotalChange}
+                />
             </div>
         </div>
     );

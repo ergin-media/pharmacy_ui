@@ -28,10 +28,11 @@ export function RxOfferForm(props: {
         <div className="grid gap-4">
             <Card className="gap-3">
                 <div
-                    className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${values.pricingMode === "provider_total"
-                        ? "bg-blue-50/60 text-blue-900"
-                        : "bg-emerald-50/60 text-emerald-900"
-                        }`}
+                    className={`flex items-start gap-2 rounded-lg px-4 py-3 text-sm ${
+                        values.pricingMode === "provider_total"
+                            ? "bg-blue-50/60 text-blue-900"
+                            : "bg-emerald-50/60 text-emerald-900"
+                    }`}
                 >
                     <Info className="mt-0.5 size-4 opacity-70" />
 
@@ -49,11 +50,13 @@ export function RxOfferForm(props: {
                                     </>
                                 )}
                                 .<br />
-                                Der Gesamtpreis wurde von der Plattform übermittelt.
+                                Der Gesamtpreis wurde von der Plattform
+                                übermittelt.
                             </>
                         ) : (
                             <>
-                                Preisquelle: <strong>Apothekenkalkulation</strong>
+                                Preisquelle:{" "}
+                                <strong>Apothekenkalkulation</strong>
                                 {values.providerName && (
                                     <>
                                         {" "}
@@ -64,8 +67,8 @@ export function RxOfferForm(props: {
                                     </>
                                 )}
                                 .<br />
-                                Die Preise dieses Angebots müssen vollständig von der Apotheke
-                                kalkuliert werden.
+                                Die Preise dieses Angebots müssen vollständig
+                                von der Apotheke kalkuliert werden.
                             </>
                         )}
                     </span>
@@ -186,8 +189,12 @@ export function RxOfferForm(props: {
                         subtotalCents={values.subtotalCents}
                         shippingCents={values.shippingCents}
                         totalCents={values.totalCents}
-                        onShippingChange={(value) => onChange("shippingCents", value)}
-                        pricingMode={values.pricingMode} />
+                        onShippingChange={(value) =>
+                            onChange("shippingCents", value)
+                        }
+                        onTotalChange={(value) => onChange("totalCents", value)}
+                        pricingMode={values.pricingMode}
+                    />
                 </CardContent>
             </Card>
 

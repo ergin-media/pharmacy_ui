@@ -73,6 +73,48 @@ function createEmptyItem(nextId: number): RxOfferFormItem {
     };
 }
 
+function recalculateFromItemsAndShipping(
+    next: RxOfferFormValues,
+): RxOfferFormValues {
+    if (isProviderTotalPricing(next.pricingMode)) {
+        const subtotalCents = next.providerTotalCents ?? 0;
+        const totalCents = Math.max(0, subtotalCents + next.shippingCents);
+
+        return {
+            ...next,
+            subtotalCents,
+            totalCents,
+        };
+    }
+
+    const subtotalCents = sum(next.items);
+    const totalCents = Math.max(0, subtotalCents + next.shippingCents);
+
+    return {
+        ...next,
+        subtotalCents,
+        totalCents,
+    };
+}
+
+function recalculateFromManualTotal(
+    next: RxOfferFormValues,
+): RxOfferFormValues {
+    const subtotalCents = isProviderTotalPricing(next.pricingMode)
+        ? (next.providerTotalCents ?? 0)
+        : sum(next.items);
+
+    const totalCents = Math.max(0, next.totalCents);
+    const shippingCents = Math.max(0, totalCents - subtotalCents);
+
+    return {
+        ...next,
+        subtotalCents,
+        shippingCents,
+        totalCents,
+    };
+}
+
 export function useRxOfferForm(rx: RxListItemDto) {
     const pricingMode = detectOfferPricingMode(rx);
 
@@ -103,50 +145,45 @@ export function useRxOfferForm(rx: RxListItemDto) {
         items: initialItems.length > 0 ? initialItems : [createEmptyItem(1)],
 
         subtotalCents: isProviderTotalPricing(pricingMode)
-            ? providerTotalCents ?? 0
+            ? (providerTotalCents ?? 0)
             : initialSubtotal,
 
         shippingCents: 0,
 
         totalCents: isProviderTotalPricing(pricingMode)
-            ? providerTotalCents ?? 0
+            ? (providerTotalCents ?? 0) + 0
             : initialSubtotal,
 
         notes: "",
     });
 
-    function recalculate(next: RxOfferFormValues): RxOfferFormValues {
-        if (isProviderTotalPricing(next.pricingMode)) {
-            const providerTotal = next.providerTotalCents ?? 0;
-
-            return {
-                ...next,
-                subtotalCents: providerTotal,
-                totalCents: providerTotal + next.shippingCents,
-            };
-        }
-
-        const subtotalCents = sum(next.items);
-        const totalCents = subtotalCents + next.shippingCents;
-
-        return {
-            ...next,
-            subtotalCents,
-            totalCents: Math.max(0, totalCents),
-        };
-    }
-
     function patch<K extends keyof RxOfferFormValues>(
         key: K,
         value: RxOfferFormValues[K],
     ) {
-        setValues((prev) => recalculate({ ...prev, [key]: value }));
+        setValues((prev) => {
+            const next = {
+                ...prev,
+                [key]: value,
+            };
+
+            if (key === "totalCents") {
+                return recalculateFromManualTotal(next);
+            }
+
+            if (
+                key === "shippingCents" ||
+                key === "providerTotalCents" ||
+                key === "pricingMode"
+            ) {
+                return recalculateFromItemsAndShipping(next);
+            }
+
+            return next;
+        });
     }
 
-    function updateItem(
-        itemId: number,
-        patchData: Partial<RxOfferFormItem>,
-    ) {
+    function updateItem(itemId: number, patchData: Partial<RxOfferFormItem>) {
         setValues((prev) => {
             const items = prev.items.map((item) => {
                 if (item.id !== itemId) return item;
@@ -163,7 +200,7 @@ export function useRxOfferForm(rx: RxListItemDto) {
                 };
             });
 
-            return recalculate({
+            return recalculateFromItemsAndShipping({
                 ...prev,
                 items,
             });
@@ -177,7 +214,7 @@ export function useRxOfferForm(rx: RxListItemDto) {
                 0,
             );
 
-            return recalculate({
+            return recalculateFromItemsAndShipping({
                 ...prev,
                 items: [...prev.items, createEmptyItem(maxId + 1)],
             });
@@ -188,7 +225,7 @@ export function useRxOfferForm(rx: RxListItemDto) {
         setValues((prev) => {
             if (prev.items.length <= 1) return prev;
 
-            return recalculate({
+            return recalculateFromItemsAndShipping({
                 ...prev,
                 items: prev.items.filter((item) => item.id !== itemId),
             });

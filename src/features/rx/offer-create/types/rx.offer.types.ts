@@ -51,7 +51,9 @@ export type CreateRxOfferPayload = {
     offer_number: string;
     issue_date: string;
     notes: string | null;
+    subtotal_cents: number;
     shipping_cents: number;
+    total_cents: number;
     items: CreateRxOfferItemPayload[];
 };
 
