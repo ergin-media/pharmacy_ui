@@ -1,16 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
     Field,
-    FieldDescription,
     FieldGroup,
     FieldLabel,
-    FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 type Props = {
     className?: string;
@@ -40,7 +38,7 @@ export function LoginForm({ className, onSubmit, isLoading, error }: Props) {
                 </div>
 
                 <Field>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <FieldLabel htmlFor="email">Emailadresse</FieldLabel>
                     <Input
                         id="email"
                         type="email"
@@ -51,7 +49,7 @@ export function LoginForm({ className, onSubmit, isLoading, error }: Props) {
                 </Field>
 
                 <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                    <FieldLabel htmlFor="password">Kennwort</FieldLabel>
                     <Input
                         id="password"
                         type="password"
@@ -66,20 +64,9 @@ export function LoginForm({ className, onSubmit, isLoading, error }: Props) {
                 )}
 
                 <Field>
-                    <Button type="submit" disabled={isLoading}>
+                    <LoadingButton type="submit" loading={isLoading}>
                         {isLoading ? "Lade..." : "Login"}
-                    </Button>
-                </Field>
-
-                <FieldSeparator>Oder</FieldSeparator>
-
-                <Field>
-                    <Button variant="outline" type="button">
-                        GitHub
-                    </Button>
-                    <FieldDescription className="text-center">
-                        Kein Account vorhanden?
-                    </FieldDescription>
+                    </LoadingButton>
                 </Field>
             </FieldGroup>
         </form>

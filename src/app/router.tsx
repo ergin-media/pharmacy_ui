@@ -8,6 +8,7 @@ import { PharmacyProductsListPage } from "@/features/pharmacy-products/pages/Pha
 import { ProviderProductsMappingsPage } from "@/features/provider-products/pages/ProviderProductsMappingsPage";
 import { PatientsListPage } from "@/features/patients/pages/PatientsListPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
+import { RequireAuth } from "@/features/auth/components/RequireAuth";
 
 export const router = createBrowserRouter([
     {
@@ -17,7 +18,11 @@ export const router = createBrowserRouter([
     },
     {
         path: "/",
-        element: <AppShell />,
+        element: (
+            <RequireAuth>
+                <AppShell />
+            </RequireAuth>
+        ),
         errorElement: <RouteErrorBoundary />,
         children: [
             { index: true, element: <DashboardPage /> },

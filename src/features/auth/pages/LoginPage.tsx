@@ -1,15 +1,20 @@
-"use client";
-
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 
-
+import { LoginForm } from "../components/LoginForm";
 import { useLoginMutation } from "../hooks/useLoginMutation";
-import { LoginForm } from "../api/components/LoginForm";
+
+type LoginLocationState = {
+    from?: string;
+};
 
 export function LoginPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const loginMutation = useLoginMutation();
+
+    const state = location.state as LoginLocationState | null;
+    const redirectTo = state?.from || "/";
 
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
@@ -29,7 +34,7 @@ export function LoginPage() {
                             onSubmit={(data) =>
                                 loginMutation.mutate(data, {
                                     onSuccess: () => {
-                                        navigate("/");
+                                        navigate(redirectTo, { replace: true });
                                     },
                                 })
                             }
