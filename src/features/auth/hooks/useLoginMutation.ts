@@ -10,7 +10,6 @@ export function useLoginMutation() {
         mutationFn: (payload: AuthLoginPayload) => login(payload),
         toastMessages: {
             loading: "Login wird durchgeführt...",
-            success: "Erfolgreich eingeloggt",
             error: "Login fehlgeschlagen",
         },
         onSuccess: async (data: AuthLoginResponse) => {
