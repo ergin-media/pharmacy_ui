@@ -22,7 +22,9 @@ export function AppShell() {
 
                     <AppBreadcrumb />
 
-                    <AppUserMenu />
+                    <div className="ml-auto">
+                        <AppUserMenu />
+                    </div>
                 </header>
 
                 <main className="flex flex-1 flex-col p-4">

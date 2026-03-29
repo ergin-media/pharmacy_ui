@@ -43,7 +43,7 @@ export function AppUserMenu() {
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
                 <button
                     type="button"
                     className="ml-auto flex items-center gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
