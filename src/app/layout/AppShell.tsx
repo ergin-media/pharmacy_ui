@@ -7,7 +7,6 @@ import {
 import { AppBreadcrumb } from "./AppBreadcrumb";
 import { Outlet } from "react-router";
 import { AppSidebar } from "./AppSidebar";
-import { Toaster } from "sonner";
 
 export function AppShell() {
     return (
@@ -15,7 +14,7 @@ export function AppShell() {
             <AppSidebar />
 
             <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 px-4 bg-white border-b">
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
                     <SidebarTrigger className="bg-white" />
 
                     <Separator orientation="vertical" className="h-4" />
@@ -31,14 +30,6 @@ export function AppShell() {
                     <Outlet />
                 </main>
             </SidebarInset>
-
-            <Toaster
-                position="top-center"
-                richColors
-                expand
-                closeButton
-                duration={1000}
-            />
         </SidebarProvider>
     );
 }

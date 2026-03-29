@@ -12,6 +12,8 @@ import { SlideInPanelHost } from "@/shared/ui/slide-in-panel/SlideInPanelHost";
 import { AppDialogProvider } from "@/shared/ui/dialogs/appDialog.store";
 import { AppDialogHost } from "@/shared/ui/dialogs/AppDialogHost";
 
+import { Toaster } from "sonner";
+
 export function AppProviders() {
     return (
         <QueryClientProvider client={queryClient}>
@@ -21,6 +23,14 @@ export function AppProviders() {
                         <RouterProvider router={router} />
                         <SlideInPanelHost />
                         <AppDialogHost />
+
+                        <Toaster
+                            position="top-center"
+                            richColors
+                            expand
+                            closeButton
+                            duration={1000}
+                        />
                     </SlideInPanelProvider>
                 </AppDialogProvider>
             </TooltipProvider>
