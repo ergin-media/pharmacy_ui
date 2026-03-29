@@ -7,8 +7,14 @@ import { DashboardPage } from "@/features/dashboard/pages/DashboardPage";
 import { PharmacyProductsListPage } from "@/features/pharmacy-products/pages/PharmacyProductsListPage";
 import { ProviderProductsMappingsPage } from "@/features/provider-products/pages/ProviderProductsMappingsPage";
 import { PatientsListPage } from "@/features/patients/pages/PatientsListPage";
+import { LoginPage } from "@/features/auth/pages/LoginPage";
 
 export const router = createBrowserRouter([
+    {
+        path: "/login",
+        element: <LoginPage />,
+        errorElement: <RouteErrorBoundary />,
+    },
     {
         path: "/",
         element: <AppShell />,
@@ -22,7 +28,6 @@ export const router = createBrowserRouter([
                 path: "products/mappings",
                 element: <ProviderProductsMappingsPage />,
             },
-
             { path: "*", element: <NotFoundPage /> },
         ],
     },
