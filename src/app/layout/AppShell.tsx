@@ -7,6 +7,7 @@ import {
 import { AppBreadcrumb } from "./AppBreadcrumb";
 import { Outlet } from "react-router";
 import { AppSidebar } from "./AppSidebar";
+import { AppUserMenu } from "@/features/auth/components/AppUserMenu";
 
 export function AppShell() {
     return (
@@ -21,9 +22,7 @@ export function AppShell() {
 
                     <AppBreadcrumb />
 
-                    <div className="ml-auto text-xs text-muted-foreground">
-                        Lokal: api.pharmacy.local
-                    </div>
+                    <AppUserMenu />
                 </header>
 
                 <main className="flex flex-1 flex-col p-4">
