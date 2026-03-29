@@ -1,20 +1,20 @@
-import { useLocation, useNavigate } from "react-router";
+"use client";
+
 import { GalleryVerticalEnd } from "lucide-react";
 
 import { LoginForm } from "../components/LoginForm";
-import { useLoginMutation } from "../hooks/useLoginMutation";
-
-type LoginLocationState = {
-    from?: string;
-};
+import { useLoginPage } from "../hooks/useLoginPage";
 
 export function LoginPage() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const loginMutation = useLoginMutation();
+    const vm = useLoginPage();
 
-    const state = location.state as LoginLocationState | null;
-    const redirectTo = state?.from || "/";
+    if (vm.isPageLoading) {
+        return (
+            <div className="flex min-h-svh items-center justify-center">
+                <div className="text-sm text-muted-foreground">Lade…</div>
+            </div>
+        );
+    }
 
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
@@ -31,19 +31,9 @@ export function LoginPage() {
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-xs">
                         <LoginForm
-                            onSubmit={(data) =>
-                                loginMutation.mutate(data, {
-                                    onSuccess: () => {
-                                        navigate(redirectTo, { replace: true });
-                                    },
-                                })
-                            }
-                            isLoading={loginMutation.isPending}
-                            error={
-                                loginMutation.isError
-                                    ? "Login fehlgeschlagen"
-                                    : null
-                            }
+                            onSubmit={vm.actions.submit}
+                            isLoading={vm.isSubmitting}
+                            error={vm.errorMessage}
                         />
                     </div>
                 </div>
@@ -51,7 +41,7 @@ export function LoginPage() {
 
             <div className="relative hidden bg-muted lg:block">
                 <img
-                    src="/placeholder.svg"
+                    src="https://images.pexels.com/photos/29986988/pexels-photo-29986988.jpeg"
                     alt="Login"
                     className="absolute inset-0 h-full w-full object-cover"
                 />
