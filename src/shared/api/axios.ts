@@ -18,6 +18,8 @@ function isAuthRoute(url?: string) {
     );
 }
 
+let hasShownSessionExpiredToast = false;
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -25,9 +27,16 @@ api.interceptors.response.use(
         const requestUrl = error?.config?.url;
 
         if (status === 401 && !isAuthRoute(requestUrl)) {
-            const isOnLoginPage = window.location.pathname === "/login";
+            if (!hasShownSessionExpiredToast) {
+                hasShownSessionExpiredToast = true;
 
-            if (!isOnLoginPage) {
+                // lazy import damit kein circular stuff entsteht
+                import("sonner").then(({ toast }) => {
+                    toast.info("Sitzung abgelaufen. Bitte neu einloggen.");
+                });
+            }
+
+            if (window.location.pathname !== "/login") {
                 window.location.href = "/login";
             }
         }
