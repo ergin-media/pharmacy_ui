@@ -5,27 +5,50 @@ import type {
     AuthMeResponse,
 } from "../types/auth.types";
 
+type ApiErrorResponse = {
+    ok: false;
+    error?: {
+        code?: string;
+        message?: string;
+        details?: unknown;
+    };
+};
+
+function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
+    return (
+        typeof data === "object" &&
+        data !== null &&
+        "ok" in data &&
+        (data as { ok?: unknown }).ok === false
+    );
+}
+
+function assertOk<T>(data: T | ApiErrorResponse): T {
+    if (isApiErrorResponse(data)) {
+        throw new Error(data.error?.message || "Request failed");
+    }
+
+    return data as T;
+}
+
 export async function login(payload: AuthLoginPayload) {
-    const { data } = await api.post<AuthLoginResponse>(
+    const { data } = await api.post<AuthLoginResponse | ApiErrorResponse>(
         "/auth/login",
         payload,
-        { withCredentials: true },
     );
-    return data;
+
+    return assertOk(data);
 }
 
 export async function logout() {
-    const { data } = await api.post(
-        "/auth/logout",
-        {},
-        { withCredentials: true },
-    );
+    const { data } = await api.post("/auth/logout", {});
     return data;
 }
 
 export async function getMe() {
-    const { data } = await api.get<AuthMeResponse>("/auth/me", {
-        withCredentials: true,
-    });
-    return data;
+    const { data } = await api.get<AuthMeResponse | ApiErrorResponse>(
+        "/auth/me",
+    );
+
+    return assertOk(data);
 }

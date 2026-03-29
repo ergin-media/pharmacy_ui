@@ -29,7 +29,7 @@ export function LoginForm({ className, onSubmit, isLoading, error }: Props) {
                 onSubmit({ email, password });
             }}
         >
-            <FieldGroup>
+            <FieldGroup aria-disabled>
                 <div className="flex flex-col items-center gap-1 text-center">
                     <h1 className="text-2xl font-bold">Login</h1>
                     <p className="text-sm text-muted-foreground">
@@ -45,6 +45,7 @@ export function LoginForm({ className, onSubmit, isLoading, error }: Props) {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        disabled={isLoading}
                     />
                 </Field>
 
@@ -56,6 +57,7 @@ export function LoginForm({ className, onSubmit, isLoading, error }: Props) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        disabled={isLoading}
                     />
                 </Field>
 
