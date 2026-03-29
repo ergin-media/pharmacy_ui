@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import { useAuth } from "./useAuth";
@@ -29,15 +29,9 @@ export function useLoginPage() {
         navigate(redirectTo, { replace: true });
     }
 
-    const errorMessage = useMemo(() => {
-        if (!loginMutation.isError) return null;
-        return "Login fehlgeschlagen";
-    }, [loginMutation.isError]);
-
     return {
         isPageLoading: auth.isLoading,
         isSubmitting: loginMutation.isPending,
-        errorMessage,
         actions: {
             submit,
         },

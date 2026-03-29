@@ -33,7 +33,6 @@ export function LoginPage() {
                         <LoginForm
                             onSubmit={vm.actions.submit}
                             isLoading={vm.isSubmitting}
-                            error={vm.errorMessage}
                         />
                     </div>
                 </div>
