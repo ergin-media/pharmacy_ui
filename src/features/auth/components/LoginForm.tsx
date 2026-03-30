@@ -23,7 +23,7 @@ export function LoginForm({ className, onSubmit, isLoading, error }: Props) {
 
     return (
         <form
-            className={cn("flex flex-col gap-6", className)}
+            className={cn("flex flex-col gap-6 bg-white p-6 rounded-lg", className)}
             onSubmit={(e) => {
                 e.preventDefault();
                 onSubmit({ email, password });
