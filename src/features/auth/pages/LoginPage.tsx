@@ -4,6 +4,7 @@ import { GalleryVerticalEnd } from "lucide-react";
 
 import { LoginForm } from "../components/LoginForm";
 import { useLoginPage } from "../hooks/useLoginPage";
+import { Spinner } from "@/components/ui/spinner";
 
 export function LoginPage() {
     const vm = useLoginPage();
@@ -11,7 +12,7 @@ export function LoginPage() {
     if (vm.isPageLoading) {
         return (
             <div className="flex min-h-svh items-center justify-center">
-                <div className="text-sm text-muted-foreground">Lade…</div>
+                <Spinner className="h-6 w-6 text-muted-foreground" />
             </div>
         );
     }

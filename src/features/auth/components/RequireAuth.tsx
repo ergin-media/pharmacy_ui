@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 
 import { useAuth } from "../hooks/useAuth";
+import { Spinner } from "@/components/ui/spinner";
 
 export function RequireAuth(props: { children: ReactNode }) {
     const { children } = props;
@@ -11,7 +12,7 @@ export function RequireAuth(props: { children: ReactNode }) {
     if (auth.isLoading) {
         return (
             <div className="flex min-h-svh items-center justify-center">
-                <div className="text-sm text-muted-foreground">Lade…</div>
+                <Spinner className="h-6 w-6 text-muted-foreground" />
             </div>
         );
     }
