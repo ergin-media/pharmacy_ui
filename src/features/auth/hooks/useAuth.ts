@@ -6,6 +6,9 @@ export function useAuth() {
         queryKey: ["auth", "me"],
         queryFn: getMe,
         retry: false,
+        refetchOnMount: false,
+        refetchOnReconnect: true,
+        staleTime: 5 * 60 * 1000, // 5 Minuten
     });
 
     return {
