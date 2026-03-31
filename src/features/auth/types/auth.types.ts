@@ -9,6 +9,7 @@ export type AuthUser = {
 export type AuthMeResponse = {
     ok: true;
     user: AuthUser;
+    csrf_token?: string;
 };
 
 export type AuthLoginPayload = {
@@ -19,4 +20,5 @@ export type AuthLoginPayload = {
 export type AuthLoginResponse = {
     ok: true;
     user: AuthUser;
+    csrf_token: string;
 };

@@ -1,6 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import type { AuthLoginPayload, AuthLoginResponse } from "../types/auth.types";
+
 import { login } from "../api/auth.api";
+import type { AuthLoginPayload, AuthLoginResponse } from "../types/auth.types";
+import { setAuthSession } from "../store/authSession.store";
+
 import { useToastMutation } from "@/shared/lib/react-query/create-toast-mutation";
 
 export function useLoginMutation() {
@@ -13,7 +16,16 @@ export function useLoginMutation() {
             error: "Login fehlgeschlagen",
         },
         onSuccess: async (data: AuthLoginResponse) => {
-            queryClient.setQueryData(["auth", "me"], data);
+            setAuthSession({
+                user: data.user,
+                csrfToken: data.csrf_token,
+            });
+
+            queryClient.setQueryData(["auth", "me"], {
+                ok: true,
+                user: data.user,
+                csrf_token: data.csrf_token,
+            });
 
             await queryClient.invalidateQueries({
                 queryKey: ["auth", "me"],
