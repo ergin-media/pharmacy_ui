@@ -41,8 +41,12 @@ export async function login(payload: AuthLoginPayload) {
 }
 
 export async function logout() {
-    const { data } = await api.post("/auth/logout", {});
-    return data;
+    const { data } = await api.post<{ ok: true } | ApiErrorResponse>(
+        "/auth/logout",
+        {},
+    );
+
+    return assertOk(data);
 }
 
 export async function getMe() {
