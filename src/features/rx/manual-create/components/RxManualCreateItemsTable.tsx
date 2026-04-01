@@ -22,6 +22,7 @@ export function RxManualCreateItemsTable(props: {
             <div className="divide-y">
                 {items.map((item, index) => {
                     const selectedProduct = mapOfferItemPharmacyProductToDto({
+                        id: item.id,
                         pharmacyProductId: item.pharmacyProductId,
                         label: item.label,
                         quantity: item.quantity,
