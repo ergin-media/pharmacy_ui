@@ -1,11 +1,15 @@
 "use client";
 
+import { Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { TypographyH1 } from "@/components/ui/typography";
 
 import { useRxListPage } from "../hooks/useRxListPage";
 import { useRxPanels } from "../hooks/useRxPanels";
 import { RxListPageContent } from "../components/RxListPageContent";
 import { RxListPageLoading } from "../components/RxListPageLoading";
+import type { RxListItemDto } from "../types/rx.dto";
 
 export function RxListPage() {
     const vm = useRxListPage();
@@ -15,12 +19,19 @@ export function RxListPage() {
         open: (id: number) => console.log("open", id),
         pdf: (id: number) => console.log("pdf", id),
         more: (id: number) => console.log("more", id),
-        createInvoice: (id: number) => panels.invoice.open(id),
+        createInvoice: (rx: RxListItemDto) => panels.invoice.open(rx),
     };
 
     return (
         <div className="h-full w-full">
-            <TypographyH1 className="mb-4">Rezepte</TypographyH1>
+            <div className="mb-4 flex items-center justify-between">
+                <TypographyH1>Rezepte</TypographyH1>
+
+                <Button onClick={panels.manualCreate.open}>
+                    <Plus className="mr-2 size-4" />
+                    Rezept manuell anlegen
+                </Button>
+            </div>
 
             {vm.listVm.isLoading && vm.tableVm.items.length === 0 ? (
                 <RxListPageLoading
