@@ -4,6 +4,7 @@ import type {
     RxManualCreateFormValues,
     RxManualCreateItem,
 } from "../types/rx-manual-create.types";
+import type { RxItem } from "../../types/rx.dto";
 
 function toDateInputValue(value?: string | null) {
     if (!value) return "";
@@ -16,7 +17,7 @@ function createEmptyItem(nextId: number): RxManualCreateItem {
         pharmacyProductId: null,
         label: "",
         quantity: 1,
-        unit: "g",
+        unit: "g" as NonNullable<RxItem["unit"]>,
     };
 }
 
