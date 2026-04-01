@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 
 import { useRxManualCreateForm } from "../hooks/useRxManualCreateForm";
+import { useCreateManualRxMutation } from "../hooks/useCreateManualRxMutation";
+import { buildManualRxFormData } from "../lib/rx-manual-create.payload";
+
 import { RxManualCreateForm } from "./RxManualCreateForm";
 import { RxManualCreatePreview } from "./RxManualCreatePreview";
 import { RxManualCreateUploadPanel } from "./RxManualCreateUploadPanel";
@@ -10,12 +13,32 @@ export function RxManualCreatePanel(props: {
     onCancel: () => void;
     onCreated?: () => Promise<void> | void;
 }) {
-    const { onCancel } = props;
+    const { onCancel, onCreated } = props;
 
     const form = useRxManualCreateForm();
+    const createManualRxMutation = useCreateManualRxMutation();
 
     async function handleCreate() {
-        console.log("manual rx values", form.values);
+        if (!form.values.patientFirstName.trim()) return;
+        if (!form.values.patientLastName.trim()) return;
+        if (!form.values.documentFile) return;
+        if (
+            form.values.items.length === 0 ||
+            form.values.items.some(
+                (item) =>
+                    !item.label.trim() ||
+                    !item.quantity ||
+                    !String(item.unit).trim(),
+            )
+        ) {
+            return;
+        }
+
+        const formData = buildManualRxFormData(form.values);
+
+        await createManualRxMutation.mutateAsync(formData);
+
+        await onCreated?.();
     }
 
     return (
@@ -50,11 +73,18 @@ export function RxManualCreatePanel(props: {
 
             <div className="sticky bottom-0 px-1 pt-3">
                 <div className="flex items-center justify-end gap-2">
-                    <Button variant="outline" onClick={onCancel}>
+                    <Button
+                        variant="outline"
+                        onClick={onCancel}
+                        disabled={createManualRxMutation.isPending}
+                    >
                         Abbrechen
                     </Button>
 
-                    <LoadingButton loading={false} onClick={handleCreate}>
+                    <LoadingButton
+                        loading={createManualRxMutation.isPending}
+                        onClick={handleCreate}
+                    >
                         Rezept anlegen
                     </LoadingButton>
                 </div>
