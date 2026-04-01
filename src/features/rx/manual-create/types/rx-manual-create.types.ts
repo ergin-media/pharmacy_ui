@@ -1,0 +1,27 @@
+import type { RxItem } from "../../types/rx.dto";
+
+export type RxManualCreateItem = {
+    id: number;
+    pharmacyProductId: number | null;
+    label: string;
+    quantity: NonNullable<RxItem["quantity"]>;
+    unit: NonNullable<RxItem["unit"]>;
+};
+
+export type RxManualCreateFormValues = {
+    issueDate: string;
+
+    patientFirstName: string;
+    patientLastName: string;
+    patientStreet: string;
+    patientZip: string;
+    patientCity: string;
+
+    notes: string;
+
+    items: RxManualCreateItem[];
+
+    documentFile: File | null;
+    documentPreviewUrl: string | null;
+    documentMimeType: string | null;
+};
