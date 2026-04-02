@@ -30,6 +30,8 @@ export function useRxManualCreateForm() {
         patientStreet: "",
         patientZip: "",
         patientCity: "",
+        patientEmail: "",
+        patientPhone: "",
 
         notes: "",
 

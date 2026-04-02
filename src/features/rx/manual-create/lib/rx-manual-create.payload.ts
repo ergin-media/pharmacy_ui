@@ -10,6 +10,8 @@ export function buildManualRxFormData(
     formData.append("patient_street", values.patientStreet.trim());
     formData.append("patient_zip", values.patientZip.trim());
     formData.append("patient_city", values.patientCity.trim());
+    formData.append("patient_email", values.patientEmail.trim());
+    formData.append("patient_phone", values.patientPhone.trim());
 
     formData.append("issue_date", values.issueDate);
     formData.append("notes", values.notes.trim());

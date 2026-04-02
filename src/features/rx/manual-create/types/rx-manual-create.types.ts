@@ -16,6 +16,8 @@ export type RxManualCreateFormValues = {
     patientStreet: string;
     patientZip: string;
     patientCity: string;
+    patientEmail: string;
+    patientPhone: string;
 
     notes: string;
 
