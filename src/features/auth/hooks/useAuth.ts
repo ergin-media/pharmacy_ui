@@ -37,10 +37,13 @@ export function useAuth() {
 
     const session = getAuthSession();
 
+    const user = query.data?.user ?? session.user ?? null;
+    const csrfToken = query.data?.csrf_token ?? session.csrfToken ?? null;
+
     return {
-        user: session.user,
-        csrfToken: session.csrfToken,
-        isAuthenticated: Boolean(session.user),
+        user,
+        csrfToken,
+        isAuthenticated: Boolean(user),
         isLoading: query.isLoading,
         isError: query.isError,
     };
