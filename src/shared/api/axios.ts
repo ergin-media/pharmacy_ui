@@ -51,7 +51,8 @@ api.interceptors.request.use((config) => {
         const csrfToken = getCsrfToken();
 
         if (csrfToken) {
-            config.headers.set("X-CSRF-Token", csrfToken);
+            config.headers = config.headers ?? {};
+            config.headers["X-CSRF-Token"] = csrfToken;
         }
     }
 
