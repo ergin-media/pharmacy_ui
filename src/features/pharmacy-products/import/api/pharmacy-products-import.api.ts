@@ -1,7 +1,18 @@
+import { api } from "@/shared/api/axios";
+
 import type {
     PharmacyProductsImportPreviewResponse,
     PharmacyProductsImportResponse,
 } from "../types/pharmacy-products-import.types";
+
+type ApiErrorResponse = {
+    ok: false;
+    error?: {
+        code?: string;
+        message?: string;
+        details?: unknown;
+    };
+};
 
 function buildCsvFormData(file: File) {
     const formData = new FormData();
@@ -9,20 +20,41 @@ function buildCsvFormData(file: File) {
     return formData;
 }
 
-async function postCsv<T>(url: string, file: File): Promise<T> {
-    const res = await fetch(`/v1/${url}`, {
-        method: "POST",
-        body: buildCsvFormData(file),
-        credentials: "include",
-    });
+function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
+    return (
+        typeof data === "object" &&
+        data !== null &&
+        "ok" in data &&
+        (data as { ok?: unknown }).ok === false
+    );
+}
 
-    const data = await res.json();
-
-    if (!res.ok || data?.ok === false) {
+function assertOk<T>(data: T | ApiErrorResponse): T {
+    if (isApiErrorResponse(data)) {
         throw new Error(JSON.stringify(data));
     }
 
     return data as T;
+}
+
+async function postCsv<T>(url: string, file: File): Promise<T> {
+    try {
+        const { data } = await api.post<T | ApiErrorResponse>(
+            `/${url}`,
+            buildCsvFormData(file),
+        );
+
+        return assertOk(data);
+    } catch (error: unknown) {
+        const responseData = (error as { response?: { data?: unknown } })
+            ?.response?.data;
+
+        if (responseData) {
+            throw new Error(JSON.stringify(responseData));
+        }
+
+        throw error;
+    }
 }
 
 export async function previewPharmacyProductsImport(file: File) {
