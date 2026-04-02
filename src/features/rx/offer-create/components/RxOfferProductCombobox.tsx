@@ -8,6 +8,7 @@ export function RxOfferProductCombobox(props: {
     disabled?: boolean;
     onInputChange: (value: string) => void;
     onSelectProduct: (product: PharmacyProductDto) => void;
+    onClearSelection?: () => void;
 }) {
     const {
         value,
@@ -16,6 +17,7 @@ export function RxOfferProductCombobox(props: {
         disabled,
         onInputChange,
         onSelectProduct,
+        onClearSelection,
     } = props;
 
     return (
@@ -24,9 +26,10 @@ export function RxOfferProductCombobox(props: {
             selectedProductId={selectedProductId}
             selectedProduct={selectedProduct}
             disabled={disabled}
-            placeholder="Artikel wählen oder frei eingeben…"
+            placeholder="Artikel wählen…"
             onInputValueChange={onInputChange}
             onSelectProduct={onSelectProduct}
+            onClearSelection={onClearSelection}
         />
     );
 }
