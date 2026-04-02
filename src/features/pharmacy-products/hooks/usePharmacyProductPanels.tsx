@@ -1,17 +1,14 @@
 import { useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { useSlideInPanel } from "@/shared/ui/slide-in-panel/slideInPanel.store";
 import type { SlideInPanelRenderApi } from "@/shared/ui/slide-in-panel/slideInPanel.types";
 
-import { pharmacyProductsKeys } from "../queries/pharmacy-products.queries";
 import type { PharmacyProductDto } from "../types/pharmacy-products.dto";
 import { PharmacyProductFormPanel } from "../product-form/components/PharmacyProductFormPanel";
 import { PharmacyProductsImportPanel } from "../import/components/PharmacyProductsImportPanel";
 
 export function usePharmacyProductPanels() {
     const { openPanel } = useSlideInPanel();
-    const queryClient = useQueryClient();
 
     const openCreate = useCallback(() => {
         openPanel({
@@ -20,16 +17,11 @@ export function usePharmacyProductPanels() {
             render: ({ close }: SlideInPanelRenderApi) => (
                 <PharmacyProductFormPanel
                     onCancel={close}
-                    onSaved={async () => {
-                        await queryClient.invalidateQueries({
-                            queryKey: pharmacyProductsKeys.all,
-                        });
-                        close();
-                    }}
+                    onSaved={close}
                 />
             ),
         });
-    }, [openPanel, queryClient]);
+    }, [openPanel]);
 
     const openEdit = useCallback(
         (product: PharmacyProductDto) => {
@@ -41,17 +33,12 @@ export function usePharmacyProductPanels() {
                     <PharmacyProductFormPanel
                         product={product}
                         onCancel={close}
-                        onSaved={async () => {
-                            await queryClient.invalidateQueries({
-                                queryKey: pharmacyProductsKeys.all,
-                            });
-                            close();
-                        }}
+                        onSaved={close}
                     />
                 ),
             });
         },
-        [openPanel, queryClient],
+        [openPanel],
     );
 
     const openImport = useCallback(() => {
@@ -61,16 +48,11 @@ export function usePharmacyProductPanels() {
             render: ({ close }) => (
                 <PharmacyProductsImportPanel
                     onCancel={close}
-                    onImported={async () => {
-                        await queryClient.invalidateQueries({
-                            queryKey: pharmacyProductsKeys.all,
-                        });
-                        close();
-                    }}
+                    onImported={close}
                 />
             ),
         });
-    }, [openPanel, queryClient]);
+    }, [openPanel]);
 
     return {
         create: {
