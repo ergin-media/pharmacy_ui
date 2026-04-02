@@ -21,15 +21,17 @@ export function RxManualCreateItemsTable(props: {
         <div className="overflow-hidden rounded-xl border">
             <div className="divide-y">
                 {items.map((item, index) => {
-                    const selectedProduct = mapOfferItemPharmacyProductToDto({
-                        id: item.id,
-                        pharmacyProductId: item.pharmacyProductId,
-                        label: "",
-                        quantity: item.quantity,
-                        unit: item.unit,
-                        unitPriceCents: 0,
-                        totalPriceCents: 0,
-                    });
+                    const selectedProduct = item.pharmacyProductId
+                        ? mapOfferItemPharmacyProductToDto({
+                              id: item.id,
+                              pharmacyProductId: item.pharmacyProductId,
+                              label: item.productName,
+                              quantity: item.quantity,
+                              unit: item.unit,
+                              unitPriceCents: 0,
+                              totalPriceCents: 0,
+                          })
+                        : null;
 
                     return (
                         <div key={item.id} className="space-y-4 px-4 py-4">
@@ -42,20 +44,27 @@ export function RxManualCreateItemsTable(props: {
                                     </Label>
 
                                     <RxOfferProductCombobox
-                                        value={selectedProduct?.name ?? ""}
+                                        value={item.productName}
                                         selectedProductId={
                                             item.pharmacyProductId ?? null
                                         }
                                         selectedProduct={selectedProduct}
-                                        onInputChange={() => {}}
+                                        onInputChange={(value) =>
+                                            onItemChange(item.id, {
+                                                productName: value,
+                                                pharmacyProductId: null,
+                                            })
+                                        }
                                         onSelectProduct={(product) =>
                                             onItemChange(item.id, {
                                                 pharmacyProductId: product.id,
+                                                productName: product.name,
                                             })
                                         }
                                         onClearSelection={() =>
                                             onItemChange(item.id, {
                                                 pharmacyProductId: null,
+                                                productName: "",
                                             })
                                         }
                                     />

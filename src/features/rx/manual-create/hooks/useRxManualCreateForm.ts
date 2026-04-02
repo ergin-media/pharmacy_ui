@@ -15,6 +15,7 @@ function createEmptyItem(nextId: number): RxManualCreateItem {
     return {
         id: nextId,
         pharmacyProductId: null,
+        productName: "",
         quantity: 1,
         unit: "g" as NonNullable<RxItem["unit"]>,
     };
