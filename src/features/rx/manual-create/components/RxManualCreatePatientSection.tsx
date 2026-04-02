@@ -48,32 +48,6 @@ export function RxManualCreatePatientSection(props: {
                     </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                    <div className="grid gap-2">
-                        <Label htmlFor="manual-rx-patient-email">E-Mail</Label>
-                        <Input
-                            id="manual-rx-patient-email"
-                            type="email"
-                            value={values.patientEmail}
-                            onChange={(e) =>
-                                onChange("patientEmail", e.target.value)
-                            }
-                        />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="manual-rx-patient-phone">Telefon</Label>
-                        <Input
-                            id="manual-rx-patient-phone"
-                            type="tel"
-                            value={values.patientPhone}
-                            onChange={(e) =>
-                                onChange("patientPhone", e.target.value)
-                            }
-                        />
-                    </div>
-                </div>
-
                 <div className="grid gap-2">
                     <Label htmlFor="manual-rx-patient-street">Straße</Label>
                     <Input
@@ -104,6 +78,32 @@ export function RxManualCreatePatientSection(props: {
                             value={values.patientCity}
                             onChange={(e) =>
                                 onChange("patientCity", e.target.value)
+                            }
+                        />
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-2">
+                        <Label htmlFor="manual-rx-patient-email">E-Mail</Label>
+                        <Input
+                            id="manual-rx-patient-email"
+                            type="email"
+                            value={values.patientEmail}
+                            onChange={(e) =>
+                                onChange("patientEmail", e.target.value)
+                            }
+                        />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="manual-rx-patient-phone">Telefon</Label>
+                        <Input
+                            id="manual-rx-patient-phone"
+                            type="tel"
+                            value={values.patientPhone}
+                            onChange={(e) =>
+                                onChange("patientPhone", e.target.value)
                             }
                         />
                     </div>
