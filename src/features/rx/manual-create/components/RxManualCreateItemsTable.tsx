@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NumberInput } from "@/components/ui/number-input";
+import { Input } from "@/components/ui/input";
 
 import { Plus, Trash2 } from "lucide-react";
 
@@ -24,7 +24,7 @@ export function RxManualCreateItemsTable(props: {
                     const selectedProduct = mapOfferItemPharmacyProductToDto({
                         id: item.id,
                         pharmacyProductId: item.pharmacyProductId,
-                        label: item.label,
+                        label: "",
                         quantity: item.quantity,
                         unit: item.unit,
                         unitPriceCents: 0,
@@ -35,26 +35,27 @@ export function RxManualCreateItemsTable(props: {
                         <div key={item.id} className="space-y-4 px-4 py-4">
                             <div className="flex items-end gap-3">
                                 <div className="grid flex-1 gap-2">
-                                    <Label htmlFor={`manual-rx-item-${item.id}`}>
+                                    <Label
+                                        htmlFor={`manual-rx-item-${item.id}`}
+                                    >
                                         Artikel {index + 1}
                                     </Label>
 
                                     <RxOfferProductCombobox
-                                        value={item.label}
+                                        value={selectedProduct?.name ?? ""}
                                         selectedProductId={
                                             item.pharmacyProductId ?? null
                                         }
                                         selectedProduct={selectedProduct}
-                                        onInputChange={(value) =>
-                                            onItemChange(item.id, {
-                                                label: value,
-                                                pharmacyProductId: null,
-                                            })
-                                        }
+                                        onInputChange={() => {}}
                                         onSelectProduct={(product) =>
                                             onItemChange(item.id, {
                                                 pharmacyProductId: product.id,
-                                                label: product.name,
+                                            })
+                                        }
+                                        onClearSelection={() =>
+                                            onItemChange(item.id, {
+                                                pharmacyProductId: null,
                                             })
                                         }
                                     />
@@ -72,22 +73,7 @@ export function RxManualCreateItemsTable(props: {
                                 </Button>
                             </div>
 
-                            <div className="grid gap-4 md:grid-cols-[1fr_140px_120px]">
-                                <div className="grid gap-2">
-                                    <Label htmlFor={`manual-rx-label-${item.id}`}>
-                                        Freitext / Bezeichnung
-                                    </Label>
-                                    <Input
-                                        id={`manual-rx-label-${item.id}`}
-                                        value={item.label}
-                                        onChange={(e) =>
-                                            onItemChange(item.id, {
-                                                label: e.target.value,
-                                            })
-                                        }
-                                    />
-                                </div>
-
+                            <div className="grid gap-4 md:grid-cols-[160px_120px]">
                                 <div className="grid gap-2">
                                     <Label htmlFor={`manual-rx-qty-${item.id}`}>
                                         Menge
@@ -105,12 +91,14 @@ export function RxManualCreateItemsTable(props: {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`manual-rx-unit-${item.id}`}>
+                                    <Label
+                                        htmlFor={`manual-rx-unit-${item.id}`}
+                                    >
                                         Einheit
                                     </Label>
                                     <Input
                                         id={`manual-rx-unit-${item.id}`}
-                                        value={item.unit}
+                                        value={String(item.unit)}
                                         onChange={(e) =>
                                             onItemChange(item.id, {
                                                 unit: e.target.value,

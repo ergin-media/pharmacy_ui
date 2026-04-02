@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import type { RxItem } from "../../types/rx.dto";
 import type {
     RxManualCreateFormValues,
     RxManualCreateItem,
 } from "../types/rx-manual-create.types";
-import type { RxItem } from "../../types/rx.dto";
 
 function toDateInputValue(value?: string | null) {
     if (!value) return "";
@@ -15,7 +15,6 @@ function createEmptyItem(nextId: number): RxManualCreateItem {
     return {
         id: nextId,
         pharmacyProductId: null,
-        label: "",
         quantity: 1,
         unit: "g" as NonNullable<RxItem["unit"]>,
     };
@@ -119,8 +118,35 @@ export function useRxManualCreateForm() {
         });
     }
 
+    const canSubmit = useMemo(() => {
+        const hasPatient =
+            values.patientFirstName.trim() !== "" &&
+            values.patientLastName.trim() !== "";
+
+        const hasDocument = Boolean(values.documentFile);
+
+        const hasValidItems =
+            values.items.length > 0 &&
+            values.items.every(
+                (item) =>
+                    item.pharmacyProductId != null &&
+                    Number(item.quantity) > 0 &&
+                    String(item.unit).trim() !== "",
+            );
+
+        return hasPatient && hasDocument && hasValidItems;
+    }, [
+        values.documentFile,
+        values.items,
+        values.patientFirstName,
+        values.patientLastName,
+    ]);
+
     return {
         values,
+        meta: {
+            canSubmit,
+        },
         actions: {
             patch,
             updateItem,

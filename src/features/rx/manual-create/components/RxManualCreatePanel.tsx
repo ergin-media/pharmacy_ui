@@ -19,20 +19,7 @@ export function RxManualCreatePanel(props: {
     const createManualRxMutation = useCreateManualRxMutation();
 
     async function handleCreate() {
-        if (!form.values.patientFirstName.trim()) return;
-        if (!form.values.patientLastName.trim()) return;
-        if (!form.values.documentFile) return;
-        if (
-            form.values.items.length === 0 ||
-            form.values.items.some(
-                (item) =>
-                    !item.label.trim() ||
-                    !item.quantity ||
-                    !String(item.unit).trim(),
-            )
-        ) {
-            return;
-        }
+        if (!form.meta.canSubmit) return;
 
         const formData = buildManualRxFormData(form.values);
 
@@ -84,6 +71,7 @@ export function RxManualCreatePanel(props: {
                     <LoadingButton
                         loading={createManualRxMutation.isPending}
                         onClick={handleCreate}
+                        disabled={!form.meta.canSubmit}
                     >
                         Rezept anlegen
                     </LoadingButton>

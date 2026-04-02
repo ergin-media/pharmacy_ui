@@ -3,7 +3,6 @@ import type { RxItem } from "../../types/rx.dto";
 export type RxManualCreateItem = {
     id: number;
     pharmacyProductId: number | null;
-    label: string;
     quantity: NonNullable<RxItem["quantity"]>;
     unit: NonNullable<RxItem["unit"]>;
 };
