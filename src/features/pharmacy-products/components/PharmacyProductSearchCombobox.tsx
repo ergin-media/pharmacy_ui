@@ -9,6 +9,7 @@ import {
     ComboboxItem,
     ComboboxList,
 } from "@/components/ui/combobox";
+import { Badge } from "@/components/ui/badge";
 
 import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 import type { PharmacyProductDto } from "../types/pharmacy-products.dto";
@@ -196,8 +197,11 @@ export function PharmacyProductSearchCombobox(props: {
                     className={cn(
                         "transition-colors",
                         isUnmapped &&
-                            !isLoading &&
-                            "border-red-400/70 bg-red-50/40 dark:bg-amber-500/10 focus-visible:ring-red-400",
+                        !isLoading &&
+                        "border-red-400/70 bg-red-50/40 dark:bg-amber-500/10 focus-visible:ring-red-400",
+                        selectedProduct &&
+                        !selectedProduct.is_active &&
+                        "border-amber-400/70 bg-amber-50/50 dark:bg-amber-500/10 focus-visible:ring-amber-400",
                     )}
                 />
 
@@ -209,36 +213,47 @@ export function PharmacyProductSearchCombobox(props: {
                             const p = byId.get(id);
 
                             return (
-                                <ComboboxItem key={id} value={id}>
+                                <ComboboxItem
+                                    key={id}
+                                    value={id}
+                                    className={cn(!p?.is_active && "opacity-60")}
+                                >
                                     <div className="flex w-full flex-col gap-1.5">
-                                        <div className="font-medium">
-                                            {p?.name ?? id}
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="font-medium">
+                                                {p?.name ?? id}
+                                            </div>
+
+                                            {p ? (
+                                                p.is_active ? (
+                                                    <Badge variant="success">Aktiv</Badge>
+                                                ) : (
+                                                    <Badge variant="destructive">Inaktiv</Badge>
+                                                )
+                                            ) : null}
                                         </div>
 
                                         <div className="text-xs text-muted-foreground">
                                             {p
                                                 ? [
-                                                      p.product_code
-                                                          ? `PZN: ${p.product_code}`
-                                                          : "",
-                                                      p.manufacturer ?? "",
-                                                      p.strain ?? "",
-                                                  ]
-                                                      .filter(Boolean)
-                                                      .join(" · ")
+                                                    p.product_code
+                                                        ? `PZN: ${p.product_code}`
+                                                        : "",
+                                                    p.manufacturer ?? "",
+                                                    p.strain ?? "",
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(" · ")
                                                 : "—"}
                                         </div>
 
                                         {p ? (
                                             <div className="text-xs text-muted-foreground">
                                                 {[
-                                                    p.prices.base_price_cents !=
-                                                    null
-                                                        ? `Basis: ${formatMoney(p.prices.base_price_cents)}`
+                                                    p.prices.base_price_cents != null
+                                                        ? `Preis: ${formatMoney(p.prices.base_price_cents)}`
                                                         : "",
-                                                    p.prices
-                                                        .price_other_provider_cents !=
-                                                    null
+                                                    p.prices.price_other_provider_cents != null
                                                         ? `Preis (andere): ${formatMoney(p.prices.price_other_provider_cents)}`
                                                         : "",
                                                 ]
