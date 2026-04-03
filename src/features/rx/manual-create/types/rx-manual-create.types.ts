@@ -6,6 +6,7 @@ export type RxManualCreateItem = {
     productName: string;
     quantity: NonNullable<RxItem["quantity"]>;
     unit: NonNullable<RxItem["unit"]>;
+    calculatedUnitPriceCents: number | null;
 };
 
 export type RxManualCreateFormValues = {

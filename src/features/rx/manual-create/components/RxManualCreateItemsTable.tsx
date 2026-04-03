@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { NumberInput } from "@/components/ui/number-input";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/components/ui/money-input";
 
 import { Plus, Trash2 } from "lucide-react";
 
@@ -11,11 +12,18 @@ import { mapOfferItemPharmacyProductToDto } from "@/features/rx/offer-create/lib
 
 export function RxManualCreateItemsTable(props: {
     items: RxManualCreateItem[];
+    currency?: string;
     onItemChange: (itemId: number, patch: Partial<RxManualCreateItem>) => void;
     onAddItem: () => void;
     onRemoveItem: (itemId: number) => void;
 }) {
-    const { items, onItemChange, onAddItem, onRemoveItem } = props;
+    const {
+        items,
+        currency = "EUR",
+        onItemChange,
+        onAddItem,
+        onRemoveItem,
+    } = props;
 
     return (
         <div className="overflow-hidden rounded-xl border">
@@ -23,23 +31,21 @@ export function RxManualCreateItemsTable(props: {
                 {items.map((item, index) => {
                     const selectedProduct = item.pharmacyProductId
                         ? mapOfferItemPharmacyProductToDto({
-                              id: item.id,
-                              pharmacyProductId: item.pharmacyProductId,
-                              label: item.productName,
-                              quantity: item.quantity,
-                              unit: item.unit,
-                              unitPriceCents: 0,
-                              totalPriceCents: 0,
-                          })
+                            id: item.id,
+                            pharmacyProductId: item.pharmacyProductId,
+                            label: item.productName,
+                            quantity: item.quantity,
+                            unit: item.unit,
+                            unitPriceCents: 0,
+                            totalPriceCents: 0,
+                        })
                         : null;
 
                     return (
                         <div key={item.id} className="space-y-4 px-4 py-4">
                             <div className="flex items-end gap-3">
                                 <div className="grid flex-1 gap-2">
-                                    <Label
-                                        htmlFor={`manual-rx-item-${item.id}`}
-                                    >
+                                    <Label htmlFor={`manual-rx-item-${item.id}`}>
                                         Artikel {index + 1}
                                     </Label>
 
@@ -53,18 +59,23 @@ export function RxManualCreateItemsTable(props: {
                                             onItemChange(item.id, {
                                                 productName: value,
                                                 pharmacyProductId: null,
+                                                calculatedUnitPriceCents: null,
                                             })
                                         }
                                         onSelectProduct={(product) =>
                                             onItemChange(item.id, {
                                                 pharmacyProductId: product.id,
                                                 productName: product.name,
+                                                calculatedUnitPriceCents:
+                                                    product.prices
+                                                        .base_price_cents ?? null,
                                             })
                                         }
                                         onClearSelection={() =>
                                             onItemChange(item.id, {
                                                 pharmacyProductId: null,
                                                 productName: "",
+                                                calculatedUnitPriceCents: null,
                                             })
                                         }
                                     />
@@ -82,7 +93,7 @@ export function RxManualCreateItemsTable(props: {
                                 </Button>
                             </div>
 
-                            <div className="grid gap-4 md:grid-cols-[160px_120px]">
+                            <div className="grid gap-4 md:grid-cols-[160px_180px_120px]">
                                 <div className="grid gap-2">
                                     <Label htmlFor={`manual-rx-qty-${item.id}`}>
                                         Menge
@@ -101,8 +112,21 @@ export function RxManualCreateItemsTable(props: {
 
                                 <div className="grid gap-2">
                                     <Label
-                                        htmlFor={`manual-rx-unit-${item.id}`}
+                                        htmlFor={`manual-rx-calculated-price-${item.id}`}
                                     >
+                                        Kalkulierter Preis
+                                    </Label>
+
+                                    <MoneyInput
+                                        cents={item.calculatedUnitPriceCents ?? 0}
+                                        currency={currency}
+                                        disabled
+                                        onChange={() => { }}
+                                    />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor={`manual-rx-unit-${item.id}`}>
                                         Einheit
                                     </Label>
                                     <Input

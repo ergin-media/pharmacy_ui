@@ -18,6 +18,7 @@ function createEmptyItem(nextId: number): RxManualCreateItem {
         productName: "",
         quantity: 1,
         unit: "g" as NonNullable<RxItem["unit"]>,
+        calculatedUnitPriceCents: null,
     };
 }
 
