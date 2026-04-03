@@ -1,5 +1,10 @@
 import type { RxListItemDto, RxItem } from "../types/rx.dto";
 
+/** Manual-Rx */
+export function rxIsManual(r: RxListItemDto): boolean {
+    return r.provider?.slug === "manual";
+}
+
 /** Mapping-Check auf RxItem */
 export function rxItemHasMapping(it: RxItem): boolean {
     const v = it.mapping?.has_pharmacy_product;
@@ -40,6 +45,7 @@ export function rxNeedsAttention(
 }
 
 export function rxCanReparse(r: RxListItemDto): boolean {
+    if (rxIsManual(r)) return false;
     return r.parse?.actions?.can_reparse === true;
 }
 
@@ -55,6 +61,5 @@ export function rxShouldShowPriceUpdateHint(
     r: RxListItemDto,
     unmappedCount: number,
 ): boolean {
-    // gleiche Logik wie needsAttention – Preisbadge ist Teil davon
     return rxNeedsAttention(r, unmappedCount);
 }

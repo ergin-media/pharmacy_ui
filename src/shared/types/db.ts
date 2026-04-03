@@ -143,6 +143,7 @@ export interface RxItem {
     id: Id;
     rx_document_id: Id;
     provider_product_map_id: Id | null;
+    pharmacy_product_id?: Id | null;
 
     raw_product_name: string;
     normalized_product_name: string | null;
