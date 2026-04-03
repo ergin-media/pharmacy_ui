@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { NumberInput } from "@/components/ui/number-input";
-import { Input } from "@/components/ui/input";
 import { MoneyInput } from "@/components/ui/money-input";
 
 import { Plus, Trash2 } from "lucide-react";
@@ -41,11 +40,16 @@ export function RxManualCreateItemsTable(props: {
                         })
                         : null;
 
+                    const unitPriceCents = item.calculatedUnitPriceCents ?? 0;
+                    const totalPriceCents = item.quantity * unitPriceCents;
+
                     return (
                         <div key={item.id} className="space-y-4 px-4 py-4">
                             <div className="flex items-end gap-3">
                                 <div className="grid flex-1 gap-2">
-                                    <Label htmlFor={`manual-rx-item-${item.id}`}>
+                                    <Label
+                                        htmlFor={`manual-rx-item-${item.id}`}
+                                    >
                                         Artikel {index + 1}
                                     </Label>
 
@@ -93,9 +97,11 @@ export function RxManualCreateItemsTable(props: {
                                 </Button>
                             </div>
 
-                            <div className="grid gap-4 md:grid-cols-[160px_180px_120px]">
+                            <div className="grid gap-4 md:grid-cols-3">
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`manual-rx-qty-${item.id}`}>
+                                    <Label
+                                        htmlFor={`manual-rx-qty-${item.id}`}
+                                    >
                                         Menge
                                     </Label>
 
@@ -112,13 +118,13 @@ export function RxManualCreateItemsTable(props: {
 
                                 <div className="grid gap-2">
                                     <Label
-                                        htmlFor={`manual-rx-calculated-price-${item.id}`}
+                                        htmlFor={`manual-rx-price-${item.id}`}
                                     >
-                                        Kalkulierter Preis
+                                        Preis
                                     </Label>
 
                                     <MoneyInput
-                                        cents={item.calculatedUnitPriceCents ?? 0}
+                                        cents={unitPriceCents}
                                         currency={currency}
                                         disabled
                                         onChange={() => { }}
@@ -126,17 +132,17 @@ export function RxManualCreateItemsTable(props: {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor={`manual-rx-unit-${item.id}`}>
-                                        Einheit
+                                    <Label
+                                        htmlFor={`manual-rx-total-${item.id}`}
+                                    >
+                                        Gesamt
                                     </Label>
-                                    <Input
-                                        id={`manual-rx-unit-${item.id}`}
-                                        value={String(item.unit)}
-                                        onChange={(e) =>
-                                            onItemChange(item.id, {
-                                                unit: e.target.value,
-                                            })
-                                        }
+
+                                    <MoneyInput
+                                        cents={totalPriceCents}
+                                        currency={currency}
+                                        disabled
+                                        onChange={() => { }}
                                     />
                                 </div>
                             </div>
