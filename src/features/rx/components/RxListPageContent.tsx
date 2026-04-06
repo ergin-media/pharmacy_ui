@@ -24,20 +24,29 @@ export function RxListPageContent(props: {
     rowActions: RxRowActions;
 }) {
     const { queueVm, listVm, toolbarVm, tableVm, rowActions } = props;
+    const showQueueSidebar = false;
 
     return (
-        <div className="grid h-full gap-2 xl:grid-cols-[235px_1fr]">
-            <Card className="gap-3">
-                <TypographyP className="pl-1 text-[.7rem] uppercase text-gray-400">
-                    Prozesse
-                </TypographyP>
+        <div
+            className={
+                showQueueSidebar
+                    ? "grid h-full gap-2 xl:grid-cols-[235px_1fr]"
+                    : "grid h-full gap-2"
+            }
+        >
+            {showQueueSidebar ? (
+                <Card className="gap-3">
+                    <TypographyP className="pl-1 text-[.7rem] uppercase text-gray-400">
+                        Prozesse
+                    </TypographyP>
 
-                <RxQueueTabs
-                    value={queueVm.value}
-                    onChange={queueVm.setQueue}
-                    counts={queueVm.counts}
-                />
-            </Card>
+                    <RxQueueTabs
+                        value={queueVm.value}
+                        onChange={queueVm.setQueue}
+                        counts={queueVm.counts}
+                    />
+                </Card>
+            ) : null}
 
             <Card>
                 <CardContent className="grid gap-4">
