@@ -16,9 +16,9 @@ export function RxListPage() {
     const panels = useRxPanels();
 
     const rowActions = {
-        open: (id: number) => console.log("open", id),
-        pdf: (id: number) => console.log("pdf", id),
-        more: (id: number) => console.log("more", id),
+        open: (rx: RxListItemDto) => console.log("open", rx.id),
+        pdf: (rx: RxListItemDto) => console.log("pdf", rx.id),
+        more: (rx: RxListItemDto) => console.log("more", rx.id),
         createInvoice: (rx: RxListItemDto) => panels.invoice.open(rx),
     };
 
