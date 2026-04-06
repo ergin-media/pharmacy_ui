@@ -49,6 +49,8 @@ export function RxOverviewPageContent(props: {
                 <RxOverviewTable
                     items={vm.items}
                     isLoading={vm.isLoading}
+                    page={vm.page}
+                    perPage={vm.perPage}
                     onPrimaryAction={vm.actions.runPrimaryAction}
                     activeActionId={vm.activeActionId}
                 />
