@@ -10,6 +10,14 @@ export type RxUiAction =
     | "mark_picked_up"
     | null;
 
+export type RxActionController = {
+    run: (rx: RxListItemDto) => Promise<void> | void;
+};
+
+export type RxUiActionControllers = Partial<
+    Record<Exclude<RxUiAction, null>, RxActionController>
+>;
+
 export function getRxUiAction(rx: RxListItemDto): RxUiAction {
     const status = getRxUiStatus(rx);
 

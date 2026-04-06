@@ -1,27 +1,32 @@
 import type { RxListItemDto } from "../types/rx.dto";
-import type { RxQueue } from "../lib/rx.queues";
-import type {
-    RxActionController,
-    RxPrimaryActionControllers,
-} from "../lib/rx.queue-actions";
+import {
+    getRxUiAction,
+    type RxUiActionControllers,
+} from "../lib/rx.actions";
 
 function getPrimaryActionController(
-    queue: RxQueue,
-    controllers: RxPrimaryActionControllers,
-): RxActionController | null {
-    return controllers[queue] ?? null;
+    rx: RxListItemDto,
+    controllers: RxUiActionControllers,
+) {
+    const action = getRxUiAction(rx);
+
+    if (!action) {
+        return null;
+    }
+
+    return controllers[action] ?? null;
 }
 
 export function useRxPrimaryAction(input: {
-    queue: RxQueue;
-    controllers: RxPrimaryActionControllers;
+    controllers: RxUiActionControllers;
 }) {
-    const { queue, controllers } = input;
-
-    const controller = getPrimaryActionController(queue, controllers);
+    const { controllers } = input;
 
     const handlePrimaryAction = async (rx: RxListItemDto) => {
+        const controller = getPrimaryActionController(rx, controllers);
+
         if (!controller) return;
+
         await controller.run(rx);
     };
 

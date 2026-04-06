@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { TableCell } from "@/components/ui/table";
-import { Loader2 } from "lucide-react";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
+import type { RxListItemDto } from "../types/rx.dto";
 import {
     getRxUiAction,
     getRxUiActionLabel,
@@ -12,29 +12,27 @@ export function RxPrimaryActionCell(props: {
     row: RxTableRowVm;
     disabled?: boolean;
     isLoading?: boolean;
-    onClick?: (rx: RxTableRowVm["rx"]) => void;
+    onClick?: (rx: RxListItemDto) => void;
 }) {
     const { row, disabled, isLoading, onClick } = props;
 
     const action = getRxUiAction(row.rx);
     const label = action ? getRxUiActionLabel(action) : null;
 
-    if (!action || !label) {
-        return <TableCell />;
-    }
-
     return (
-        <TableCell>
-            <Button
-                size="sm"
-                onClick={() => onClick?.(row.rx)}
-                disabled={disabled || isLoading}
-            >
-                {isLoading && (
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                )}
-                {label}
-            </Button>
+        <TableCell className="text-right">
+            {label ? (
+                <div className="flex justify-end">
+                    <LoadingButton
+                        size="sm"
+                        loading={isLoading}
+                        disabled={disabled}
+                        onClick={() => onClick?.(row.rx)}
+                    >
+                        {label}
+                    </LoadingButton>
+                </div>
+            ) : null}
         </TableCell>
     );
 }

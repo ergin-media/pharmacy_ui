@@ -25,8 +25,7 @@ export function useRxListPage() {
     });
 
     const primaryActionVm = useRxPrimaryAction({
-        queue: filtersVm.filters.queue,
-        controllers: mutationsVm.primary,
+        controllers: mutationsVm.actions,
     });
 
     const queueVm = {

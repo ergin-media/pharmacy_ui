@@ -10,11 +10,10 @@ import { useMarkRxShippedMutation } from "../mark-shipped/queries/rx-mark-shippe
 import { useMarkRxHandedOverMutation } from "../mark-handed-over/queries/rx-mark-handed-over.queries";
 
 import type { RxListItemDto } from "../types/rx.dto";
-
 import type {
     RxActionController,
-    RxPrimaryActionControllers,
-} from "../lib/rx.queue-actions";
+    RxUiActionControllers,
+} from "../lib/rx.actions";
 
 function createNoopController(label: string): RxActionController {
     return {
@@ -51,20 +50,6 @@ export function useRxListMutations(input?: {
             reparseMutation.variables === id,
     };
 
-    const takeOver: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-
-            setActivePrimaryActionId(id);
-
-            try {
-                await takeOverMutation.mutateAsync(id);
-            } finally {
-                setActivePrimaryActionId(null);
-            }
-        },
-    };
-
     const offerCreate: RxActionController = {
         run: async (rx: RxListItemDto) => {
             const id = Number(rx.id);
@@ -79,7 +64,35 @@ export function useRxListMutations(input?: {
         },
     };
 
-    const startPackaging: RxActionController = {
+    const resolveAttention: RxActionController = {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+
+            setActivePrimaryActionId(id);
+
+            try {
+                openOfferCreate?.(rx);
+            } finally {
+                setActivePrimaryActionId(null);
+            }
+        },
+    };
+
+    const startProcessing: RxActionController = {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+
+            setActivePrimaryActionId(id);
+
+            try {
+                await takeOverMutation.mutateAsync(id);
+            } finally {
+                setActivePrimaryActionId(null);
+            }
+        },
+    };
+
+    const finishPreparation: RxActionController = {
         run: async (rx: RxListItemDto) => {
             const id = Number(rx.id);
 
@@ -126,7 +139,7 @@ export function useRxListMutations(input?: {
         },
     };
 
-    const markHandedOver: RxActionController = {
+    const markPickedUp: RxActionController = {
         run: async (rx: RxListItemDto) => {
             const id = Number(rx.id);
 
@@ -140,19 +153,21 @@ export function useRxListMutations(input?: {
         },
     };
 
-    const primary: RxPrimaryActionControllers = {
-        inbox: takeOver,
+    const actions: RxUiActionControllers = {
+        resolve_attention: resolveAttention,
         offer_create: offerCreate,
-        await_payment: createNoopController("confirmPayment"),
-        paid_not_started: startPackaging,
-        packaging: markReady,
-        shipping: markShipped,
-        pickup: markHandedOver,
+        start_processing: startProcessing,
+        finish_preparation: finishPreparation,
+        mark_shipped: markShipped,
+        mark_picked_up: markPickedUp,
     };
 
     return {
         reparse,
-        primary,
+        actions,
+        internal: {
+            markReady,
+        },
         primaryActionState: {
             isPending: activePrimaryActionId !== null,
             activeId: activePrimaryActionId,
