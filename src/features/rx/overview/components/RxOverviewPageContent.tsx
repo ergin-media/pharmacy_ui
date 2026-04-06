@@ -1,8 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RxOverviewTable } from "./RxOverviewTable";
+import { RxOverviewToolbar } from "./RxOverviewToolbar";
 import type { useRxOverviewPage } from "../hooks/useRxOverviewPage";
-import { RxOverviewFilters } from "./RxOverviewFilters";
 
 export function RxOverviewPageContent(props: {
     vm: ReturnType<typeof useRxOverviewPage>;
@@ -28,12 +28,24 @@ export function RxOverviewPageContent(props: {
                     </div>
                 ) : null}
 
-                <RxOverviewFilters
-                    filters={vm.filters}
-                    onChange={(patch) =>
-                        vm.setFilters((prev) => ({ ...prev, ...patch }))
-                    }
+                <RxOverviewToolbar
+                    total={vm.total}
+                    page={vm.page}
+                    totalPages={vm.totalPages}
+                    providerRaw={vm.filters.provider}
+                    searchRaw={vm.filters.search}
+                    perPage={vm.perPage}
+                    status={vm.filters.status}
+                    onlyAttention={vm.filters.onlyAttention}
+                    isFetching={vm.isFetching}
+                    onPageChange={vm.actions.setPage}
+                    onProviderChange={vm.actions.setProvider}
+                    onSearchChange={vm.actions.setSearch}
+                    onPerPageChange={vm.actions.setPerPage}
+                    onStatusChange={vm.actions.setStatus}
+                    onOnlyAttentionChange={vm.actions.setOnlyAttention}
                 />
+
                 <RxOverviewTable
                     items={vm.items}
                     isLoading={vm.isLoading}
