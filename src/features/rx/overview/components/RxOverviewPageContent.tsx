@@ -1,9 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RxOverviewTable } from "./RxOverviewTable";
+import type { useRxOverviewPage } from "../hooks/useRxOverviewPage";
 
 export function RxOverviewPageContent(props: {
-    vm: ReturnType<typeof import("../hooks/useRxOverviewPage").useRxOverviewPage>;
+    vm: ReturnType<typeof useRxOverviewPage>;
 }) {
     const { vm } = props;
 
@@ -29,6 +30,8 @@ export function RxOverviewPageContent(props: {
                 <RxOverviewTable
                     items={vm.items}
                     isLoading={vm.isLoading}
+                    onPrimaryAction={vm.actions.runPrimaryAction}
+                    activeActionId={vm.activeActionId}
                 />
             </CardContent>
         </Card>

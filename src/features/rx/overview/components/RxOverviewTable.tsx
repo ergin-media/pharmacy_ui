@@ -6,14 +6,21 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { getRxOverviewStatus, getRxOverviewStatusLabel, getRxOverviewStatusVariant } from "../lib/rx-overview.status";
 import { Badge } from "@/components/ui/badge";
+import { LoadingButton } from "@/components/ui/loading-button";
+import {
+    getRxOverviewStatus,
+    getRxOverviewStatusLabel,
+    getRxOverviewStatusVariant,
+} from "../lib/rx-overview.status";
 
 export function RxOverviewTable(props: {
     items: RxListItemDto[];
     isLoading?: boolean;
+    onPrimaryAction?: (rx: RxListItemDto) => void;
+    activeActionId?: number | null;
 }) {
-    const { items, isLoading } = props;
+    const { items, isLoading, onPrimaryAction, activeActionId } = props;
 
     return (
         <div className="overflow-x-auto rounded-md border">
@@ -42,6 +49,7 @@ export function RxOverviewTable(props: {
                     ) : (
                         items.map((rx) => {
                             const status = getRxOverviewStatus(rx);
+                            const isBusy = activeActionId === Number(rx.id);
 
                             return (
                                 <TableRow key={rx.id}>
@@ -60,12 +68,36 @@ export function RxOverviewTable(props: {
                                     </TableCell>
 
                                     <TableCell>
-                                        <Badge variant={getRxOverviewStatusVariant(status)}>
+                                        <Badge
+                                            variant={getRxOverviewStatusVariant(status)}
+                                        >
                                             {getRxOverviewStatusLabel(status)}
                                         </Badge>
                                     </TableCell>
 
-                                    <TableCell>—</TableCell>
+                                    <TableCell>
+                                        {status === "offer_required" ? (
+                                            <LoadingButton
+                                                size="sm"
+                                                loading={isBusy}
+                                                onClick={() => onPrimaryAction?.(rx)}
+                                            >
+                                                Angebot erstellen
+                                            </LoadingButton>
+                                        ) : status === "paid" ? (
+                                            <LoadingButton
+                                                size="sm"
+                                                loading={isBusy}
+                                                onClick={() => onPrimaryAction?.(rx)}
+                                            >
+                                                In Bearbeitung
+                                            </LoadingButton>
+                                        ) : (
+                                            <span className="text-sm text-muted-foreground">
+                                                —
+                                            </span>
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             );
                         })
