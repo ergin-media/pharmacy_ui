@@ -1,14 +1,13 @@
 import type { RxListItemDto } from "../types/rx.dto";
-import { getRxUiStatus, type RxUiStatus } from "./rx.status";
+import { getRxUiStatus } from "./rx.status";
 
 export type RxUiAction =
+    | "resolve_attention"
     | "offer_create"
-    | "mark_paid"
     | "start_processing"
     | "finish_preparation"
     | "mark_shipped"
     | "mark_picked_up"
-    | "resolve_attention"
     | null;
 
 export function getRxUiAction(rx: RxListItemDto): RxUiAction {
@@ -51,8 +50,6 @@ export function getRxUiActionLabel(action: RxUiAction): string | null {
             return "Problem beheben";
         case "offer_create":
             return "Angebot erstellen";
-        case "mark_paid":
-            return "Zahlung bestätigen";
         case "start_processing":
             return "In Bearbeitung starten";
         case "finish_preparation":
