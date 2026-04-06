@@ -5,6 +5,7 @@ import type {
 } from "../types/rx.dto";
 import { PER_PAGE_OPTIONS, type RxSort } from "../lib/rx.constants";
 import { RX_PROVIDERS } from "../lib/rx.providers";
+import { RX_QUEUE_ITEMS_VISIBLE, type RxQueue } from "../lib/rx.queues";
 
 import { formatInt } from "@/shared/lib/format/figures";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,8 @@ export function RxListToolbar(props: {
     page: number;
     totalPages: number;
 
+    queue: RxQueue;
+
     parseStatus?: RxParseStatus;
     workflowStatus?: RxWorkflowStatus;
     paymentState?: RxPaymentState;
@@ -35,6 +38,7 @@ export function RxListToolbar(props: {
     isFetching: boolean;
 
     onPageChange: (page: number) => void;
+    onQueueChange: (v: RxQueue) => void;
     onParseStatusChange: (v: string) => void;
     onWorkflowStatusChange: (v: string) => void;
     onPaymentStateChange: (v: string) => void;
@@ -48,11 +52,13 @@ export function RxListToolbar(props: {
         total,
         page,
         totalPages,
+        queue,
         providerRaw,
         searchRaw,
         perPage,
         isFetching,
         onPageChange,
+        onQueueChange,
         onProviderChange,
         onSearchChange,
         onPerPageChange,
@@ -68,6 +74,25 @@ export function RxListToolbar(props: {
                     {formatInt(total)}
                 </span>
             </div>
+
+            <Separator orientation="vertical" className="h-4" />
+
+            <Select
+                value={queue}
+                onValueChange={(v) => onQueueChange(v as RxQueue)}
+                disabled={disableControls}
+            >
+                <SelectTrigger className="w-52">
+                    <SelectValue placeholder="Queue" />
+                </SelectTrigger>
+                <SelectContent>
+                    {RX_QUEUE_ITEMS_VISIBLE.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
 
             <Separator orientation="vertical" className="h-4" />
 
@@ -101,6 +126,7 @@ export function RxListToolbar(props: {
 
             <div className="ml-auto flex items-center gap-4">
                 <Separator orientation="vertical" className="h-4" />
+
                 <Select
                     value={String(perPage)}
                     onValueChange={(v) => onPerPageChange(Number(v))}
