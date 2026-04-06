@@ -1,3 +1,4 @@
+import type { BadgeVariant } from "@/components/ui/badge.variants";
 import type { RxListItemDto } from "../types/rx.dto";
 
 export type RxUiStatus =
@@ -70,5 +71,26 @@ export function getRxUiStatusLabel(status: RxUiStatus): string {
             return "Abgeschlossen";
         default:
             return "—";
+    }
+}
+
+export function getRxUiStatusVariant(status: RxUiStatus): BadgeVariant {
+    switch (status) {
+        case "attention":
+            return "destructive";
+        case "offer_create":
+            return "warning";
+        case "await_payment":
+            return "secondary";
+        case "paid":
+            return "success";
+        case "processing":
+            return "info";
+        case "ready":
+            return "success";
+        case "completed":
+            return "success";
+        default:
+            return "secondary";
     }
 }

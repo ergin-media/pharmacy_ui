@@ -2,10 +2,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, RotateCcw } from "lucide-react";
 
-import { workflowBadgeVariant, paymentBadgeVariant } from "../lib/rx.badges";
-import { workflowLabel, paymentLabel } from "../lib/rx.labels";
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
 import { TableCell } from "@/components/ui/table";
+import {
+    getRxUiStatus,
+    getRxUiStatusLabel,
+    getRxUiStatusVariant,
+} from "../lib/rx.status";
 
 export function RxStatusCell(props: {
     row: RxTableRowVm;
@@ -15,23 +18,15 @@ export function RxStatusCell(props: {
 }) {
     const { row, disabled, isReparseBusy, onReparse } = props;
 
+    const uiStatus = getRxUiStatus(row.rx);
+
     return (
         <TableCell>
             <div className="flex flex-col gap-2">
                 <div className="flex flex-wrap gap-2">
-                    <Badge variant={workflowBadgeVariant(row.workflowStatus)}>
-                        {workflowLabel(row.workflowStatus)}
+                    <Badge variant={getRxUiStatusVariant(uiStatus)}>
+                        {getRxUiStatusLabel(uiStatus)}
                     </Badge>
-
-                    <Badge variant={paymentBadgeVariant(row.paymentState)}>
-                        {paymentLabel(row.paymentState)}
-                    </Badge>
-                </div>
-
-                <div className="text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">
-                        {row.parseStatus}
-                    </span>
                 </div>
 
                 {row.showReparse ? (
