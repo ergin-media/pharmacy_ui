@@ -61,6 +61,7 @@ export function RxListPageContent(props: {
                     <RxListToolbar
                         {...toolbarVm}
                         queue={queueVm.value}
+                        queueCounts={queueVm.counts}
                         onQueueChange={queueVm.setQueue}
                         page={listVm.page}
                         totalPages={listVm.totalPages}

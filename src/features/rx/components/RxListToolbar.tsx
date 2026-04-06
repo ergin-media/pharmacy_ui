@@ -5,7 +5,11 @@ import type {
 } from "../types/rx.dto";
 import { PER_PAGE_OPTIONS, type RxSort } from "../lib/rx.constants";
 import { RX_PROVIDERS } from "../lib/rx.providers";
-import { RX_QUEUE_ITEMS_VISIBLE, type RxQueue } from "../lib/rx.queues";
+import {
+    RX_QUEUE_ITEMS_VISIBLE,
+    type RxQueue,
+    type RxQueueCounts,
+} from "../lib/rx.queues";
 
 import { formatInt } from "@/shared/lib/format/figures";
 import { Input } from "@/components/ui/input";
@@ -25,6 +29,7 @@ export function RxListToolbar(props: {
     totalPages: number;
 
     queue: RxQueue;
+    queueCounts: RxQueueCounts;
 
     parseStatus?: RxParseStatus;
     workflowStatus?: RxWorkflowStatus;
@@ -53,6 +58,7 @@ export function RxListToolbar(props: {
         page,
         totalPages,
         queue,
+        queueCounts,
         providerRaw,
         searchRaw,
         perPage,
@@ -86,11 +92,15 @@ export function RxListToolbar(props: {
                     <SelectValue placeholder="Queue" />
                 </SelectTrigger>
                 <SelectContent>
-                    {RX_QUEUE_ITEMS_VISIBLE.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                        </SelectItem>
-                    ))}
+                    {RX_QUEUE_ITEMS_VISIBLE.map((item) => {
+                        const count = queueCounts[item.value] ?? 0;
+
+                        return (
+                            <SelectItem key={item.value} value={item.value}>
+                                {item.label} ({formatInt(count)})
+                            </SelectItem>
+                        );
+                    })}
                 </SelectContent>
             </Select>
 
