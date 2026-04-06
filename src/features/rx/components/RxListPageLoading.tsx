@@ -1,37 +1,37 @@
-"use client";
-
-import { Card, CardContent } from "@/components/ui/card";
+import type { RxQueueVm, RxToolbarVm } from "../types/rx.list.vm";
 import { RxListToolbar } from "./RxListToolbar";
-import { RxListTable } from "./RxListTable";
-import { RxQueueTabsSkeleton } from "./RxQueueTabsSkeleton";
+import { RxListTableSkeleton } from "./RxListTableSkeleton";
 
 export function RxListPageLoading(props: {
     perPage: number;
-    toolbarVm: React.ComponentProps<typeof RxListToolbar>;
+    toolbarVm: RxToolbarVm;
+    queueVm: RxQueueVm;
+    page: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
 }) {
-    const { perPage, toolbarVm } = props;
+    const {
+        perPage,
+        toolbarVm,
+        queueVm,
+        page,
+        totalPages,
+        onPageChange,
+    } = props;
 
     return (
-        <div className="grid h-full gap-2 xl:grid-cols-[210px_1fr] 2xl:grid-cols-[225px_1fr]">
-            <RxQueueTabsSkeleton />
+        <div className="grid gap-4">
+            <RxListToolbar
+                {...toolbarVm}
+                queue={queueVm.value}
+                queueCounts={queueVm.counts}
+                onQueueChange={queueVm.setQueue}
+                page={page}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+            />
 
-            <Card>
-                <CardContent className="grid gap-4">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex flex-1 items-center">
-                            <RxListToolbar {...toolbarVm} />
-                        </div>
-                    </div>
-
-                    <RxListTable
-                        queue="all"
-                        items={[]}
-                        page={1}
-                        perPage={perPage}
-                        isLoading
-                    />
-                </CardContent>
-            </Card>
+            <RxListTableSkeleton rows={perPage} />
         </div>
     );
 }
