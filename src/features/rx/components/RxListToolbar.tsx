@@ -73,88 +73,15 @@ export function RxListToolbar(props: {
     const disableControls = isFetching;
 
     return (
-        <div className="flex flex-1 flex-wrap items-center gap-4">
-            <div className="whitespace-nowrap text-sm text-muted-foreground">
-                Gesamt:{" "}
-                <span className="font-medium text-foreground">
-                    {formatInt(total)}
-                </span>
-            </div>
-
-            <Separator orientation="vertical" className="h-4" />
-
-            <Select
-                value={queue}
-                onValueChange={(v) => onQueueChange(v as RxQueue)}
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-52">
-                    <SelectValue placeholder="Queue" />
-                </SelectTrigger>
-                <SelectContent>
-                    {RX_QUEUE_ITEMS_VISIBLE.map((item) => {
-                        const count = queueCounts[item.value] ?? 0;
-
-                        return (
-                            <SelectItem key={item.value} value={item.value}>
-                                {item.label} ({formatInt(count)})
-                            </SelectItem>
-                        );
-                    })}
-                </SelectContent>
-            </Select>
-
-            <Separator orientation="vertical" className="h-4" />
-
-            <Input
-                value={searchRaw}
-                placeholder="Suche (Patient, Bestell-ID)"
-                className="w-80 flex-1"
-                onChange={(e) => onSearchChange(e.target.value)}
-                disabled={disableControls}
-            />
-
-            <Separator orientation="vertical" className="h-4" />
-
-            <Select
-                value={providerRaw || "all"}
-                onValueChange={(v) => onProviderChange(v === "all" ? "" : v)}
-                disabled={disableControls}
-            >
-                <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Provider" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Alle Plattformen</SelectItem>
-                    {RX_PROVIDERS.map((p) => (
-                        <SelectItem key={p.slug} value={p.slug}>
-                            {p.name}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-
-            <div className="ml-auto flex items-center gap-4">
-                <Separator orientation="vertical" className="h-4" />
-
-                <Select
-                    value={String(perPage)}
-                    onValueChange={(v) => onPerPageChange(Number(v))}
-                    disabled={disableControls}
-                >
-                    <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Pro Seite" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {PER_PAGE_OPTIONS.map((n) => (
-                            <SelectItem key={n} value={String(n)}>
-                                {n} / Seite
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-                <Separator orientation="vertical" className="h-4" />
+        <div className="grid gap-3">
+            {/* ZEILE 1 */}
+            <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                    Gesamt:{" "}
+                    <span className="font-medium text-foreground">
+                        {formatInt(total)}
+                    </span>
+                </div>
 
                 <Pagination
                     page={page}
@@ -163,6 +90,79 @@ export function RxListToolbar(props: {
                     isLoading={isFetching}
                     showStatus={true}
                 />
+            </div>
+
+            {/* ZEILE 2 */}
+            <div className="flex flex-wrap items-center gap-4">
+                <Select
+                    value={queue}
+                    onValueChange={(v) => onQueueChange(v as RxQueue)}
+                    disabled={disableControls}
+                >
+                    <SelectTrigger className="w-52">
+                        <SelectValue placeholder="Queue" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {RX_QUEUE_ITEMS_VISIBLE.map((item) => {
+                            const count = queueCounts[item.value] ?? 0;
+
+                            return (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label} ({formatInt(count)})
+                                </SelectItem>
+                            );
+                        })}
+                    </SelectContent>
+                </Select>
+
+                <Input
+                    value={searchRaw}
+                    placeholder="Suche (Patient, Bestell-ID)"
+                    className="min-w-[260px] flex-1"
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    disabled={disableControls}
+                />
+
+                <Select
+                    value={providerRaw || "all"}
+                    onValueChange={(v) =>
+                        onProviderChange(v === "all" ? "" : v)
+                    }
+                    disabled={disableControls}
+                >
+                    <SelectTrigger className="w-44">
+                        <SelectValue placeholder="Provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Alle Plattformen</SelectItem>
+                        {RX_PROVIDERS.map((p) => (
+                            <SelectItem key={p.slug} value={p.slug}>
+                                {p.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <div className="ml-auto">
+                    <Select
+                        value={String(perPage)}
+                        onValueChange={(v) =>
+                            onPerPageChange(Number(v))
+                        }
+                        disabled={disableControls}
+                    >
+                        <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Pro Seite" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {PER_PAGE_OPTIONS.map((n) => (
+                                <SelectItem key={n} value={String(n)}>
+                                    {n} / Seite
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
         </div>
     );
