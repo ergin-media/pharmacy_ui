@@ -9,6 +9,7 @@ import { ProviderProductsMappingsPage } from "@/features/provider-products/pages
 import { PatientsListPage } from "@/features/patients/pages/PatientsListPage";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RequireAuth } from "@/features/auth/components/RequireAuth";
+import { RxOverviewPage } from "@/features/rx/overview/pages/RxOverviewPage";
 
 export const router = createBrowserRouter([
     {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <DashboardPage /> },
             { path: "rx", element: <RxListPage /> },
+            { path: "rx-overview", element: <RxOverviewPage /> },
             { path: "patients", element: <PatientsListPage /> },
             { path: "products", element: <PharmacyProductsListPage /> },
             {
