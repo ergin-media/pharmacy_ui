@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RxOverviewTable } from "./RxOverviewTable";
 import type { useRxOverviewPage } from "../hooks/useRxOverviewPage";
+import { RxOverviewFilters } from "./RxOverviewFilters";
 
 export function RxOverviewPageContent(props: {
     vm: ReturnType<typeof useRxOverviewPage>;
@@ -27,6 +28,12 @@ export function RxOverviewPageContent(props: {
                     </div>
                 ) : null}
 
+                <RxOverviewFilters
+                    filters={vm.filters}
+                    onChange={(patch) =>
+                        vm.setFilters((prev) => ({ ...prev, ...patch }))
+                    }
+                />
                 <RxOverviewTable
                     items={vm.items}
                     isLoading={vm.isLoading}
