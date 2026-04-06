@@ -1,12 +1,9 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import type { RxListItemDto } from "../../types/rx.dto";
 import { useRxPanels } from "../../hooks/useRxPanels";
-import {
-    rxKeys,
-    useTakeOverRxMutation,
-} from "../../queries/rx.queries";
-import { useQueryClient } from "@tanstack/react-query";
+import { rxKeys, useTakeOverRxMutation } from "../../queries/rx.queries";
 
 export function useRxOverviewActions() {
     const panels = useRxPanels();
@@ -15,9 +12,24 @@ export function useRxOverviewActions() {
     const takeOverMutation = useTakeOverRxMutation();
     const [activeActionId, setActiveActionId] = useState<number | null>(null);
 
-    const isActionPending = useMemo(
-        () => takeOverMutation.isPending,
-        [takeOverMutation.isPending],
+    const open = useCallback(
+        (rx: RxListItemDto) => {
+            console.log("open rx", rx.id);
+        },
+        [],
+    );
+
+    const remove = useCallback(
+        async (rx: RxListItemDto) => {
+            console.log("delete rx", rx.id);
+
+            // TODO:
+            // hier später dialog + mutation zum löschen anschließen
+            await queryClient.invalidateQueries({
+                queryKey: rxKeys.lists(),
+            });
+        },
+        [queryClient],
     );
 
     const runPrimaryAction = useCallback(
@@ -34,7 +46,9 @@ export function useRxOverviewActions() {
                     rx.workflow_status === "completed" ||
                     Boolean(rx.timeline?.completed_at);
 
-                if (isCompleted) return;
+                if (isCompleted) {
+                    return;
+                }
 
                 if (hasAttention) {
                     return;
@@ -52,26 +66,21 @@ export function useRxOverviewActions() {
                 if (!rx.timeline?.prepared_at) {
                     await takeOverMutation.mutateAsync(Number(rx.id));
 
-                    await queryClient.invalidateQueries({
-                        queryKey: rxKeys.lists(),
-                    });
-
                     return;
                 }
-
-                return;
             } finally {
                 setActiveActionId(null);
             }
         },
-        [panels, queryClient, takeOverMutation],
+        [panels, takeOverMutation],
     );
 
     return {
         activeActionId,
-        isActionPending,
         actions: {
             runPrimaryAction,
+            open,
+            delete: remove,
         },
     };
 }

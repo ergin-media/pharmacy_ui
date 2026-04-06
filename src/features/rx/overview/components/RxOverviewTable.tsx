@@ -13,9 +13,9 @@ import { RelativeDateTime } from "@/shared/ui/RelativeDateTime";
 import { RxPatientCell } from "../../components/RxPatientCell";
 import { RxProviderCell } from "../../components/RxProviderCell";
 import { RxItemsTableCell } from "../../components/RxItemsTableCell";
-import { RxMoreActionsCell } from "../../components/RxMoreActionsCell";
 import { RxOverviewTableHeader } from "./RxOverviewTableHeader";
 import { RX_OVERVIEW_COLUMNS } from "../lib/rx-overview.columns";
+import { RxOverviewMoreActionsCell } from "./RxOverviewMoreActionsCell";
 import { RxOverviewStatusCell } from "./RxOverviewStatusCell";
 import { RxOverviewPrimaryActionCell } from "./RxOverviewPrimaryActionCell";
 
@@ -26,6 +26,8 @@ export function RxOverviewTable(props: {
     perPage: number;
     activeActionId?: number | null;
     onPrimaryAction?: (rx: RxListItemDto) => void;
+    onOpen?: (rx: RxListItemDto) => void;
+    onDelete?: (rx: RxListItemDto) => void;
 }) {
     const {
         items,
@@ -34,6 +36,8 @@ export function RxOverviewTable(props: {
         perPage,
         activeActionId,
         onPrimaryAction,
+        onOpen,
+        onDelete,
     } = props;
 
     const columns = RX_OVERVIEW_COLUMNS;
@@ -131,12 +135,10 @@ export function RxOverviewTable(props: {
                                         onClick={onPrimaryAction}
                                     />
 
-                                    <RxMoreActionsCell
-                                        row={row}
-                                        open={() => { }}
-                                        pdf={() => { }}
-                                        more={() => { }}
-                                        createInvoice={() => { }}
+                                    <RxOverviewMoreActionsCell
+                                        rx={row.rx}
+                                        onOpen={onOpen}
+                                        onDelete={onDelete}
                                     />
                                 </TableRow>
                             );

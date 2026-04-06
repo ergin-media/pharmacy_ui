@@ -53,6 +53,8 @@ export function RxOverviewPageContent(props: {
                     perPage={vm.perPage}
                     onPrimaryAction={vm.actions.runPrimaryAction}
                     activeActionId={vm.activeActionId}
+                    onOpen={vm.actions.open}
+                    onDelete={vm.actions.delete}
                 />
             </CardContent>
         </Card>
