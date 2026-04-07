@@ -3,53 +3,38 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
-import { TypographyP } from "@/components/ui/typography";
 
 import { RxListTable } from "./RxListTable";
-import { RxQueueTabs } from "./RxQueueTabs";
+import { RxStatusPanels } from "./RxStatusPanels";
 import type {
     RxListVm,
-    RxQueueVm,
     RxRowActions,
+    RxStatusVm,
     RxTableVm,
     RxToolbarVm,
 } from "../types/rx.list.vm";
 import { RxListToolbar } from "./RxListToolbar";
 
 export function RxListPageContent(props: {
-    queueVm: RxQueueVm;
+    statusVm: RxStatusVm;
     listVm: RxListVm;
     toolbarVm: RxToolbarVm;
     tableVm: RxTableVm;
     rowActions: RxRowActions;
 }) {
-    const { queueVm, listVm, toolbarVm, tableVm, rowActions } = props;
-    const showQueueSidebar = false;
+    const { statusVm, listVm, toolbarVm, tableVm, rowActions } = props;
 
     return (
-        <div
-            className={
-                showQueueSidebar
-                    ? "grid h-full gap-2 xl:grid-cols-[235px_1fr]"
-                    : "grid h-full gap-2"
-            }
-        >
-            {showQueueSidebar ? (
-                <Card className="gap-3">
-                    <TypographyP className="pl-1 text-[.7rem] uppercase text-gray-400">
-                        Prozesse
-                    </TypographyP>
-
-                    <RxQueueTabs
-                        value={queueVm.value}
-                        onChange={queueVm.setQueue}
-                        counts={queueVm.counts}
-                    />
-                </Card>
-            ) : null}
-
+        <div className="grid h-full gap-2">
             <Card>
                 <CardContent className="grid gap-4">
+                    <RxStatusPanels
+                        value={statusVm.value}
+                        counts={statusVm.counts}
+                        attentionCount={statusVm.attentionCount}
+                        onChange={statusVm.setStatus}
+                    />
+
                     {listVm.isError ? (
                         <div className="flex items-center gap-2">
                             <div className="text-sm text-destructive">
@@ -69,16 +54,12 @@ export function RxListPageContent(props: {
 
                     <RxListToolbar
                         {...toolbarVm}
-                        queue={queueVm.value}
-                        queueCounts={queueVm.counts}
-                        onQueueChange={queueVm.setQueue}
                         page={listVm.page}
                         totalPages={listVm.totalPages}
                         onPageChange={listVm.setPage}
                     />
 
                     <RxListTable
-                        queue={tableVm.queue}
                         items={tableVm.items}
                         page={tableVm.page}
                         perPage={tableVm.perPage}

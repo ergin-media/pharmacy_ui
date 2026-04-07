@@ -5,11 +5,6 @@ import type {
 } from "../types/rx.dto";
 import { PER_PAGE_OPTIONS, type RxSort } from "../lib/rx.constants";
 import { RX_PROVIDERS } from "../lib/rx.providers";
-import {
-    RX_QUEUE_ITEMS_VISIBLE,
-    type RxQueue,
-    type RxQueueCounts,
-} from "../lib/rx.queues";
 
 import { formatInt } from "@/shared/lib/format/figures";
 import { Input } from "@/components/ui/input";
@@ -20,16 +15,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Pagination } from "@/components/ui/pagination";
 
 export function RxListToolbar(props: {
     total: number;
     page: number;
     totalPages: number;
-
-    queue: RxQueue;
-    queueCounts: RxQueueCounts;
 
     parseStatus?: RxParseStatus;
     workflowStatus?: RxWorkflowStatus;
@@ -43,7 +34,6 @@ export function RxListToolbar(props: {
     isFetching: boolean;
 
     onPageChange: (page: number) => void;
-    onQueueChange: (v: RxQueue) => void;
     onParseStatusChange: (v: string) => void;
     onWorkflowStatusChange: (v: string) => void;
     onPaymentStateChange: (v: string) => void;
@@ -57,14 +47,11 @@ export function RxListToolbar(props: {
         total,
         page,
         totalPages,
-        queue,
-        queueCounts,
         providerRaw,
         searchRaw,
         perPage,
         isFetching,
         onPageChange,
-        onQueueChange,
         onProviderChange,
         onSearchChange,
         onPerPageChange,
@@ -74,8 +61,7 @@ export function RxListToolbar(props: {
 
     return (
         <div className="grid gap-3">
-            {/* ZEILE 1 */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
                 <div className="text-sm text-muted-foreground">
                     Gesamt:{" "}
                     <span className="font-medium text-foreground">
@@ -92,29 +78,7 @@ export function RxListToolbar(props: {
                 />
             </div>
 
-            {/* ZEILE 2 */}
             <div className="flex flex-wrap items-center gap-4">
-                <Select
-                    value={queue}
-                    onValueChange={(v) => onQueueChange(v as RxQueue)}
-                    disabled={disableControls}
-                >
-                    <SelectTrigger className="w-52">
-                        <SelectValue placeholder="Queue" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {RX_QUEUE_ITEMS_VISIBLE.map((item) => {
-                            const count = queueCounts[item.value] ?? 0;
-
-                            return (
-                                <SelectItem key={item.value} value={item.value}>
-                                    {item.label} ({formatInt(count)})
-                                </SelectItem>
-                            );
-                        })}
-                    </SelectContent>
-                </Select>
-
                 <Input
                     value={searchRaw}
                     placeholder="Suche (Patient, Bestell-ID)"
@@ -146,9 +110,7 @@ export function RxListToolbar(props: {
                 <div className="ml-auto">
                     <Select
                         value={String(perPage)}
-                        onValueChange={(v) =>
-                            onPerPageChange(Number(v))
-                        }
+                        onValueChange={(v) => onPerPageChange(Number(v))}
                         disabled={disableControls}
                     >
                         <SelectTrigger className="w-40">
