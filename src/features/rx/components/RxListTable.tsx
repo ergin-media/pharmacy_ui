@@ -1,5 +1,4 @@
 import type { RxListItemDto } from "../types/rx.dto";
-import type { RxQueue } from "../lib/rx.queues";
 import type { RxRowActions } from "../types/rx.list.vm";
 import { getRxTableColumns, hasRxTableColumn } from "../lib/rx.table-columns";
 import { mapRxListItemToRowVm } from "../lib/rx.table-row.vm";
@@ -24,7 +23,6 @@ import { RxIssuesCell } from "./RxIssuesCell";
 import { RelativeDateTime } from "@/shared/ui/RelativeDateTime";
 
 export function RxListTable(props: {
-    queue: RxQueue;
     items: RxListItemDto[];
     isLoading?: boolean;
 
@@ -44,7 +42,6 @@ export function RxListTable(props: {
     activePrimaryActionId?: number | null;
 }) {
     const {
-        queue,
         items,
         isLoading,
         page,
@@ -60,7 +57,7 @@ export function RxListTable(props: {
         activePrimaryActionId,
     } = props;
 
-    const columns = getRxTableColumns(queue);
+    const columns = getRxTableColumns();
 
     return (
         <div className="overflow-x-auto rounded-md border transition-opacity">
@@ -85,7 +82,6 @@ export function RxListTable(props: {
                         items.map((rx, idx) => {
                             const row = mapRxListItemToRowVm({
                                 rx,
-                                queue,
                                 rowIndex: idx,
                                 page,
                                 perPage,
@@ -177,57 +173,6 @@ export function RxListTable(props: {
                                             isReparseBusy={rowIsReparseBusy}
                                             onReparse={onReparse}
                                         />
-                                    )}
-
-                                    {hasRxTableColumn(
-                                        columns,
-                                        "offerCreatedAt",
-                                    ) && (
-                                        <TableCell className="whitespace-nowrap">
-                                            {row.offerCreatedAtLabel}
-                                        </TableCell>
-                                    )}
-
-                                    {hasRxTableColumn(columns, "paidAt") && (
-                                        <TableCell className="whitespace-nowrap">
-                                            {row.paidAtLabel}
-                                        </TableCell>
-                                    )}
-
-                                    {hasRxTableColumn(
-                                        columns,
-                                        "fulfillmentType",
-                                    ) && (
-                                        <TableCell>
-                                            {row.fulfillmentTypeLabel}
-                                        </TableCell>
-                                    )}
-
-                                    {hasRxTableColumn(
-                                        columns,
-                                        "preparedAt",
-                                    ) && (
-                                        <TableCell className="whitespace-nowrap">
-                                            {row.preparedAtLabel}
-                                        </TableCell>
-                                    )}
-
-                                    {hasRxTableColumn(
-                                        columns,
-                                        "pickupReadyAt",
-                                    ) && (
-                                        <TableCell className="whitespace-nowrap">
-                                            {row.pickupReadyAtLabel}
-                                        </TableCell>
-                                    )}
-
-                                    {hasRxTableColumn(
-                                        columns,
-                                        "completedAt",
-                                    ) && (
-                                        <TableCell className="whitespace-nowrap">
-                                            {row.completedAtLabel}
-                                        </TableCell>
                                     )}
 
                                     {hasRxTableColumn(columns, "issue") && (

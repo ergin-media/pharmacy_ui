@@ -11,7 +11,7 @@ export function useRxListPage() {
     const dataVm = useRxListData({
         page: filtersVm.filters.page,
         perPage: filtersVm.filters.perPage,
-        queue: filtersVm.filters.queue,
+        status: filtersVm.filters.status,
         parseStatus: filtersVm.filters.parseStatus,
         workflowStatus: filtersVm.filters.workflowStatus,
         paymentState: filtersVm.filters.paymentState,
@@ -28,10 +28,11 @@ export function useRxListPage() {
         controllers: mutationsVm.actions,
     });
 
-    const queueVm = {
-        value: filtersVm.filters.queue,
-        counts: dataVm.queueCounts,
-        setQueue: filtersVm.actions.setQueue,
+    const statusVm = {
+        value: filtersVm.filters.status,
+        counts: dataVm.statusCounts,
+        attentionCount: dataVm.attentionCount,
+        setStatus: filtersVm.actions.setStatus,
     };
 
     const toolbarVm = {
@@ -74,7 +75,7 @@ export function useRxListPage() {
     };
 
     const tableVm = {
-        queue: filtersVm.filters.queue,
+        status: filtersVm.filters.status,
         items: dataVm.items,
         page: filtersVm.filters.page,
         perPage: filtersVm.filters.perPage,
@@ -88,7 +89,7 @@ export function useRxListPage() {
 
     return {
         query: dataVm.query,
-        queueVm,
+        statusVm,
         toolbarVm,
         listVm,
         tableVm,

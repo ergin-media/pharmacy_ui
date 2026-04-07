@@ -5,6 +5,7 @@ import type {
     RxParseStatus,
     RxWorkflowStatus,
     RxPaymentState,
+    RxStatus,
 } from "../types/rx.dto";
 import {
     ALLOWED_WORKFLOW,
@@ -15,7 +16,6 @@ import {
     DEFAULT_PER_PAGE,
     type RxSort,
 } from "../lib/rx.constants";
-import { RX_QUEUE_ORDER, type RxQueue } from "../lib/rx.queues";
 
 import {
     spGetInt,
@@ -25,15 +25,10 @@ import {
 } from "@/shared/lib/url/searchParams";
 import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 
-function normalizeQueue(v: string | null): RxQueue | undefined {
-    const s = (v ?? "").trim() as RxQueue;
-    return RX_QUEUE_ORDER.includes(s) ? s : undefined;
-}
-
 type PatchValues = Partial<{
     page: number;
     per_page: number;
-    queue: string;
+    status: string;
     parse_status: string;
     workflow_status: string;
     payment_state: string;
@@ -41,6 +36,16 @@ type PatchValues = Partial<{
     search: string;
     sort: string;
 }>;
+
+function normalizeStatus(v: string | null): RxStatus | undefined {
+    const value = (v ?? "").trim();
+
+    if (value === "new" || value === "processing" || value === "completed") {
+        return value;
+    }
+
+    return undefined;
+}
 
 export function useRxListFilters() {
     const [sp, setSp] = useSearchParams();
@@ -51,7 +56,7 @@ export function useRxListFilters() {
         Math.min(100, spGetInt(sp, "per_page", DEFAULT_PER_PAGE)),
     );
 
-    const queue = normalizeQueue(spGetString(sp, "queue"));
+    const status = normalizeStatus(spGetString(sp, "status"));
 
     const parseStatusRaw = spGetString(sp, "parse_status") ?? "";
     const parseStatus: RxParseStatus | undefined = (
@@ -131,7 +136,7 @@ export function useRxListFilters() {
         () => ({
             page,
             perPage,
-            queue: (queue ?? "all") as RxQueue,
+            status,
             parseStatus,
             workflowStatus,
             paymentState,
@@ -144,7 +149,7 @@ export function useRxListFilters() {
         [
             page,
             perPage,
-            queue,
+            status,
             parseStatus,
             workflowStatus,
             paymentState,
@@ -157,15 +162,15 @@ export function useRxListFilters() {
     );
 
     const actions = {
-        setQueue: (value: RxQueue) => {
-            if (value === "all") {
+        setStatus: (value?: RxStatus) => {
+            if (!value) {
                 resetToAll();
                 return;
             }
 
             patch({
                 page: 1,
-                queue: value,
+                status: value,
             });
         },
 

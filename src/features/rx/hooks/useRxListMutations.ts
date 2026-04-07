@@ -15,14 +15,6 @@ import type {
     RxUiActionControllers,
 } from "../lib/rx.actions";
 
-function createNoopController(label: string): RxActionController {
-    return {
-        run: async (rx: RxListItemDto) => {
-            console.warn(`${label} not implemented yet`, rx.id);
-        },
-    };
-}
-
 export function useRxListMutations(input?: {
     openOfferCreate?: (rx: RxListItemDto) => void;
 }) {

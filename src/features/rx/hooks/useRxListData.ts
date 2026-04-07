@@ -5,15 +5,15 @@ import type {
     RxListQueryParams,
     RxParseStatus,
     RxPaymentState,
-    RxQueueCounts,
+    RxStatus,
     RxWorkflowStatus,
 } from "../types/rx.dto";
-import type { RxQueue } from "../lib/rx.queues";
+import type { RxStatusCounts } from "../lib/rx.status-panels";
 
 export function useRxListData(input: {
     page: number;
     perPage: number;
-    queue: RxQueue;
+    status?: RxStatus;
     parseStatus?: RxParseStatus;
     workflowStatus?: RxWorkflowStatus;
     paymentState?: RxPaymentState;
@@ -24,7 +24,7 @@ export function useRxListData(input: {
     const {
         page,
         perPage,
-        queue,
+        status,
         parseStatus,
         workflowStatus,
         paymentState,
@@ -37,7 +37,7 @@ export function useRxListData(input: {
         () => ({
             page,
             per_page: perPage,
-            queue: queue !== "all" ? queue : undefined,
+            status,
             parse_status: parseStatus,
             workflow_status: workflowStatus,
             payment_state: paymentState,
@@ -48,7 +48,7 @@ export function useRxListData(input: {
         [
             page,
             perPage,
-            queue,
+            status,
             parseStatus,
             workflowStatus,
             paymentState,
@@ -66,7 +66,9 @@ export function useRxListData(input: {
         query.data?.total_pages && query.data.total_pages > 0
             ? query.data.total_pages
             : 1;
-    const queueCounts: RxQueueCounts = query.data?.queue_counts ?? {};
+
+    const statusCounts: RxStatusCounts = query.data?.status_counts ?? {};
+    const attentionCount = query.data?.attention_count ?? 0;
 
     return {
         params,
@@ -74,6 +76,7 @@ export function useRxListData(input: {
         items,
         total,
         totalPages,
-        queueCounts,
+        statusCounts,
+        attentionCount,
     };
 }

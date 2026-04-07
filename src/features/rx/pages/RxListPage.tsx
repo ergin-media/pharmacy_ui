@@ -37,14 +37,14 @@ export function RxListPage() {
                 <RxListPageLoading
                     perPage={vm.tableVm.perPage}
                     toolbarVm={vm.toolbarVm}
-                    queueVm={vm.queueVm}
+                    statusVm={vm.statusVm}
                     page={vm.listVm.page}
                     totalPages={vm.listVm.totalPages}
                     onPageChange={vm.listVm.setPage}
                 />
             ) : (
                 <RxListPageContent
-                    queueVm={vm.queueVm}
+                    statusVm={vm.statusVm}
                     listVm={vm.listVm}
                     toolbarVm={vm.toolbarVm}
                     tableVm={vm.tableVm}

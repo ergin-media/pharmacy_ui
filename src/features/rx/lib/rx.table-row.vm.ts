@@ -1,8 +1,6 @@
 import type { RxListItemDto, RxParseStatus } from "../types/rx.dto";
-import type { RxQueue } from "./rx.queues";
 import { getPriceMeta } from "./rx.summary";
-import { rxShouldShowReparse, rxUnmappedCount, rxIsManual } from "./rx.reparse";
-import { getRxQueuePrimaryAction } from "./rx.queue-actions";
+import { rxShouldShowReparse, rxUnmappedCount } from "./rx.reparse";
 
 import { formatDateTime, formatDate } from "@/shared/lib/format/date";
 import { formatMoney } from "@/shared/lib/format/money";
@@ -18,7 +16,6 @@ function getFulfillmentTypeLabel(rx: RxListItemDto) {
 
     if (type === "shipping") return "Versand";
     if (type === "pickup") return "Abholung";
-    if (type === "unknown") return "Unbekannt";
 
     return "—";
 }
@@ -30,7 +27,7 @@ function getIssueLabel(rx: RxListItemDto, unmappedCount: number) {
         return "Grundpreis fehlt";
     }
 
-    if (rx.parse?.actions?.can_reparse && !rxIsManual(rx)) {
+    if (rx.parse?.actions?.can_reparse) {
         return "Prüfung erforderlich";
     }
 
@@ -124,32 +121,8 @@ function getIssueMessages(rx: RxListItemDto, unmappedCount: number) {
     return Array.from(new Set(messages));
 }
 
-function getProviderSub(rx: RxListItemDto) {
-    if (rx.external_order_id) {
-        return String(rx.external_order_id);
-    }
-
-    if (rxIsManual(rx)) {
-        return "Manuell erfasst";
-    }
-
-    return "—";
-}
-
-function getTotalPriceLabel(rx: RxListItemDto) {
-    const priceCents = rx.summary?.final_price_cents ?? null;
-    const currency = rx.summary?.currency ?? "EUR";
-
-    if (priceCents == null && rx.provider?.price_source === "pharmacy_calculated") {
-        return "Offen";
-    }
-
-    return formatMoney(priceCents, currency);
-}
-
 export type RxTableRowVm = {
     id: number;
-    queue: RxQueue;
     rowNumber: number;
 
     patientTitle: string;
@@ -185,17 +158,15 @@ export type RxTableRowVm = {
     parseStatus: RxParseStatus;
 
     showReparse: boolean;
-    primaryActionLabel: string | null;
 };
 
 export function mapRxListItemToRowVm(input: {
     rx: RxListItemDto;
-    queue: RxQueue;
     rowIndex: number;
     page: number;
     perPage: number;
 }): RxTableRowVm {
-    const { rx, queue, rowIndex, page, perPage } = input;
+    const { rx, rowIndex, page, perPage } = input;
 
     const rowId = Number(rx.id);
     const rowNumber = Math.max(0, (page - 1) * perPage) + rowIndex + 1;
@@ -209,21 +180,24 @@ export function mapRxListItemToRowVm(input: {
     const totalQty = summary?.total_quantity ?? null;
     const totalUnit = summary?.total_unit ?? null;
 
+    const priceCents = summary?.final_price_cents ?? null;
+    const currency = summary?.currency ?? "EUR";
+
     const patientTitle = formatPersonName(
         rx.patient?.first_name,
         rx.patient?.last_name,
     );
 
     const providerTitle = rx.provider?.name ?? rx.provider?.slug ?? "—";
-    const providerSub = getProviderSub(rx);
+    const providerSub = rx.external_order_id
+        ? String(rx.external_order_id)
+        : "—";
 
     const timeline = rx.timeline ?? undefined;
-    const primaryAction = getRxQueuePrimaryAction(queue);
     const issueMessages = getIssueMessages(rx, unmappedCount);
 
     return {
         id: rowId,
-        queue,
         rowNumber,
 
         patientTitle,
@@ -240,7 +214,7 @@ export function mapRxListItemToRowVm(input: {
         priceMeta,
 
         totalQtyLabel: formatQuantity(totalQty, totalUnit),
-        totalPriceLabel: getTotalPriceLabel(rx),
+        totalPriceLabel: formatMoney(priceCents, currency),
         totalPriceDimmed: !priceMeta.isComplete,
 
         receivedAtLabel: rx.mail?.received_at ?? "-",
@@ -259,6 +233,5 @@ export function mapRxListItemToRowVm(input: {
         parseStatus: rx.parse_status as RxParseStatus,
 
         showReparse,
-        primaryActionLabel: primaryAction?.label ?? null,
     };
 }

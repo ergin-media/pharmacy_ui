@@ -22,6 +22,7 @@ export type RxWorkflowStatus =
     | "rejected";
 
 export type RxPaymentState = "unpaid" | "paid" | "refunded";
+export type RxStatus = "new" | "processing" | "completed";
 
 /**
  * Timeline der Rezeptbearbeitung
@@ -79,6 +80,8 @@ export type RxItem = {
 
 export interface RxListItemDto {
     id: Id;
+    status?: RxStatus | null;
+    has_attention?: boolean | null;
 
     provider: RxProviderDto | null;
 
@@ -147,17 +150,15 @@ export interface RxListResponseDto {
     per_page: number;
     total: number;
     total_pages: number;
-    queue_counts: RxQueueCounts;
+    status_counts: Partial<Record<RxStatus, number>>;
+    attention_count?: number;
 }
 
 export interface RxListQueryParams {
     page?: number;
     per_page?: number;
 
-    /**
-     * Backend Queue Filter
-     */
-    queue?: RxQueue;
+    status?: RxStatus;
 
     parse_status?: RxParseStatus;
     workflow_status?: RxWorkflowStatus;
