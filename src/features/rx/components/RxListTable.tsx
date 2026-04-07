@@ -102,7 +102,12 @@ export function RxListTable(props: {
                             return (
                                 <TableRow
                                     key={row.id}
-                                    className="hover:bg-muted/50"
+                                    className={[
+                                        "transition-colors",
+                                        row.hasAttention
+                                            ? "bg-destructive/5 hover:bg-destructive/10"
+                                            : "hover:bg-muted/50",
+                                    ].join(" ")}
                                 >
                                     {hasRxTableColumn(columns, "index") && (
                                         <TableCell className="ps-3 text-muted-foreground">

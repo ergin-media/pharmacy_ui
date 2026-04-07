@@ -5,25 +5,26 @@ export function getRxStatusBadge(status?: RxStatus | null) {
         case "new":
             return {
                 label: "Neu",
-                variant: "secondary",
+                className: "bg-muted text-foreground border border-border",
             };
 
         case "processing":
             return {
                 label: "In Bearbeitung",
-                variant: "default",
+                className: "bg-blue-50 text-blue-700 border border-blue-200",
             };
 
         case "completed":
             return {
                 label: "Abgeschlossen",
-                variant: "outline",
+                className: "bg-green-50 text-green-700 border border-green-200",
             };
 
         default:
             return {
                 label: "Unbekannt",
-                variant: "outline",
+                className:
+                    "bg-muted text-muted-foreground border border-border",
             };
     }
 }

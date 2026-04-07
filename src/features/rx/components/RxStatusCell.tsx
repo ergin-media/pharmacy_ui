@@ -1,12 +1,10 @@
-import type { ComponentProps } from "react";
-
 import { AlertTriangle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
 import { getRxStatusBadge } from "../lib/rx.badges";
-import { cn } from "@/lib/utils";
 
 export function RxStatusCell(props: {
     row: RxTableRowVm;
@@ -16,28 +14,31 @@ export function RxStatusCell(props: {
 }) {
     const { row } = props;
 
-    const status = row.rx.status;
+    const status = row.status;
     const hasAttention = row.hasAttention;
 
-    type BadgeVariant = ComponentProps<typeof Badge>["variant"];
-    const badge = getRxStatusBadge(status) as {
-        label: string;
-        variant: BadgeVariant;
-    };
+    const badge = getRxStatusBadge(status);
 
     return (
         <td className="whitespace-nowrap">
             <div
                 className={cn(
                     "flex items-center gap-2",
-                    hasAttention && "text-destructive",
+                    hasAttention && "font-medium text-destructive",
                 )}
             >
                 {hasAttention ? (
                     <AlertTriangle className="size-4 shrink-0" />
                 ) : null}
 
-                <Badge variant={badge.variant}>{badge.label}</Badge>
+                <Badge
+                    className={cn(
+                        badge.className,
+                        hasAttention && "ring-1 ring-destructive/30",
+                    )}
+                >
+                    {badge.label}
+                </Badge>
             </div>
         </td>
     );
