@@ -10,10 +10,12 @@ import type {
 } from "../types/rx.dto";
 import type { RxStatusCounts } from "../lib/rx.status-panels";
 
+type RxListPanelStatus = RxStatus | "attention";
+
 export function useRxListData(input: {
     page: number;
     perPage: number;
-    status?: RxStatus;
+    status?: RxListPanelStatus;
     parseStatus?: RxParseStatus;
     workflowStatus?: RxWorkflowStatus;
     paymentState?: RxPaymentState;
@@ -33,11 +35,13 @@ export function useRxListData(input: {
         sort,
     } = input;
 
+    const apiStatus = status === "attention" ? undefined : status;
+
     const params = useMemo<RxListQueryParams>(
         () => ({
             page,
             per_page: perPage,
-            status,
+            status: apiStatus,
             parse_status: parseStatus,
             workflow_status: workflowStatus,
             payment_state: paymentState,
@@ -48,7 +52,7 @@ export function useRxListData(input: {
         [
             page,
             perPage,
-            status,
+            apiStatus,
             parseStatus,
             workflowStatus,
             paymentState,
@@ -60,12 +64,24 @@ export function useRxListData(input: {
 
     const query = useRxListQuery(params);
 
-    const items = query.data?.items ?? [];
-    const total = query.data?.total ?? 0;
+    const allItems = query.data?.items ?? [];
+
+    const items =
+        status === "attention"
+            ? allItems.filter((item) => item.has_attention === true)
+            : allItems;
+
+    const total =
+        status === "attention"
+            ? (query.data?.attention_count ?? items.length)
+            : (query.data?.total ?? 0);
+
     const totalPages =
-        query.data?.total_pages && query.data.total_pages > 0
-            ? query.data.total_pages
-            : 1;
+        status === "attention"
+            ? Math.max(1, Math.ceil(total / perPage))
+            : query.data?.total_pages && query.data.total_pages > 0
+              ? query.data.total_pages
+              : 1;
 
     const statusCounts: RxStatusCounts = query.data?.status_counts ?? {};
     const attentionCount = query.data?.attention_count ?? 0;

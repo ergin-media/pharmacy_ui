@@ -2,6 +2,7 @@ import type { RxStatusVm, RxToolbarVm } from "../types/rx.list.vm";
 import { RxListToolbar } from "./RxListToolbar";
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
 import { RxStatusPanels } from "./RxStatusPanels";
+import { Card } from "@/components/ui/card";
 
 export function RxListPageLoading(props: {
     perPage: number;
@@ -15,22 +16,24 @@ export function RxListPageLoading(props: {
         props;
 
     return (
-        <div className="grid gap-4">
-            <RxStatusPanels
-                value={statusVm.value}
-                counts={statusVm.counts}
-                attentionCount={statusVm.attentionCount}
-                onChange={statusVm.setStatus}
-            />
+        <Card>
+            <div className="grid gap-4">
+                <RxStatusPanels
+                    value={statusVm.value}
+                    counts={statusVm.counts}
+                    attentionCount={statusVm.attentionCount}
+                    onChange={statusVm.setStatus}
+                />
 
-            <RxListToolbar
-                {...toolbarVm}
-                page={page}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-            />
+                <RxListToolbar
+                    {...toolbarVm}
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                />
 
-            <RxListTableSkeleton rows={perPage} />
-        </div>
+                <RxListTableSkeleton rows={perPage} />
+            </div>
+        </Card>
     );
 }

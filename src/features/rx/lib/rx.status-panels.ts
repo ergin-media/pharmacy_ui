@@ -11,6 +11,9 @@ export const RX_STATUS_PANELS = {
     completed: {
         label: "Abgeschlossen",
     },
+    attention: {
+        label: "Handlungsbedarf",
+    },
 } as const;
 
 export type RxStatusPanel = keyof typeof RX_STATUS_PANELS;
@@ -20,6 +23,7 @@ export const RX_STATUS_PANEL_ORDER: RxStatusPanel[] = [
     "new",
     "processing",
     "completed",
+    "attention",
 ];
 
 export const RX_STATUS_PANEL_ITEMS = RX_STATUS_PANEL_ORDER.map((value) => ({
@@ -28,5 +32,5 @@ export const RX_STATUS_PANEL_ITEMS = RX_STATUS_PANEL_ORDER.map((value) => ({
 }));
 
 export type RxStatusCounts = Partial<
-    Record<Exclude<RxStatusPanel, "all">, number>
+    Record<Exclude<RxStatusPanel, "all" | "attention">, number>
 >;

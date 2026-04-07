@@ -25,6 +25,8 @@ import {
 } from "@/shared/lib/url/searchParams";
 import { useDebouncedValue } from "@/shared/lib/hooks/useDebouncedValue";
 
+type RxListPanelStatus = RxStatus | "attention";
+
 type PatchValues = Partial<{
     page: number;
     per_page: number;
@@ -37,10 +39,15 @@ type PatchValues = Partial<{
     sort: string;
 }>;
 
-function normalizeStatus(v: string | null): RxStatus | undefined {
+function normalizeStatus(v: string | null): RxListPanelStatus | undefined {
     const value = (v ?? "").trim();
 
-    if (value === "new" || value === "processing" || value === "completed") {
+    if (
+        value === "new" ||
+        value === "processing" ||
+        value === "completed" ||
+        value === "attention"
+    ) {
         return value;
     }
 
@@ -162,7 +169,7 @@ export function useRxListFilters() {
     );
 
     const actions = {
-        setStatus: (value?: RxStatus) => {
+        setStatus: (value?: RxListPanelStatus) => {
             if (!value) {
                 resetToAll();
                 return;
