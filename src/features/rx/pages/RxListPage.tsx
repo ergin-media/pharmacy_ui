@@ -38,6 +38,7 @@ export function RxListPage() {
                     perPage={vm.tableVm.perPage}
                     toolbarVm={vm.toolbarVm}
                     statusVm={vm.statusVm}
+                    processingVm={vm.processingVm}
                     page={vm.listVm.page}
                     totalPages={vm.listVm.totalPages}
                     onPageChange={vm.listVm.setPage}
@@ -45,6 +46,7 @@ export function RxListPage() {
             ) : (
                 <RxListPageContent
                     statusVm={vm.statusVm}
+                    processingVm={vm.processingVm}
                     listVm={vm.listVm}
                     toolbarVm={vm.toolbarVm}
                     tableVm={vm.tableVm}

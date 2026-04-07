@@ -4,6 +4,7 @@ import type { RxListItemDto } from "./rx.dto";
 export type RxListPageVm = ReturnType<typeof useRxListPage>;
 
 export type RxStatusVm = RxListPageVm["statusVm"];
+export type RxProcessingVm = RxListPageVm["processingVm"];
 export type RxToolbarVm = RxListPageVm["toolbarVm"];
 export type RxListVm = RxListPageVm["listVm"];
 export type RxTableVm = RxListPageVm["tableVm"];

@@ -7,6 +7,7 @@ import type {
     RxPaymentState,
     RxStatus,
 } from "../types/rx.dto";
+import type { RxProcessingTab } from "../lib/rx.processing-tabs";
 import {
     ALLOWED_WORKFLOW,
     ALLOWED_PAYMENT,
@@ -31,6 +32,7 @@ type PatchValues = Partial<{
     page: number;
     per_page: number;
     status: string;
+    processing_tab: string;
     parse_status: string;
     workflow_status: string;
     payment_state: string;
@@ -54,6 +56,22 @@ function normalizeStatus(v: string | null): RxListPanelStatus | undefined {
     return undefined;
 }
 
+function normalizeProcessingTab(v: string | null): RxProcessingTab | undefined {
+    const value = (v ?? "").trim();
+
+    if (
+        value === "all" ||
+        value === "awaiting_payment" ||
+        value === "paid" ||
+        value === "shipping_ready" ||
+        value === "pickup_ready"
+    ) {
+        return value as RxProcessingTab;
+    }
+
+    return undefined;
+}
+
 export function useRxListFilters() {
     const [sp, setSp] = useSearchParams();
 
@@ -64,6 +82,9 @@ export function useRxListFilters() {
     );
 
     const status = normalizeStatus(spGetString(sp, "status"));
+    const processingTab = normalizeProcessingTab(
+        spGetString(sp, "processing_tab"),
+    );
 
     const parseStatusRaw = spGetString(sp, "parse_status") ?? "";
     const parseStatus: RxParseStatus | undefined = (
@@ -144,6 +165,7 @@ export function useRxListFilters() {
             page,
             perPage,
             status,
+            processingTab,
             parseStatus,
             workflowStatus,
             paymentState,
@@ -157,6 +179,7 @@ export function useRxListFilters() {
             page,
             perPage,
             status,
+            processingTab,
             parseStatus,
             workflowStatus,
             paymentState,
@@ -178,8 +201,15 @@ export function useRxListFilters() {
             patch({
                 page: 1,
                 status: value,
+                processing_tab: "",
             });
         },
+
+        setProcessingTab: (value?: RxProcessingTab) =>
+            patch({
+                page: 1,
+                processing_tab: !value || value === "all" ? "" : value,
+            }),
 
         setParseStatus: (value: string) =>
             patch({

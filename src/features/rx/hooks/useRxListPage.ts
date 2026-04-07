@@ -12,6 +12,7 @@ export function useRxListPage() {
         page: filtersVm.filters.page,
         perPage: filtersVm.filters.perPage,
         status: filtersVm.filters.status,
+        processingTab: filtersVm.filters.processingTab,
         parseStatus: filtersVm.filters.parseStatus,
         workflowStatus: filtersVm.filters.workflowStatus,
         paymentState: filtersVm.filters.paymentState,
@@ -33,6 +34,12 @@ export function useRxListPage() {
         counts: dataVm.statusCounts,
         attentionCount: dataVm.attentionCount,
         setStatus: filtersVm.actions.setStatus,
+    };
+
+    const processingVm = {
+        value: filtersVm.filters.processingTab,
+        counts: dataVm.processingTabCounts,
+        setProcessingTab: filtersVm.actions.setProcessingTab,
     };
 
     const toolbarVm = {
@@ -90,6 +97,7 @@ export function useRxListPage() {
     return {
         query: dataVm.query,
         statusVm,
+        processingVm,
         toolbarVm,
         listVm,
         tableVm,

@@ -9,6 +9,11 @@ import type {
     RxWorkflowStatus,
 } from "../types/rx.dto";
 import type { RxStatusCounts } from "../lib/rx.status-panels";
+import type { RxProcessingTab } from "../lib/rx.processing-tabs";
+import {
+    getProcessingTabCounts,
+    matchesProcessingTab,
+} from "../lib/rx.processing-tabs";
 
 type RxListPanelStatus = RxStatus | "attention";
 
@@ -16,6 +21,7 @@ export function useRxListData(input: {
     page: number;
     perPage: number;
     status?: RxListPanelStatus;
+    processingTab?: RxProcessingTab;
     parseStatus?: RxParseStatus;
     workflowStatus?: RxWorkflowStatus;
     paymentState?: RxPaymentState;
@@ -27,6 +33,7 @@ export function useRxListData(input: {
         page,
         perPage,
         status,
+        processingTab,
         parseStatus,
         workflowStatus,
         paymentState,
@@ -66,25 +73,42 @@ export function useRxListData(input: {
 
     const allItems = query.data?.items ?? [];
 
-    const items =
+    const attentionFilteredItems =
         status === "attention"
             ? allItems.filter((item) => item.has_attention === true)
             : allItems;
 
+    const processingFilteredItems =
+        status === "processing" && processingTab && processingTab !== "all"
+            ? attentionFilteredItems.filter((item) =>
+                matchesProcessingTab(item, processingTab),
+            )
+            : attentionFilteredItems;
+
+    const items = processingFilteredItems;
+
     const total =
         status === "attention"
-            ? (query.data?.attention_count ?? items.length)
-            : (query.data?.total ?? 0);
+            ? query.data?.attention_count ?? items.length
+            : status === "processing" &&
+                processingTab &&
+                processingTab !== "all"
+                ? items.length
+                : query.data?.total ?? 0;
 
     const totalPages =
-        status === "attention"
+        status === "attention" ||
+            (status === "processing" &&
+                processingTab != null &&
+                processingTab !== "all")
             ? Math.max(1, Math.ceil(total / perPage))
             : query.data?.total_pages && query.data.total_pages > 0
-              ? query.data.total_pages
-              : 1;
+                ? query.data.total_pages
+                : 1;
 
     const statusCounts: RxStatusCounts = query.data?.status_counts ?? {};
     const attentionCount = query.data?.attention_count ?? 0;
+    const processingTabCounts = getProcessingTabCounts(allItems);
 
     return {
         params,
@@ -94,5 +118,6 @@ export function useRxListData(input: {
         totalPages,
         statusCounts,
         attentionCount,
+        processingTabCounts,
     };
 }

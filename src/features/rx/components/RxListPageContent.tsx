@@ -6,8 +6,10 @@ import { Pagination } from "@/components/ui/pagination";
 
 import { RxListTable } from "./RxListTable";
 import { RxStatusPanels } from "./RxStatusPanels";
+import { RxProcessingSubTabs } from "./RxProcessingSubTabs";
 import type {
     RxListVm,
+    RxProcessingVm,
     RxRowActions,
     RxStatusVm,
     RxTableVm,
@@ -17,12 +19,14 @@ import { RxListToolbar } from "./RxListToolbar";
 
 export function RxListPageContent(props: {
     statusVm: RxStatusVm;
+    processingVm: RxProcessingVm;
     listVm: RxListVm;
     toolbarVm: RxToolbarVm;
     tableVm: RxTableVm;
     rowActions: RxRowActions;
 }) {
-    const { statusVm, listVm, toolbarVm, tableVm, rowActions } = props;
+    const { statusVm, processingVm, listVm, toolbarVm, tableVm, rowActions } =
+        props;
 
     return (
         <div className="grid h-full gap-2">
@@ -34,6 +38,14 @@ export function RxListPageContent(props: {
                         attentionCount={statusVm.attentionCount}
                         onChange={statusVm.setStatus}
                     />
+
+                    {statusVm.value === "processing" ? (
+                        <RxProcessingSubTabs
+                            value={processingVm.value}
+                            counts={processingVm.counts}
+                            onChange={processingVm.setProcessingTab}
+                        />
+                    ) : null}
 
                     {listVm.isError ? (
                         <div className="flex items-center gap-2">
