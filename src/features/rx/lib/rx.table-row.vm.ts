@@ -158,6 +158,9 @@ export type RxTableRowVm = {
     parseStatus: RxParseStatus;
 
     showReparse: boolean;
+
+    status: RxListItemDto["status"] | null;
+    hasAttention: boolean;
 };
 
 export function mapRxListItemToRowVm(input: {
@@ -231,6 +234,9 @@ export function mapRxListItemToRowVm(input: {
         workflowStatus: rx.workflow_status,
         paymentState: rx.payment_state,
         parseStatus: rx.parse_status as RxParseStatus,
+
+        status: rx.status ?? null,
+        hasAttention: rx.has_attention === true,
 
         showReparse,
     };

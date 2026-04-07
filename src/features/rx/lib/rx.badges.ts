@@ -1,30 +1,29 @@
-import type { RxPaymentState, RxWorkflowStatus } from "../types/rx.dto";
-import type { BadgeVariant } from "@/components/ui/badge.variants";
+import type { RxStatus } from "../types/rx.dto";
 
-export function workflowBadgeVariant(
-    status?: RxWorkflowStatus | null,
-): BadgeVariant {
+export function getRxStatusBadge(status?: RxStatus | null) {
     switch (status) {
-        case "completed":
-            return "success";
-        case "processing":
-            return "info";
-        case "rejected":
-            return "destructive";
-        case "pending":
-        default:
-            return "neutral";
-    }
-}
+        case "new":
+            return {
+                label: "Neu",
+                variant: "secondary",
+            };
 
-export function paymentBadgeVariant(
-    state?: RxPaymentState | null,
-): BadgeVariant {
-    switch (state) {
-        case "paid":
-            return "success";
-        case "unpaid":
+        case "processing":
+            return {
+                label: "In Bearbeitung",
+                variant: "default",
+            };
+
+        case "completed":
+            return {
+                label: "Abgeschlossen",
+                variant: "outline",
+            };
+
         default:
-            return "warning";
+            return {
+                label: "Unbekannt",
+                variant: "outline",
+            };
     }
 }

@@ -1,14 +1,12 @@
+import type { ComponentProps } from "react";
+
+import { AlertTriangle } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Loader2, RotateCcw } from "lucide-react";
 
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
-import { TableCell } from "@/components/ui/table";
-import {
-    getRxUiStatus,
-    getRxUiStatusLabel,
-    getRxUiStatusVariant,
-} from "../lib/rx.status";
+import { getRxStatusBadge } from "../lib/rx.badges";
+import { cn } from "@/lib/utils";
 
 export function RxStatusCell(props: {
     row: RxTableRowVm;
@@ -16,38 +14,31 @@ export function RxStatusCell(props: {
     isReparseBusy?: boolean;
     onReparse?: (id: number) => void;
 }) {
-    const { row, disabled, isReparseBusy, onReparse } = props;
+    const { row } = props;
 
-    const uiStatus = getRxUiStatus(row.rx);
+    const status = row.rx.status;
+    const hasAttention = row.hasAttention;
+
+    type BadgeVariant = ComponentProps<typeof Badge>["variant"];
+    const badge = getRxStatusBadge(status) as {
+        label: string;
+        variant: BadgeVariant;
+    };
 
     return (
-        <TableCell>
-            <div className="flex flex-col gap-2">
-                <div className="flex flex-wrap gap-2">
-                    <Badge variant={getRxUiStatusVariant(uiStatus)}>
-                        {getRxUiStatusLabel(uiStatus)}
-                    </Badge>
-                </div>
-
-                {row.showReparse ? (
-                    <div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 px-2"
-                            onClick={() => onReparse?.(row.id)}
-                            disabled={disabled || isReparseBusy}
-                        >
-                            {isReparseBusy ? (
-                                <Loader2 className="mr-2 size-4 animate-spin" />
-                            ) : (
-                                <RotateCcw className="mr-2 size-4" />
-                            )}
-                            Reparse
-                        </Button>
-                    </div>
+        <td className="whitespace-nowrap">
+            <div
+                className={cn(
+                    "flex items-center gap-2",
+                    hasAttention && "text-destructive",
+                )}
+            >
+                {hasAttention ? (
+                    <AlertTriangle className="size-4 shrink-0" />
                 ) : null}
+
+                <Badge variant={badge.variant}>{badge.label}</Badge>
             </div>
-        </TableCell>
+        </td>
     );
 }
