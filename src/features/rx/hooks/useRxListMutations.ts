@@ -5,7 +5,6 @@ import {
     useTakeOverRxMutation,
 } from "../queries/rx.queries";
 import { useStartRxPackagingMutation } from "../start-packaging/queries/rx-start-packaging.queries";
-import { useMarkRxReadyMutation } from "../mark-ready/queries/rx-mark-ready.queries";
 import { useMarkRxShippedMutation } from "../mark-shipped/queries/rx-mark-shipped.queries";
 import { useMarkRxHandedOverMutation } from "../mark-handed-over/queries/rx-mark-handed-over.queries";
 
@@ -31,7 +30,6 @@ export function useRxListMutations(input?: {
     const reparseMutation = useReparseRxMutation();
     const takeOverMutation = useTakeOverRxMutation();
     const startPackagingMutation = useStartRxPackagingMutation();
-    const markReadyMutation = useMarkRxReadyMutation();
     const markShippedMutation = useMarkRxShippedMutation();
     const markHandedOverMutation = useMarkRxHandedOverMutation();
 
