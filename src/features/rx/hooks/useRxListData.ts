@@ -79,7 +79,7 @@ export function useRxListData(input: {
             : allItems;
 
     const processingFilteredItems =
-        status === "processing" && processingTab && processingTab !== "all"
+        status === "processing" && processingTab
             ? attentionFilteredItems.filter((item) =>
                 matchesProcessingTab(item, processingTab),
             )
@@ -90,17 +90,12 @@ export function useRxListData(input: {
     const total =
         status === "attention"
             ? query.data?.attention_count ?? items.length
-            : status === "processing" &&
-                processingTab &&
-                processingTab !== "all"
+            : status === "processing" && processingTab
                 ? items.length
                 : query.data?.total ?? 0;
 
     const totalPages =
-        status === "attention" ||
-            (status === "processing" &&
-                processingTab != null &&
-                processingTab !== "all")
+        status === "attention" || (status === "processing" && processingTab)
             ? Math.max(1, Math.ceil(total / perPage))
             : query.data?.total_pages && query.data.total_pages > 0
                 ? query.data.total_pages

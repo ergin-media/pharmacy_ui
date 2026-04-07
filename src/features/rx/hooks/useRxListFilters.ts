@@ -60,7 +60,6 @@ function normalizeProcessingTab(v: string | null): RxProcessingTab | undefined {
     const value = (v ?? "").trim();
 
     if (
-        value === "all" ||
         value === "awaiting_payment" ||
         value === "paid" ||
         value === "shipping_ready" ||
@@ -208,7 +207,7 @@ export function useRxListFilters() {
         setProcessingTab: (value?: RxProcessingTab) =>
             patch({
                 page: 1,
-                processing_tab: !value || value === "all" ? "" : value,
+                processing_tab: value ?? "",
             }),
 
         setParseStatus: (value: string) =>

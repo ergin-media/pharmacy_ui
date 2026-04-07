@@ -14,29 +14,21 @@ export function RxProcessingSubTabs(props: {
 }) {
     const { value, counts, onChange } = props;
 
-    const total =
-        (counts.awaiting_payment ?? 0) +
-        (counts.paid ?? 0) +
-        (counts.shipping_ready ?? 0) +
-        (counts.pickup_ready ?? 0);
+    const firstTab = RX_PROCESSING_TAB_ITEMS[0]?.value;
+    const tabValue = value ?? firstTab;
 
-    const tabValue = value ?? "all";
+    if (!firstTab) {
+        return null;
+    }
 
     return (
         <Tabs
             value={tabValue}
-            onValueChange={(next) =>
-                onChange(next === "all" ? undefined : (next as RxProcessingTab))
-            }
+            onValueChange={(next) => onChange(next as RxProcessingTab)}
         >
             <TabsList className="flex flex-wrap">
                 {RX_PROCESSING_TAB_ITEMS.map((item) => {
-                    const count =
-                        item.value === "all"
-                            ? total
-                            : counts[
-                            item.value as keyof RxProcessingTabCounts
-                            ] ?? 0;
+                    const count = counts[item.value] ?? 0;
 
                     return (
                         <TabsTrigger key={item.value} value={item.value}>
