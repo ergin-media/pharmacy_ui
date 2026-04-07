@@ -1,8 +1,5 @@
 import type { RxListItemDto } from "../types/rx.dto";
-import {
-    getRxUiAction,
-    type RxUiActionControllers,
-} from "../lib/rx.actions";
+import { getRxUiAction, type RxUiActionControllers } from "../lib/rx.actions";
 
 function getPrimaryActionController(
     rx: RxListItemDto,

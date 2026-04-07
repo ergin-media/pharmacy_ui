@@ -1,9 +1,8 @@
 import type { RxListItemDto } from "../types/rx.dto";
-import { getRxUiStatus } from "./rx.status";
 
 export type RxUiAction =
-    | "resolve_attention"
-    | "offer_create"
+    | "review_attention"
+    | "create_offer"
     | "start_processing"
     | "finish_preparation"
     | "mark_shipped"
@@ -19,44 +18,57 @@ export type RxUiActionControllers = Partial<
 >;
 
 export function getRxUiAction(rx: RxListItemDto): RxUiAction {
-    const status = getRxUiStatus(rx);
+    const status = rx.status ?? null;
+    const hasAttention = rx.has_attention === true;
 
-    switch (status) {
-        case "attention":
-            return "resolve_attention";
-
-        case "offer_create":
-            return "offer_create";
-
-        case "await_payment":
-            return null;
-
-        case "paid":
-            return "start_processing";
-
-        case "processing":
-            return "finish_preparation";
-
-        case "ready":
-            return rx.fulfillment_type === "shipping"
-                ? "mark_shipped"
-                : rx.fulfillment_type === "pickup"
-                    ? "mark_picked_up"
-                    : null;
-
-        case "completed":
-            return null;
-
-        default:
-            return null;
+    if (status === "completed") {
+        return null;
     }
+
+    if (hasAttention) {
+        return "review_attention";
+    }
+
+    if (status === "new") {
+        return "create_offer";
+    }
+
+    if (status !== "processing") {
+        return null;
+    }
+
+    const isPaid = rx.payment_state === "paid" || Boolean(rx.timeline?.paid_at);
+    const isPrepared = Boolean(rx.timeline?.prepared_at);
+    const isReady = Boolean(rx.timeline?.pickup_ready_at);
+
+    if (!isPaid) {
+        return null;
+    }
+
+    if (!isPrepared) {
+        return "start_processing";
+    }
+
+    if (!isReady) {
+        return "finish_preparation";
+    }
+
+    if (rx.fulfillment_type === "shipping") {
+        return "mark_shipped";
+    }
+
+    if (rx.fulfillment_type === "pickup") {
+        return "mark_picked_up";
+    }
+
+    return null;
 }
 
 export function getRxUiActionLabel(action: RxUiAction): string | null {
     switch (action) {
-        case "resolve_attention":
-            return "Problem beheben";
-        case "offer_create":
+        case "review_attention":
+            return "Prüfen";
+        case "create_offer":
             return "Angebot erstellen";
         case "start_processing":
             return "In Bearbeitung starten";

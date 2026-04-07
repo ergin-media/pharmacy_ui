@@ -15,6 +15,14 @@ import type {
     RxUiActionControllers,
 } from "../lib/rx.actions";
 
+function createNoopController(label: string): RxActionController {
+    return {
+        run: async (rx: RxListItemDto) => {
+            console.warn(`${label} not implemented yet`, rx.id);
+        },
+    };
+}
+
 export function useRxListMutations(input?: {
     openOfferCreate?: (rx: RxListItemDto) => void;
 }) {
@@ -42,7 +50,7 @@ export function useRxListMutations(input?: {
             reparseMutation.variables === id,
     };
 
-    const offerCreate: RxActionController = {
+    const reviewAttention: RxActionController = {
         run: async (rx: RxListItemDto) => {
             const id = Number(rx.id);
 
@@ -56,7 +64,7 @@ export function useRxListMutations(input?: {
         },
     };
 
-    const resolveAttention: RxActionController = {
+    const createOffer: RxActionController = {
         run: async (rx: RxListItemDto) => {
             const id = Number(rx.id);
 
@@ -98,25 +106,6 @@ export function useRxListMutations(input?: {
         },
     };
 
-    const markReady: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-            const fulfillmentType =
-                rx.fulfillment_type === "shipping" ? "shipping" : "pickup";
-
-            setActivePrimaryActionId(id);
-
-            try {
-                await markReadyMutation.mutateAsync({
-                    id,
-                    fulfillment_type: fulfillmentType,
-                });
-            } finally {
-                setActivePrimaryActionId(null);
-            }
-        },
-    };
-
     const markShipped: RxActionController = {
         run: async (rx: RxListItemDto) => {
             const id = Number(rx.id);
@@ -146,8 +135,8 @@ export function useRxListMutations(input?: {
     };
 
     const actions: RxUiActionControllers = {
-        resolve_attention: resolveAttention,
-        offer_create: offerCreate,
+        review_attention: reviewAttention,
+        create_offer: createOffer,
         start_processing: startProcessing,
         finish_preparation: finishPreparation,
         mark_shipped: markShipped,
@@ -158,7 +147,8 @@ export function useRxListMutations(input?: {
         reparse,
         actions,
         internal: {
-            markReady,
+            markReady: createNoopController("markReady"),
+            startPackaging: createNoopController("startPackaging"),
         },
         primaryActionState: {
             isPending: activePrimaryActionId !== null,

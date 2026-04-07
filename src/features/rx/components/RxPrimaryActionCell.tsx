@@ -3,10 +3,7 @@ import { LoadingButton } from "@/components/ui/loading-button";
 
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
 import type { RxListItemDto } from "../types/rx.dto";
-import {
-    getRxUiAction,
-    getRxUiActionLabel,
-} from "../lib/rx.actions";
+import { getRxUiAction, getRxUiActionLabel } from "../lib/rx.actions";
 
 export function RxPrimaryActionCell(props: {
     row: RxTableRowVm;
