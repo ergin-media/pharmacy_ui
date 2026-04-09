@@ -83,6 +83,8 @@ export function RxListPageContent(props: {
                         onReparse={tableVm.onReparse}
                         isReparseBusy={tableVm.isReparseBusy}
                         onPrimaryAction={tableVm.onPrimaryAction}
+                        onMarkShippingReady={tableVm.onMarkShippingReady}
+                        onMarkPickupReady={tableVm.onMarkPickupReady}
                         isPrimaryActionPending={tableVm.isPrimaryActionPending}
                         activePrimaryActionId={tableVm.activePrimaryActionId}
                     />

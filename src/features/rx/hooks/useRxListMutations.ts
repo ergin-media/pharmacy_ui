@@ -1,136 +1,130 @@
-import { useState } from "react";
-
-import { useReparseRxMutation } from "../queries/rx.queries";
-import { useMarkRxShippedMutation } from "../mark-shipped/queries/rx-mark-shipped.queries";
-import { useMarkRxHandedOverMutation } from "../mark-handed-over/queries/rx-mark-handed-over.queries";
-
+import { useRxListFilters } from "./useRxListFilters";
+import { useRxListData } from "./useRxListData";
+import { useRxListMutations } from "./useRxListMutations";
+import { useRxPrimaryAction } from "./useRxPrimaryAction";
+import { useRxPanels } from "./useRxPanels";
 import type { RxListItemDto } from "../types/rx.dto";
-import type {
-    RxActionController,
-    RxUiActionControllers,
-} from "../lib/rx.actions";
 
-export function useRxListMutations(input?: {
-    openOfferCreate?: (rx: RxListItemDto) => void;
-    openShippingReady?: (rx: RxListItemDto) => void;
-    openPickupReady?: (rx: RxListItemDto) => void;
-}) {
-    const openOfferCreate = input?.openOfferCreate;
-    const openShippingReady = input?.openShippingReady;
-    const openPickupReady = input?.openPickupReady;
+export function useRxListPage() {
+    const filtersVm = useRxListFilters();
+    const panels = useRxPanels();
 
-    const reparseMutation = useReparseRxMutation();
-    const markShippedMutation = useMarkRxShippedMutation();
-    const markHandedOverMutation = useMarkRxHandedOverMutation();
+    const dataVm = useRxListData({
+        page: filtersVm.filters.page,
+        perPage: filtersVm.filters.perPage,
+        status: filtersVm.filters.status,
+        processingTab: filtersVm.filters.processingTab,
+        parseStatus: filtersVm.filters.parseStatus,
+        workflowStatus: filtersVm.filters.workflowStatus,
+        paymentState: filtersVm.filters.paymentState,
+        provider: filtersVm.filters.provider,
+        search: filtersVm.filters.search,
+        sort: filtersVm.filters.sort,
+    });
 
-    const [activePrimaryActionId, setActivePrimaryActionId] = useState<
-        number | null
-    >(null);
-
-    const reparse = {
-        run: async (id: number) => {
-            await reparseMutation.mutateAsync(id);
-        },
-
-        isBusy: (id: number) =>
-            reparseMutation.isPending &&
-            typeof reparseMutation.variables === "number" &&
-            reparseMutation.variables === id,
-    };
-
-    const reviewAttention: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-            setActivePrimaryActionId(id);
-
-            try {
-                openOfferCreate?.(rx);
-            } finally {
-                setActivePrimaryActionId(null);
+    const mutationsVm = useRxListMutations({
+        openOfferCreate: panels.offerCreate.open,
+        openShippingReady: (rx) => {
+            if (panels.shippingReady?.open) {
+                panels.shippingReady.open(rx);
+                return;
             }
+            console.log("shippingReady", rx.id);
         },
-    };
-
-    const createOffer: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-            setActivePrimaryActionId(id);
-
-            try {
-                openOfferCreate?.(rx);
-            } finally {
-                setActivePrimaryActionId(null);
+        openPickupReady: (rx) => {
+            if (panels.pickupReady?.open) {
+                panels.pickupReady.open(rx);
+                return;
             }
+            console.log("pickupReady", rx.id);
+        },
+    });
+
+    const primaryActionVm = useRxPrimaryAction({
+        controllers: mutationsVm.actions,
+    });
+
+    const statusVm = {
+        value: filtersVm.filters.status,
+        counts: dataVm.statusCounts,
+        attentionCount: dataVm.attentionCount,
+        setStatus: filtersVm.actions.setStatus,
+    };
+
+    const processingVm = {
+        value: filtersVm.filters.processingTab,
+        counts: dataVm.processingTabCounts,
+        setProcessingTab: filtersVm.actions.setProcessingTab,
+    };
+
+    const toolbarVm = {
+        total: dataVm.total,
+        page: filtersVm.filters.page,
+        totalPages: dataVm.totalPages,
+        parseStatus: filtersVm.filters.parseStatus,
+        workflowStatus: filtersVm.filters.workflowStatus,
+        paymentState: filtersVm.filters.paymentState,
+        providerRaw: filtersVm.filters.providerRaw,
+        searchRaw: filtersVm.filters.searchRaw,
+        sort: filtersVm.filters.sort,
+        perPage: filtersVm.filters.perPage,
+        isFetching: dataVm.query.isFetching,
+        onParseStatusChange: filtersVm.actions.setParseStatus,
+        onWorkflowStatusChange: filtersVm.actions.setWorkflowStatus,
+        onPaymentStateChange: filtersVm.actions.setPaymentState,
+        onProviderChange: filtersVm.actions.setProvider,
+        onSearchChange: filtersVm.actions.setSearch,
+        onSortChange: filtersVm.actions.setSort,
+        onPerPageChange: filtersVm.actions.setPerPage,
+        onPageChange: filtersVm.actions.setPage,
+        onRefresh: () => {
+            void dataVm.query.refetch();
         },
     };
 
-    const markShippingReady: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-            setActivePrimaryActionId(id);
-
-            try {
-                openShippingReady?.(rx);
-            } finally {
-                setActivePrimaryActionId(null);
-            }
+    const listVm = {
+        page: filtersVm.filters.page,
+        total: dataVm.total,
+        totalPages: dataVm.totalPages,
+        isFetching: dataVm.query.isFetching,
+        isLoading: dataVm.query.isLoading,
+        isError: dataVm.query.isError,
+        error: dataVm.query.isError ? dataVm.query.error : null,
+        setPage: filtersVm.actions.setPage,
+        refresh: () => {
+            void dataVm.query.refetch();
         },
     };
 
-    const markPickupReady: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-            setActivePrimaryActionId(id);
-
-            try {
-                openPickupReady?.(rx);
-            } finally {
-                setActivePrimaryActionId(null);
-            }
-        },
+    const handleMarkShippingReady = (rx: RxListItemDto) => {
+        mutationsVm.actions.mark_shipping_ready?.run(rx);
     };
 
-    const markShipped: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-            setActivePrimaryActionId(id);
-
-            try {
-                await markShippedMutation.mutateAsync({ id });
-            } finally {
-                setActivePrimaryActionId(null);
-            }
-        },
+    const handleMarkPickupReady = (rx: RxListItemDto) => {
+        mutationsVm.actions.mark_pickup_ready?.run(rx);
     };
 
-    const markPickedUp: RxActionController = {
-        run: async (rx: RxListItemDto) => {
-            const id = Number(rx.id);
-            setActivePrimaryActionId(id);
-
-            try {
-                await markHandedOverMutation.mutateAsync({ id });
-            } finally {
-                setActivePrimaryActionId(null);
-            }
-        },
-    };
-
-    const actions: RxUiActionControllers = {
-        review_attention: reviewAttention,
-        create_offer: createOffer,
-        mark_shipping_ready: markShippingReady,
-        mark_pickup_ready: markPickupReady,
-        mark_shipped: markShipped,
-        mark_picked_up: markPickedUp,
+    const tableVm = {
+        status: filtersVm.filters.status,
+        items: dataVm.items,
+        page: filtersVm.filters.page,
+        perPage: filtersVm.filters.perPage,
+        isLoading: dataVm.query.isFetching,
+        onReparse: mutationsVm.reparse.run,
+        isReparseBusy: mutationsVm.reparse.isBusy,
+        onPrimaryAction: primaryActionVm.handlePrimaryAction,
+        onMarkShippingReady: handleMarkShippingReady,
+        onMarkPickupReady: handleMarkPickupReady,
+        isPrimaryActionPending: mutationsVm.primaryActionState.isPending,
+        activePrimaryActionId: mutationsVm.primaryActionState.activeId,
     };
 
     return {
-        reparse,
-        actions,
-        primaryActionState: {
-            isPending: activePrimaryActionId !== null,
-            activeId: activePrimaryActionId,
-        },
+        query: dataVm.query,
+        statusVm,
+        processingVm,
+        toolbarVm,
+        listVm,
+        tableVm,
     };
 }

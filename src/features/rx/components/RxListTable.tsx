@@ -38,6 +38,8 @@ export function RxListTable(props: {
     isReparseBusy?: (id: number) => boolean;
 
     onPrimaryAction?: (rx: RxListItemDto) => void;
+    onMarkShippingReady?: (rx: RxListItemDto) => void;
+    onMarkPickupReady?: (rx: RxListItemDto) => void;
     isPrimaryActionPending?: boolean;
     activePrimaryActionId?: number | null;
 }) {
@@ -53,6 +55,8 @@ export function RxListTable(props: {
         onReparse,
         isReparseBusy,
         onPrimaryAction,
+        onMarkShippingReady,
+        onMarkPickupReady,
         isPrimaryActionPending,
         activePrimaryActionId,
     } = props;
@@ -172,12 +176,7 @@ export function RxListTable(props: {
                                     )}
 
                                     {hasRxTableColumn(columns, "status") && (
-                                        <RxStatusCell
-                                            row={row}
-                                            disabled={isBusy}
-                                            isReparseBusy={rowIsReparseBusy}
-                                            onReparse={onReparse}
-                                        />
+                                        <RxStatusCell row={row} />
                                     )}
 
                                     {hasRxTableColumn(columns, "issue") && (
@@ -198,6 +197,12 @@ export function RxListTable(props: {
                                             disabled={isBusy}
                                             isLoading={rowIsPrimaryActionBusy}
                                             onClick={onPrimaryAction}
+                                            onMarkShippingReady={
+                                                onMarkShippingReady
+                                            }
+                                            onMarkPickupReady={
+                                                onMarkPickupReady
+                                            }
                                         />
                                     )}
 
