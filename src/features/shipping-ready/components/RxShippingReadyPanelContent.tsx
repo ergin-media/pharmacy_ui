@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { RxListItemDto } from "@/features/rx/types/rx.dto";
@@ -9,8 +10,15 @@ export function RxShippingReadyPanelContent(props: {
     trackingId?: string | null;
     isCreatingLabel?: boolean;
     onCreateLabel?: () => void;
+    onCancel?: () => void;
 }) {
-    const { rx, trackingId, isCreatingLabel = false, onCreateLabel } = props;
+    const {
+        rx,
+        trackingId,
+        isCreatingLabel = false,
+        onCreateLabel,
+        onCancel,
+    } = props;
 
     return (
         <div className="grid gap-6">
@@ -22,48 +30,62 @@ export function RxShippingReadyPanelContent(props: {
                 </div>
             </div>
 
-            <div className="grid gap-4 rounded-lg border p-4">
-                <div className="text-sm font-medium">Rezept</div>
-                <div className="text-sm text-muted-foreground">ID: {rx.id}</div>
-                <div className="text-sm text-muted-foreground">
-                    Patient: {rx.patient?.first_name} {rx.patient?.last_name}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    Bestell-ID: {rx.external_order_id ?? "—"}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    Versandart laut Plattform:{" "}
-                    {rx.fulfillment_type === "shipping"
-                        ? "Versand"
-                        : rx.fulfillment_type === "pickup"
-                          ? "Abholung"
-                          : "Unbekannt"}
-                </div>
-            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">Rezept</CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-2 text-sm text-muted-foreground">
+                    <div>ID: {rx.id}</div>
+                    <div>
+                        Patient: {rx.patient?.first_name}{" "}
+                        {rx.patient?.last_name}
+                    </div>
+                    <div>Bestell-ID: {rx.external_order_id ?? "—"}</div>
+                    <div>
+                        Wunsch laut Plattform:{" "}
+                        {rx.fulfillment_type === "shipping"
+                            ? "Versand"
+                            : rx.fulfillment_type === "pickup"
+                              ? "Abholung"
+                              : "Unbekannt"}
+                    </div>
+                </CardContent>
+            </Card>
 
-            <div className="grid gap-4 rounded-lg border p-4">
-                <div className="text-sm font-medium">DHL Versandlabel</div>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">
+                        DHL Versandlabel
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4">
+                    <div className="grid gap-2">
+                        <Label>Tracking-ID</Label>
+                        <Input value={trackingId ?? ""} readOnly />
+                    </div>
 
-                <div className="grid gap-2">
-                    <Label>Tracking-ID</Label>
-                    <Input value={trackingId ?? ""} readOnly />
-                </div>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            type="button"
+                            onClick={onCreateLabel}
+                            disabled={isCreatingLabel}
+                        >
+                            {isCreatingLabel
+                                ? "Versandlabel wird erstellt..."
+                                : "Versandlabel erzeugen"}
+                        </Button>
 
-                <div className="flex items-center gap-3">
-                    <Button
-                        type="button"
-                        onClick={onCreateLabel}
-                        disabled={isCreatingLabel}
-                    >
-                        {isCreatingLabel
-                            ? "Versandlabel wird erstellt..."
-                            : "Versandlabel erzeugen"}
-                    </Button>
+                        {trackingId ? (
+                            <Badge variant="success">Label erstellt</Badge>
+                        ) : null}
+                    </div>
+                </CardContent>
+            </Card>
 
-                    {trackingId ? (
-                        <Badge variant="success">Label erstellt</Badge>
-                    ) : null}
-                </div>
+            <div className="flex items-center justify-end gap-3 border-t pt-4">
+                <Button type="button" variant="outline" onClick={onCancel}>
+                    Schließen
+                </Button>
             </div>
         </div>
     );

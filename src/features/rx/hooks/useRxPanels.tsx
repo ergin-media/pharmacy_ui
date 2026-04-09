@@ -90,7 +90,7 @@ export function useRxPanels() {
                 description: formatRxPanelDescription(rx),
                 variant: "custom",
                 widthClassName: "w-[95vw] max-w-[1000px]",
-                render: () => (
+                render: ({ close }) => (
                     <RxShippingReadyPanelContent
                         rx={rx}
                         trackingId={null}
@@ -98,6 +98,7 @@ export function useRxPanels() {
                         onCreateLabel={() => {
                             console.log("create dhl label", rx.id);
                         }}
+                        onCancel={close}
                     />
                 ),
             });
@@ -112,7 +113,7 @@ export function useRxPanels() {
                 description: formatRxPanelDescription(rx),
                 variant: "custom",
                 widthClassName: "w-[95vw] max-w-[900px]",
-                render: () => (
+                render: ({ close }) => (
                     <RxPickupReadyPanelContent
                         rx={rx}
                         pickupMailSentAt={null}
@@ -123,6 +124,7 @@ export function useRxPanels() {
                         onResendPickupMail={() => {
                             console.log("resend pickup mail", rx.id);
                         }}
+                        onCancel={close}
                     />
                 ),
             });
