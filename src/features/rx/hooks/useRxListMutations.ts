@@ -1,9 +1,6 @@
 import { useState } from "react";
 
-import {
-    useReparseRxMutation,
-    useTakeOverRxMutation,
-} from "../queries/rx.queries";
+import { useReparseRxMutation } from "../queries/rx.queries";
 import { useMarkRxShippedMutation } from "../mark-shipped/queries/rx-mark-shipped.queries";
 import { useMarkRxHandedOverMutation } from "../mark-handed-over/queries/rx-mark-handed-over.queries";
 
@@ -15,11 +12,14 @@ import type {
 
 export function useRxListMutations(input?: {
     openOfferCreate?: (rx: RxListItemDto) => void;
+    openShippingReady?: (rx: RxListItemDto) => void;
+    openPickupReady?: (rx: RxListItemDto) => void;
 }) {
     const openOfferCreate = input?.openOfferCreate;
+    const openShippingReady = input?.openShippingReady;
+    const openPickupReady = input?.openPickupReady;
 
     const reparseMutation = useReparseRxMutation();
-    const takeOverMutation = useTakeOverRxMutation();
     const markShippedMutation = useMarkRxShippedMutation();
     const markHandedOverMutation = useMarkRxHandedOverMutation();
 
@@ -64,13 +64,26 @@ export function useRxListMutations(input?: {
         },
     };
 
-    const startProcessing: RxActionController = {
+    const markShippingReady: RxActionController = {
         run: async (rx: RxListItemDto) => {
             const id = Number(rx.id);
             setActivePrimaryActionId(id);
 
             try {
-                await takeOverMutation.mutateAsync(id);
+                openShippingReady?.(rx);
+            } finally {
+                setActivePrimaryActionId(null);
+            }
+        },
+    };
+
+    const markPickupReady: RxActionController = {
+        run: async (rx: RxListItemDto) => {
+            const id = Number(rx.id);
+            setActivePrimaryActionId(id);
+
+            try {
+                openPickupReady?.(rx);
             } finally {
                 setActivePrimaryActionId(null);
             }
@@ -106,7 +119,8 @@ export function useRxListMutations(input?: {
     const actions: RxUiActionControllers = {
         review_attention: reviewAttention,
         create_offer: createOffer,
-        start_processing: startProcessing,
+        mark_shipping_ready: markShippingReady,
+        mark_pickup_ready: markPickupReady,
         mark_shipped: markShipped,
         mark_picked_up: markPickedUp,
     };

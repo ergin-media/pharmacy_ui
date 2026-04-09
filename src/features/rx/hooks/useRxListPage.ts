@@ -23,6 +23,8 @@ export function useRxListPage() {
 
     const mutationsVm = useRxListMutations({
         openOfferCreate: panels.offerCreate.open,
+        openShippingReady: panels.shippingReady?.open,
+        openPickupReady: panels.pickupReady?.open,
     });
 
     const primaryActionVm = useRxPrimaryAction({
