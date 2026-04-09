@@ -1,8 +1,9 @@
 import { useRxListFilters } from "./useRxListFilters";
 import { useRxListData } from "./useRxListData";
-import { useRxListMutations } from "./useRxListMutations";
 import { useRxPrimaryAction } from "./useRxPrimaryAction";
 import { useRxPanels } from "./useRxPanels";
+import type { RxListItemDto } from "../types/rx.dto";
+import { useRxListMutations } from "./useRxListMutations";
 
 export function useRxListPage() {
     const filtersVm = useRxListFilters();
@@ -23,8 +24,20 @@ export function useRxListPage() {
 
     const mutationsVm = useRxListMutations({
         openOfferCreate: panels.offerCreate.open,
-        openShippingReady: panels.shippingReady?.open,
-        openPickupReady: panels.pickupReady?.open,
+        openShippingReady: (rx) => {
+            if (panels.shippingReady?.open) {
+                panels.shippingReady.open(rx);
+                return;
+            }
+            console.log("shippingReady", rx.id);
+        },
+        openPickupReady: (rx) => {
+            if (panels.pickupReady?.open) {
+                panels.pickupReady.open(rx);
+                return;
+            }
+            console.log("pickupReady", rx.id);
+        },
     });
 
     const primaryActionVm = useRxPrimaryAction({
@@ -83,6 +96,14 @@ export function useRxListPage() {
         },
     };
 
+    const handleMarkShippingReady = (rx: RxListItemDto) => {
+        mutationsVm.actions.mark_shipping_ready?.run(rx);
+    };
+
+    const handleMarkPickupReady = (rx: RxListItemDto) => {
+        mutationsVm.actions.mark_pickup_ready?.run(rx);
+    };
+
     const tableVm = {
         status: filtersVm.filters.status,
         items: dataVm.items,
@@ -92,6 +113,8 @@ export function useRxListPage() {
         onReparse: mutationsVm.reparse.run,
         isReparseBusy: mutationsVm.reparse.isBusy,
         onPrimaryAction: primaryActionVm.handlePrimaryAction,
+        onMarkShippingReady: handleMarkShippingReady,
+        onMarkPickupReady: handleMarkPickupReady,
         isPrimaryActionPending: mutationsVm.primaryActionState.isPending,
         activePrimaryActionId: mutationsVm.primaryActionState.activeId,
     };
