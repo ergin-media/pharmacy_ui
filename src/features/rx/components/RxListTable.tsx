@@ -181,7 +181,12 @@ export function RxListTable(props: {
                                     )}
 
                                     {hasRxTableColumn(columns, "issue") && (
-                                        <RxIssuesCell row={row} />
+                                        <RxIssuesCell
+                                            row={row}
+                                            disabled={isBusy}
+                                            isReparseBusy={rowIsReparseBusy}
+                                            onReparse={onReparse}
+                                        />
                                     )}
 
                                     {hasRxTableColumn(
