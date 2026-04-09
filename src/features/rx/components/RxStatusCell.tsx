@@ -1,12 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 
-import { getRxUiStatus } from "../lib/rx.status-resolver";
-import { getRxUiStatusBadge } from "../lib/rx.ui-status-badges";
-
 import type { RxTableRowVm } from "../lib/rx.table-row.vm";
+import { getRxUiStatus } from "../lib/rx.ui-status";
+import { getRxUiStatusBadge } from "../lib/rx.ui-status-badges";
 
 export function RxStatusCell(props: {
     row: RxTableRowVm;
+    disabled?: boolean;
+    isReparseBusy?: boolean;
+    onReparse?: (id: number) => void;
 }) {
     const { row } = props;
 
@@ -15,9 +17,7 @@ export function RxStatusCell(props: {
 
     return (
         <td className="whitespace-nowrap">
-            <Badge className={badge.className}>
-                {badge.label}
-            </Badge>
+            <Badge className={badge.className}>{badge.label}</Badge>
         </td>
     );
 }

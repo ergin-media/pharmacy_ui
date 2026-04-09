@@ -1,10 +1,10 @@
 import type { RxListItemDto } from "../types/rx.dto";
+import { getRxUiStatus, type RxUiStatus } from "./rx.ui-status";
 
 export type RxUiAction =
     | "review_attention"
     | "create_offer"
     | "start_processing"
-    | "finish_preparation"
     | "mark_shipped"
     | "mark_picked_up"
     | null;
@@ -18,50 +18,33 @@ export type RxUiActionControllers = Partial<
 >;
 
 export function getRxUiAction(rx: RxListItemDto): RxUiAction {
-    const status = rx.status ?? null;
-    const hasAttention = rx.has_attention === true;
+    const status = getRxUiStatus(rx);
 
-    if (status === "completed") {
-        return null;
+    switch (status) {
+        case "attention":
+            return "review_attention";
+
+        case "new":
+            return "create_offer";
+
+        case "awaiting_payment":
+            return null;
+
+        case "paid":
+            return "start_processing";
+
+        case "shipping_ready":
+            return "mark_shipped";
+
+        case "pickup_ready":
+            return "mark_picked_up";
+
+        case "completed":
+            return null;
+
+        default:
+            return null;
     }
-
-    if (hasAttention) {
-        return "review_attention";
-    }
-
-    if (status === "new") {
-        return "create_offer";
-    }
-
-    if (status !== "processing") {
-        return null;
-    }
-
-    const isPaid = rx.payment_state === "paid" || Boolean(rx.timeline?.paid_at);
-    const isPrepared = Boolean(rx.timeline?.prepared_at);
-    const isReady = Boolean(rx.timeline?.pickup_ready_at);
-
-    if (!isPaid) {
-        return null;
-    }
-
-    if (!isPrepared) {
-        return "start_processing";
-    }
-
-    if (!isReady) {
-        return "finish_preparation";
-    }
-
-    if (rx.fulfillment_type === "shipping") {
-        return "mark_shipped";
-    }
-
-    if (rx.fulfillment_type === "pickup") {
-        return "mark_picked_up";
-    }
-
-    return null;
 }
 
 export function getRxUiActionLabel(action: RxUiAction): string | null {
@@ -72,12 +55,31 @@ export function getRxUiActionLabel(action: RxUiAction): string | null {
             return "Angebot erstellen";
         case "start_processing":
             return "In Bearbeitung starten";
-        case "finish_preparation":
-            return "Fertig vorbereiten";
         case "mark_shipped":
             return "Als versendet markieren";
         case "mark_picked_up":
             return "Als abgeholt markieren";
+        default:
+            return null;
+    }
+}
+
+export function getRxUiActionFromStatus(status: RxUiStatus): RxUiAction {
+    switch (status) {
+        case "attention":
+            return "review_attention";
+        case "new":
+            return "create_offer";
+        case "awaiting_payment":
+            return null;
+        case "paid":
+            return "start_processing";
+        case "shipping_ready":
+            return "mark_shipped";
+        case "pickup_ready":
+            return "mark_picked_up";
+        case "completed":
+            return null;
         default:
             return null;
     }
