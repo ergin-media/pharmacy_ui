@@ -23,20 +23,23 @@ export function RxPickupReadyPanelContent(props: {
     const hasSent = Boolean(pickupMailSentAt);
 
     return (
-        <div className="grid gap-6">
-            <div className="grid gap-2">
-                <div className="text-lg font-semibold">
-                    Abholung vorbereiten
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    Hier kann die Benachrichtigung an den Patienten versendet
-                    werden, dass das Rezept zur Abholung bereitliegt.
-                </div>
-            </div>
+        <div className="grid gap-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold">
+                        Abholung vorbereiten
+                    </CardTitle>
+                    <CardContent>
+                        Hier kann die Benachrichtigung an den Patienten
+                        versendet werden, dass das Rezept zur Abholung
+                        bereitliegt.
+                    </CardContent>
+                </CardHeader>
+            </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">Rezept</CardTitle>
+                    <CardTitle>Rezept</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-2 text-sm text-muted-foreground">
                     <div>ID: {rx.id}</div>
@@ -58,9 +61,7 @@ export function RxPickupReadyPanelContent(props: {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">
-                        Abholbenachrichtigung
-                    </CardTitle>
+                    <CardTitle>Abholbenachrichtigung</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                     <div className="flex items-center gap-3">
@@ -106,7 +107,7 @@ export function RxPickupReadyPanelContent(props: {
                 </CardContent>
             </Card>
 
-            <div className="flex items-center justify-end gap-3 border-t pt-4">
+            <div className="flex items-center justify-end gap-3">
                 <Button type="button" variant="outline" onClick={onCancel}>
                     Schließen
                 </Button>

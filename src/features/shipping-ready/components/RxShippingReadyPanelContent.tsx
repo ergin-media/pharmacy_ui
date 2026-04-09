@@ -21,18 +21,22 @@ export function RxShippingReadyPanelContent(props: {
     } = props;
 
     return (
-        <div className="grid gap-6">
-            <div className="grid gap-2">
-                <div className="text-lg font-semibold">Versand vorbereiten</div>
-                <div className="text-sm text-muted-foreground">
-                    Hier kann das DHL Versandlabel erzeugt werden. Nach
-                    erfolgreicher Erstellung wird die Tracking-ID angezeigt.
-                </div>
-            </div>
+        <div className="grid gap-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold">
+                        Versand vorbereiten
+                    </CardTitle>
+                    <CardContent>
+                        Hier kann das DHL Versandlabel erzeugt werden. Nach
+                        erfolgreicher Erstellung wird die Tracking-ID angezeigt.
+                    </CardContent>
+                </CardHeader>
+            </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">Rezept</CardTitle>
+                    <CardTitle>Rezept</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-2 text-sm text-muted-foreground">
                     <div>ID: {rx.id}</div>
@@ -54,9 +58,7 @@ export function RxShippingReadyPanelContent(props: {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">
-                        DHL Versandlabel
-                    </CardTitle>
+                    <CardTitle>DHL Versandlabel</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                     <div className="grid gap-2">
@@ -82,7 +84,7 @@ export function RxShippingReadyPanelContent(props: {
                 </CardContent>
             </Card>
 
-            <div className="flex items-center justify-end gap-3 border-t pt-4">
+            <div className="flex items-center justify-end gap-3">
                 <Button type="button" variant="outline" onClick={onCancel}>
                     Schließen
                 </Button>
