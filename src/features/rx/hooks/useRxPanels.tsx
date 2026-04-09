@@ -9,6 +9,7 @@ import { RxPickupReadyPanelContent } from "../pickup-ready/components/RxPickupRe
 import { rxKeys } from "../queries/rx.queries";
 import type { RxListItemDto } from "../types/rx.dto";
 import { formatRxPanelDescription } from "../lib/rx.format";
+import { RxShippingReadyPanelContent } from "@/features/shipping-ready/components/RxShippingReadyPanelContent";
 
 export function useRxPanels() {
     const { openPanel } = useSlideInPanel();
@@ -89,8 +90,8 @@ export function useRxPanels() {
                 description: formatRxPanelDescription(rx),
                 variant: "custom",
                 widthClassName: "w-[95vw] max-w-[1000px]",
-                render: ({ close }) => (
-                    <RxPickupReadyPanelContent
+                render: () => (
+                    <RxShippingReadyPanelContent
                         rx={rx}
                         trackingId={null}
                         isCreatingLabel={false}
@@ -111,7 +112,7 @@ export function useRxPanels() {
                 description: formatRxPanelDescription(rx),
                 variant: "custom",
                 widthClassName: "w-[95vw] max-w-[900px]",
-                render: ({ close }) => (
+                render: () => (
                     <RxPickupReadyPanelContent
                         rx={rx}
                         pickupMailSentAt={null}
