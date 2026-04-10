@@ -7,6 +7,7 @@ import { RxListToolbar } from "./RxListToolbar";
 import { RxListTableSkeleton } from "./RxListTableSkeleton";
 import { RxStatusPanels } from "./RxStatusPanels";
 import { RxProcessingSubTabs } from "./RxProcessingSubTabs";
+import { Card } from "@/components/ui/card";
 
 export function RxListPageLoading(props: {
     perPage: number;
@@ -29,29 +30,31 @@ export function RxListPageLoading(props: {
 
     return (
         <div className="grid gap-4">
-            <RxStatusPanels
-                value={statusVm.value}
-                counts={statusVm.counts}
-                attentionCount={statusVm.attentionCount}
-                onChange={statusVm.setStatus}
-            />
-
-            {statusVm.value === "processing" ? (
-                <RxProcessingSubTabs
-                    value={processingVm.value}
-                    counts={processingVm.counts}
-                    onChange={processingVm.setProcessingTab}
+            <Card>
+                <RxStatusPanels
+                    value={statusVm.value}
+                    counts={statusVm.counts}
+                    attentionCount={statusVm.attentionCount}
+                    onChange={statusVm.setStatus}
                 />
-            ) : null}
 
-            <RxListToolbar
-                {...toolbarVm}
-                page={page}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-            />
+                {statusVm.value === "processing" ? (
+                    <RxProcessingSubTabs
+                        value={processingVm.value}
+                        counts={processingVm.counts}
+                        onChange={processingVm.setProcessingTab}
+                    />
+                ) : null}
 
-            <RxListTableSkeleton rows={perPage} />
+                <RxListToolbar
+                    {...toolbarVm}
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                />
+
+                <RxListTableSkeleton rows={perPage} />
+            </Card>
         </div>
     );
 }
