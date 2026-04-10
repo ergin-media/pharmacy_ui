@@ -52,7 +52,7 @@ export function RxPrimaryActionCell(props: {
                             disabled={disabled}
                             onClick={() => onMarkShippingReady?.(row.rx)}
                         >
-                            Versandbereit
+                            Versandlabel erstellen
                         </LoadingButton>
 
                         <LoadingButton
@@ -62,7 +62,7 @@ export function RxPrimaryActionCell(props: {
                             disabled={disabled || isLoading}
                             onClick={() => onMarkPickupReady?.(row.rx)}
                         >
-                            Abholbereit
+                            Abholnachricht senden
                         </LoadingButton>
                     </div>
                 </div>
