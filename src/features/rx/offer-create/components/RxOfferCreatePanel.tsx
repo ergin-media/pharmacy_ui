@@ -59,6 +59,7 @@ export function RxOfferCreatePanel(props: {
             <div className="sticky bottom-0 px-1 pt-3">
                 <div className="flex items-center justify-end gap-2">
                     <Button
+                        type="button"
                         variant="outline"
                         onClick={onCancel}
                         disabled={isBusy}
@@ -67,6 +68,7 @@ export function RxOfferCreatePanel(props: {
                     </Button>
 
                     <LoadingButton
+                        type="button"
                         loading={isBusy}
                         onClick={handleCreateAndSend}
                     >
